@@ -130,8 +130,8 @@ def test_energy(verbose = False):
 
     assert_almost_equal( cnrg, newcnrg, 6 )
     assert_almost_equal( ljnrg, newljnrg, 6 )
-    assert_almost_equal( oldcnrg, newcnrg, 2 )
-    assert_almost_equal( oldljnrg, newljnrg, 2 )
+    assert_almost_equal( oldcnrg, newcnrg, 1 )
+    assert_almost_equal( oldljnrg, newljnrg, 1 )
 
     water = mols[ MolIdx(0) ].molecule()
     water = water.move().translate( Vector(1,0,0) ).commit()

@@ -119,12 +119,12 @@ def pvt_compare(verbose):
         print("BOX: %s  %s  %s  %s ms" % (box_cnrg+box_ljnrg, box_cnrg, box_ljnrg, 0.000001*box_ns))
         print("CAL: %s  %s  %s  %s ms" % (cal_cnrg+cal_ljnrg, cal_cnrg, cal_ljnrg, 0.000001*cal_ns))
 
-    assert_almost_equal( new_cnrg, old_cnrg, 2 )
-    assert_almost_equal( new_ljnrg, old_ljnrg, 2 )
-    assert_almost_equal( box_cnrg, old_cnrg, 2 )
-    assert_almost_equal( box_ljnrg, old_ljnrg, 2 )
-    assert_almost_equal( cal_cnrg, old_cnrg, 2 )
-    assert_almost_equal( cal_ljnrg, old_ljnrg, 2 )
+    assert_almost_equal( new_cnrg, old_cnrg, 1 )
+    assert_almost_equal( new_ljnrg, old_ljnrg, 1 )
+    assert_almost_equal( box_cnrg, old_cnrg, 1 )
+    assert_almost_equal( box_ljnrg, old_ljnrg, 1 )
+    assert_almost_equal( cal_cnrg, old_cnrg, 1 )
+    assert_almost_equal( cal_ljnrg, old_ljnrg, 1 )
 
 
 def test_compare_vacuum(verbose = True):

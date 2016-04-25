@@ -5,8 +5,12 @@ from Sire.Mol import *
 from Sire.MM import *
 from Sire.System import *
 from Sire.Units import *
+import os.path
 
 from nose.tools import assert_almost_equal
+plugins = os.path.join('lib','plugins')
+os.environ["OPENMM_PLUGIN_DIR"] = os.path.join(Sire.Base.getInstallDir(),plugins)
+
 
 (mols, space) = Amber().readCrdTop("../io/ala.crd", "../io/ala.top")
 
@@ -80,9 +84,9 @@ def test_setup(verbose = False):
     if verbose:
         print("\nInitial OpenMM energy = %s kcal mol-1" % openmm_nrg)
 
-    assert_almost_equal( sire_nrg, openmm_nrg, 1 )
+    assert_almost_equal(sire_nrg, openmm_nrg, 1)
 
-def test_nve(verbose = False):
+def test_nve(verbose=False):
 
     sire_nrg = system.energy().value()
 

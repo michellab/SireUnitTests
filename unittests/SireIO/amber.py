@@ -25,8 +25,8 @@ lj_cutoff = 1000 * angstrom
 lj_feather = 999.5 * angstrom
 #############################################################
 
-top_file = "test/io/SYSTEM.top"
-crd_file = "test/io/SYSTEM.crd"
+top_file = "../io/SYSTEM.top"
+crd_file = "../io/SYSTEM.crd"
 print("Solvated protein/ligand complex: Loading a top file...")
 timer = QTime()
 timer.start()

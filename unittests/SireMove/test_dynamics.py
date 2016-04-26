@@ -14,7 +14,7 @@ from Sire.Stream import *
 
 import sys
 
-t = QTime()
+from nose.tools import assert_almost_equal
 
 cljff = InterCLJFF("cljff")
 
@@ -72,18 +72,32 @@ system = System()
 system.add(salt)
 system.add(cljff)
 
-t.start()                                       
-print("Initial energy = %s" % system.energy())
-print("(took %d ms)" % t.elapsed())
+def test_conservation(verbose=False):
 
-hmcmove = HybridMC(salt, 100)
+    mdmove = MolecularDynamics(salt)
 
-print(system.property("space"))
+    mdmove.setTimeStep(1*femtosecond)
 
-for i in range(0,250):
-    print("\nmove %d" % (i+1))
-    hmcmove.move(system, 1)
+    old_nrg = None
 
-    print(system.energy())
+    for i in range(0,25):
+        if verbose:
+            print("move %d" % (i+1))
 
-    PDB().write(system.molecules(), "test%0004d.pdb" % i)
+        mdmove.move(system, 20)
+
+        if verbose:
+            print(system.energy())
+            print(mdmove.kineticEnergy())
+            print(system.energy() + mdmove.kineticEnergy())
+
+        total_nrg = system.energy().value() + mdmove.kineticEnergy().value()
+
+        if old_nrg:
+            assert_almost_equal( total_nrg, old_nrg, 1 )
+
+        old_nrg = total_nrg
+
+if __name__ == "__main__":
+    test_conservation(True)
+

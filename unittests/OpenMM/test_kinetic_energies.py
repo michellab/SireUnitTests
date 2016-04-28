@@ -1,18 +1,19 @@
-
 from Sire.IO import *
 from Sire.Move import *
 from Sire.Mol import *
 from Sire.MM import *
 from Sire.System import *
 from Sire.Units import *
+from Sire.Maths import *
 import os.path
+import numpy as np
 
 from nose.tools import assert_almost_equal
 plugins = os.path.join('lib','plugins')
 os.environ["OPENMM_PLUGIN_DIR"] = os.path.join(Sire.Base.getInstallDir(),plugins)
 
 
-(mols, space) = Amber().readCrdTop("../io/ala.crd", "../io/ala.top")
+(mols, space) = Amber().readCrdTop("../io/ethane.crd", "../io/ethane.top")
 
 coul_cutoff = 10 * angstrom
 lj_cutoff = 10 * angstrom
@@ -46,11 +47,11 @@ system.add(mols)
 
 system.setProperty("space", space)
 
-def _pvt_createOpenMM(mols, temperature, pressure):
+def _pvt_create_nve_OpenMM(mols):
     openmm = OpenMMMDIntegrator(mols)
     openmm.setPlatform("CPU")
     openmm.setConstraintType("none")
-    openmm.setCutoffType("cutoffperiodic")
+    openmm.setCutoffType("cutoffnonperiodic")
     openmm.setIntegrator("leapfrogverlet")
     openmm.setFriction(0.1 * picosecond)
     openmm.setPrecision("double")
@@ -61,39 +62,32 @@ def _pvt_createOpenMM(mols, temperature, pressure):
     openmm.setCMMremovalFrequency(0)
     openmm.setBufferFrequency(0)
     openmm.setRestraint(False)
-    openmm.setTemperature(temperature)
-    openmm.setAndersen(True)
+    openmm.setAndersen(False)
     openmm.setAndersenFrequency(10)
-    openmm.setPressure(pressure)
-    openmm.setMCBarostat(True)
+    openmm.setMCBarostat(False)
     openmm.setMCBarostatFrequency(25)
     openmm.initialise()
     return openmm
 
-def test_setup(verbose = False):
+def test_kinetic_energy():
+    openmm = _pvt_create_nve_OpenMM(system[mols.number()])
+    #MD move integration
+    velocity_generator = MaxwellBoltzmann(25*celsius)
+    velocity_generator.setGenerator(RanGenerator(1234))
 
-    sire_nrg = system.energy().value()
-
-    if verbose:
-        print("\nInitial Sire energy = %s kcal mol-1" % sire_nrg)
-
-    openmm = _pvt_createOpenMM(system[mols.number()], 25*celsius, 1*atm)
-
-    openmm_nrg = openmm.getPotentialEnergy(system).value()
-
-    if verbose:
-        print("\nInitial OpenMM energy = %s kcal mol-1" % openmm_nrg)
-
-    assert_almost_equal(sire_nrg, openmm_nrg, 1)
-
-def test_nve(verbose=False):
-
-    sire_nrg = system.energy().value()
-
-    # build OpenMM NVE integrator
-
-
-
+    mdmove = MolecularDynamics(mols, openmm, 0.001*picosecond,
+                              {"velocity generator":velocity_generator})
+    tot_e = []
+    for i in range(10):
+        print("++++++++++++++++++++++++%d++++++++++++++++++++"%i)
+        mdmove.move(system, 1, True)
+        total_energy = system.energy()+mdmove.kineticEnergy()
+        print ("Potential energy is %s and kinetic energy is %s" %(system.energy(),mdmove.kineticEnergy()))
+        print ("Total energy from sire is: %s" %total_energy)
+        tot_e.append(total_energy.value())
+    percent_fluc = np.std(tot_e)/np.abs(np.mean(tot_e))*100
+    print ("Percent fluctuations are: %s "%(percent_fluc))
+    assert(percent_fluc<0.1)
 
 if __name__ == "__main__":
-    test_setup(True)
+    test_kinetic_energy()

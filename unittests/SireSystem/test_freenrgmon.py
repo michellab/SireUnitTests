@@ -25,7 +25,7 @@ water0 = water0.move().translate( -water0.evaluate().center() ).commit()
 water1 = water1.move().translate( Vector(0,0,2) - water1.evaluate().center() ).commit()
 water2 = water2.move().translate( Vector(0,0,2) - water2.evaluate().center() ).commit()
 
-def calculateEnergy(lamval):
+def _pvt_calculateEnergy(lamval, verbose):
     cljff01 = InterGroupCLJFF("cljff01")
     cljff02 = InterGroupCLJFF("cljff02")
 
@@ -111,21 +111,32 @@ def calculateEnergy(lamval):
     sys_dg = sys.energy(Symbol("dE")).value()
     sys_soft_dg = sys.energy(Symbol("dE_soft")).value()
 
+    if verbose:
+        print("%s : %s versus %s (should be equal)" % (lamval,dg,sys_dg))
+        print("%s : %s versus %s (should be equal)" % (lamval,soft_dg,sys_soft_dg))
+
     assert_almost_equal(dg, sys_dg, 5)
     assert_almost_equal(soft_dg, sys_soft_dg, 5)
 
-def test_1():
-    calculateEnergy(0.0)
+def test_1(verbose=False):
+    _pvt_calculateEnergy(0.0,verbose)
 
-def test_2():
-    calculateEnergy(0.1)
+def test_2(verbose=False):
+    _pvt_calculateEnergy(0.1,verbose)
 
-def test_3():
-    calculateEnergy(0.5)
+def test_3(verbose=False):
+    _pvt_calculateEnergy(0.5,verbose)
 
-def test_4():
-    calculateEnergy(0.9)
+def test_4(verbose=False):
+    _pvt_calculateEnergy(0.9,verbose)
 
-def test_5():
-    calculateEnergy(0.999)
+def test_5(verbose=False):
+    _pvt_calculateEnergy(0.999,verbose)
+
+if __name__ == "__main__":
+    test_1(True)
+    test_2(True)
+    test_3(True)
+    test_4(True)
+    test_5(True)
 

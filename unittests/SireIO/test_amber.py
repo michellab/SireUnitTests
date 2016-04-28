@@ -15,6 +15,8 @@ from Sire.Qt import *
 import os,re,sys
 import shutil
 
+from nose.tools import assert_almost_equal
+
 combining_rules = "arithmetic"
 temperature = 25 * celsius
 pressure = 1 * atm
@@ -82,10 +84,35 @@ def test_nrg(verbose=False):
         for component in list(system.energyComponents().keys()):
             print(component, system.energyComponents().value(component) * kcal_per_mol)
 
-        print("The AMBER11/sander energies for this system are ") 
+        print("The AMBER14/sander energies for this system are ") 
         print("""
+   NSTEP       ENERGY          RMS            GMAX         NAME    NUMBER
+      1      -3.4880E+01     1.3388E+01     6.2845E+01     C2         20
+
+ BOND    =        5.1844  ANGLE   =       10.0783  DIHED      =       20.1271
+ VDWAALS =       -1.7278  EEL     =     -256.9757  HBOND      =        0.0000
+ 1-4 VDW =       10.6377  1-4 EEL =      177.7958  RESTRAINT  =        0.0000
 """)
+
+        diff = abs( -34.880 - system.energy().value() )
+        print("Difference = %s" % diff)
+
+    e_bond = system.energy( solute_intraff.components().bond() ).value()
+    e_ang = system.energy( solute_intraff.components().angle() ).value()
+    e_dih = system.energy( solute_intraff.components().dihedral() ).value() + \
+            system.energy( solute_intraff.components().improper() ).value()
+    
+    assert_almost_equal( e_bond, 5.1844, 2 )
+    assert_almost_equal( e_ang, 10.0783, 2 )
+    assert_almost_equal( e_dih, 20.1271, 2 )
+
+    e_coul = system.energy( solute_intraclj.components().coulomb() ).value()
+    e_lj = system.energy( solute_intraclj.components().lj() ).value()
+
+    assert_almost_equal( e_coul, -256.9757 + 177.7958, 2 )
+    assert_almost_equal( e_lj, -1.7278 + 10.6377, 2 )
+
+    assert_almost_equal( system.energy().value(), -34.880, 2 )
 
 if __name__ == "__main__":
     test_nrg(True)
-

@@ -234,4 +234,4 @@ if __name__ == "__main__":
     test_nvt_setup(True)
     test_nve_setup(True)
     test_getters_setters(True)
-    test_nve(True)
+    #test_nve(True)

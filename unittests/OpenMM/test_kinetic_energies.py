@@ -6,7 +6,8 @@ from Sire.System import *
 from Sire.Units import *
 from Sire.Maths import *
 import os.path
-import numpy as np
+
+np = Sire.try_import("numpy")
 
 from nose.tools import assert_almost_equal
 plugins = os.path.join('lib','plugins')

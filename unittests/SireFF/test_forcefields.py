@@ -16,15 +16,28 @@ from nose.tools import assert_almost_equal, assert_equal
 
 (mols, space) = Amber().readCrdTop("../io/waterbox.crd", "../io/waterbox.top")
 
-ff1 = InterCLJFF("ff1")
-ff2 = InterCoulombFF("ff2")
-ff3 = InterLJFF("ff3")
+slow_ff1 = InterCLJFF("ff1")
+slow_ff2 = InterCoulombFF("ff2")
+slow_ff3 = InterLJFF("ff3")
 
-ff1.add(mols)
-ff2.add(mols)
-ff3.add(mols)
+slow_ff1.add(mols)
+slow_ff2.add(mols)
+slow_ff3.add(mols)
 
-def test_ffs_total(verbose=False):
+fast_ff1 = InterFF("ff1")
+fast_ff1.setCLJFunction( CLJShiftFunction(100*angstrom, 100*angstrom) )
+
+fast_ff2 = InterFF("ff2")
+fast_ff2.setCLJFunction( CLJShiftFunction(100*angstrom, 0*angstrom) )
+
+fast_ff3 = InterFF("ff3")
+fast_ff3.setCLJFunction( CLJShiftFunction(0*angstrom, 100*angstrom) )
+
+fast_ff1.add(mols)
+fast_ff2.add(mols)
+fast_ff3.add(mols)
+
+def _pvt_test(ff1, ff2, ff3, verbose=False):
 
     ffields = ForceFields()
     assert_equal( ffields.nForceFields(), 0 )
@@ -101,5 +114,41 @@ def test_ffs_total(verbose=False):
 
         assert_almost_equal( nrg.value(), total_nrg.value(), 2 )
 
+    part = Symbol("E_part")
+
+    ffields.setComponent( part, lam * (ff1.components().total() + ff2.components().total()) )
+    ffields.setComponent( ffields.totalComponent(),
+                          part + ff3.components().total() )
+
+    for i in range(0,11):
+        l = 0.1*i
+    
+        ffields.mustNowRecalculateFromScratch()
+        assert(ffields.isDirty())
+
+        if verbose:
+            print("Calculating energy for lambda = %f" % l)
+
+        ffields.setComponent(lam, l)
+
+        nrg = ffields.energy()
+        total_nrg = l * (nrg1 + nrg2) + nrg3
+
+        assert_almost_equal( nrg.value(), total_nrg.value(), 2 )    
+
+def test_slow_ffs(verbose=False):
+    if verbose:
+        print("\nTesting parallel running of serial forcefields")
+
+    _pvt_test(slow_ff1,slow_ff2,slow_ff3,verbose)
+
+def test_fast_ffs(verbose=False):
+    if verbose:
+        print("\nTesting parallel running of parallel forcefields")
+
+    _pvt_test(fast_ff1,fast_ff2,fast_ff3,verbose)
+
 if __name__ == "__main__":
-    test_ffs_total(True)
+    test_fast_ffs(True)
+    test_slow_ffs(True)
+

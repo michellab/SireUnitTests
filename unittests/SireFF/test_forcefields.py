@@ -75,9 +75,15 @@ def _pvt_test(ff1, ff2, ff3, par=False, verbose=False):
         print("...equals %s" % nrg)
         print("Calculating individual energies...")
 
+    t = QElapsedTimer()
+    t.start()
     nrg1 = ff1.energy()
     nrg2 = ff2.energy()
     nrg3 = ff3.energy()
+    ns = t.nsecsElapsed()
+
+    if verbose:
+        print("Serial evaluation took %f ms" % (0.000001*ns))
 
     total_nrg = nrg1+nrg2+nrg3
 
@@ -127,8 +133,6 @@ def _pvt_test(ff1, ff2, ff3, par=False, verbose=False):
     ffields.setComponent( part, lam * (ff1.components().total() + ff2.components().total()) )
     ffields.setComponent( ffields.totalComponent(),
                           part + ff3.components().total() )
-
-    t = QElapsedTimer()
 
     for i in range(0,11):
         l = 0.1*i

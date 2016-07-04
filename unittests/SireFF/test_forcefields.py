@@ -26,22 +26,30 @@ slow_ff3.add(mols)
 
 fast_ff1 = InterFF("ff1")
 fast_ff1.setCLJFunction( CLJShiftFunction(100*angstrom, 100*angstrom) )
+fast_ff1.setUseParallelCalculation(False)
 
 fast_ff2 = InterFF("ff2")
 fast_ff2.setCLJFunction( CLJShiftFunction(100*angstrom, 0*angstrom) )
+fast_ff2.setUseParallelCalculation(False)
 
 fast_ff3 = InterFF("ff3")
 fast_ff3.setCLJFunction( CLJShiftFunction(0*angstrom, 100*angstrom) )
+fast_ff3.setUseParallelCalculation(False)
 
 fast_ff1.add(mols)
 fast_ff2.add(mols)
 fast_ff3.add(mols)
 
-def _pvt_test(ff1, ff2, ff3, verbose=False):
+def _pvt_test(ff1, ff2, ff3, par=False, verbose=False):
 
     ffields = ForceFields()
     assert_equal( ffields.nForceFields(), 0 )
     assert_equal( ffields.nMolecules(), 0 )
+
+    if par:
+        ff1.setUseParallelCalculation(True)
+        ff2.setUseParallelCalculation(True)
+        ff3.setUseParallelCalculation(True)
 
     ffields.add(ff1)
     assert_equal( ffields.nForceFields(), 1 )
@@ -120,6 +128,8 @@ def _pvt_test(ff1, ff2, ff3, verbose=False):
     ffields.setComponent( ffields.totalComponent(),
                           part + ff3.components().total() )
 
+    t = QElapsedTimer()
+
     for i in range(0,11):
         l = 0.1*i
     
@@ -131,24 +141,41 @@ def _pvt_test(ff1, ff2, ff3, verbose=False):
 
         ffields.setComponent(lam, l)
 
+        t.start()
         nrg = ffields.energy()
+        ns = t.nsecsElapsed()
         total_nrg = l * (nrg1 + nrg2) + nrg3
+
+        if verbose:
+            print("Evaluation took %f ms" % (0.000001*ns))
 
         assert_almost_equal( nrg.value(), total_nrg.value(), 2 )    
 
+    if par:
+        ff1.setUseParallelCalculation(False)
+        ff2.setUseParallelCalculation(False)                                          
+        ff3.setUseParallelCalculation(False)
+
 def test_slow_ffs(verbose=False):
     if verbose:
-        print("\nTesting parallel running of serial forcefields")
+        print("\nTesting parallel running of (slow) serial forcefields")
 
-    _pvt_test(slow_ff1,slow_ff2,slow_ff3,verbose)
+    _pvt_test(slow_ff1,slow_ff2,slow_ff3,False,verbose)
 
-def test_fast_ffs(verbose=False):
+def test_parallel_ffs(verbose=False):
     if verbose:
         print("\nTesting parallel running of parallel forcefields")
 
-    _pvt_test(fast_ff1,fast_ff2,fast_ff3,verbose)
+    _pvt_test(fast_ff1,fast_ff2,fast_ff3,True,verbose)
+
+def test_fast_ffs(verbose=False):
+    if verbose:
+        print("\nTesting parallel running of fast (serial) forcefields")
+
+    _pvt_test(fast_ff1,fast_ff2,fast_ff3,False,verbose)
 
 if __name__ == "__main__":
     test_fast_ffs(True)
+    test_parallel_ffs(True)
     test_slow_ffs(True)
 

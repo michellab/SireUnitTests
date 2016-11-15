@@ -10,6 +10,8 @@ from Sire.Units import *
 from Sire.Mol import *
 from Sire.Qt import *
 
+import Sire.Stream
+
 from nose.tools import assert_almost_equal
 
 import math
@@ -107,6 +109,43 @@ def test_single_point(verbose=False):
     assert_almost_equal(nrg1, nrg3, 1)
     assert_almost_equal(nrg2, nrg3, 1)
 
+def _pvt_test_stream(verbose, s):
+    if verbose:
+        print("Testing streaming %s" % s.forceFields()[FFIdx(0)])
+
+    s = System(s)
+
+    moves = RigidBodyMC(cluster)
+
+    moves.move(s, nmoves, False)
+
+    oldnrg = s.energy().value()
+
+    Sire.Stream.save(s, "tmp.s3")
+
+    s = Sire.Stream.load("tmp.s3")
+
+    newnrg = s.energy().value()
+
+    if verbose:
+        print("%s vs %s" % (oldnrg, newnrg))
+
+    assert_almost_equal(oldnrg, newnrg, 1)
+
+    s.mustNowRecalculateFromScratch()
+
+    newnrg = s.energy().value()
+
+    if verbose:
+        print("%s vs %s" % (oldnrg, newnrg))
+
+    assert_almost_equal(oldnrg, newnrg, 1)
+
+def test_stream(verbose=False):
+    _pvt_test_stream(verbose, system1)
+    _pvt_test_stream(verbose, system2)
+    _pvt_test_stream(verbose, system3)
+
 def _pvt_test_simulation(verbose, s):
     if verbose:
         print("Testing simulation %s" % s.forceFields()[FFIdx(0)])
@@ -134,3 +173,5 @@ def test_simulation(verbose=False):
 if __name__ == "__main__":
     test_single_point(True)
     test_simulation(True)
+    test_stream(True)
+

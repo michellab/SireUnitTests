@@ -16,8 +16,8 @@ from nose.tools import assert_almost_equal
 
 import math
 
-coul_cutoff = 50 * angstrom
-lj_cutoff = 10 * angstrom
+coul_cutoff = 15 * angstrom
+lj_cutoff = 5 * angstrom
 
 grid_spacing = 0.25 * angstrom
 
@@ -117,15 +117,24 @@ def _pvt_test_stream(verbose, s):
 
     moves = RigidBodyMC(cluster)
 
-    moves.move(s, nmoves, False)
+    moves.move(s, 5*nmoves, False)
 
     oldnrg = s.energy().value()
 
     Sire.Stream.save(s, "tmp.s3")
 
-    s = Sire.Stream.load("tmp.s3")
+    s2 = Sire.Stream.load("tmp.s3")
 
-    newnrg = s.energy().value()
+    newnrg = s2.energy().value()
+
+    if verbose:
+        print("%s vs %s" % (oldnrg, newnrg))
+
+    assert_almost_equal(oldnrg, newnrg, 1)
+
+    s2.mustNowRecalculateFromScratch()
+
+    newnrg = s2.energy().value()
 
     if verbose:
         print("%s vs %s" % (oldnrg, newnrg))

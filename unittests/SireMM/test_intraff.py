@@ -24,7 +24,7 @@ zmat_maker = ZmatrixMaker()
 zmat_maker.loadTemplates( os.path.join(Sire.Config.parameter_directory, "amber.zmatrices") )
 protein = zmat_maker.applyTemplates(protein)
 
-nmoves = 1
+nmoves = 100
 ranseed = 3989
 temperature = 25 * celsius
 
@@ -50,6 +50,7 @@ oldff.add(protein)
 newff = IntraFF("newff")
 newff.setProperty("switchingFunction",switchfunc)
 newff.setProperty("space",space)
+newff.enableParallelCalculation()
 
 newff.add(protein)
 

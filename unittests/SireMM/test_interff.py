@@ -39,7 +39,7 @@ waters = MoleculeGroup("waters")
 for i in range(0, mols.nMolecules()):
     mol = mols[ MolIdx(i) ].molecule()
 
-    if Vector.distance(mol.evaluate().center(),reflect_sphere_center) < reflect_sphere_radius.value() :
+    if Vector.distance(mol.evaluate().centerOfMass(),reflect_sphere_center) < reflect_sphere_radius.value() :
         cluster.add(mol)
     else:
         waters.add(mol)

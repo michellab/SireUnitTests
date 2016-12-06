@@ -12,11 +12,14 @@ from Sire.Units import *
 
 from nose.tools import assert_almost_equal
 
-def test_fixed_center(verbose = False):
+def _pvt_test_fixed_center(center_method, verbose = False):
     ligand = Sire.Stream.load("../io/osel.s3")
-    ligand = ligand.edit().setProperty("center", wrap(ligand.evaluate().center())).commit()
 
-    old_center = ligand.property("center")
+    if center_method:
+        old_center = center_method.getPoint(ligand)
+    else:
+        ligand = ligand.edit().setProperty("center", wrap(Vector(1.0,2.0,3.0))).commit()
+        old_center = ligand.property("center")
 
     intraff = InternalFF("intraff")
     intraff.add(ligand)
@@ -33,8 +36,13 @@ def test_fixed_center(verbose = False):
     system.add(mols)
 
     intramove = InternalMove(mols)
+
     rbmove = RigidBodyMC(mols)
     rbmove.setMaximumTranslation(0*angstrom)
+
+    if center_method:
+        rbmove.setCenterOfRotation(center_method)
+        intramove.setCenterOfMolecule(center_method)
 
     moves = WeightedMoves()
     moves.add(intramove, 1)
@@ -48,7 +56,10 @@ def test_fixed_center(verbose = False):
 
         ligand = system[ligand.number()].molecule()
 
-        new_center = ligand.property("center")
+        if center_method:
+            new_center = center_method.getPoint(ligand)
+        else:
+            new_center = ligand.property("center")
 
         if verbose:
             print("Old center = %s" % old_center)
@@ -57,6 +68,22 @@ def test_fixed_center(verbose = False):
         assert_almost_equal( old_center.x(), new_center.x(), 1 )
         assert_almost_equal( old_center.y(), new_center.y(), 1 )
         assert_almost_equal( old_center.z(), new_center.z(), 1 )
+
+def test_fixed_center(verbose=False):
+    if verbose:
+        print("\nTesting with center of mass...")
+
+    _pvt_test_fixed_center( GetCOMPoint(), verbose )
+
+    if verbose:
+        print("\nTesting with centroid...")
+
+    _pvt_test_fixed_center( GetCentroidPoint(), verbose )
+
+    if verbose:
+        print("\nTesting with fixed point...")
+
+    _pvt_test_fixed_center( None, verbose )
 
 if __name__ == "__main__":
     test_fixed_center(True)

@@ -1,2 +1,2 @@
-A directroy to contain all of the unit tests
+A directory to contain all of the unit tests
 

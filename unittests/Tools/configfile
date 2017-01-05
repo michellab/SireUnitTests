@@ -3,4 +3,5 @@ value2 = 35 # * 42
 value3 = 100 centimeter
 value4 = 50 * second
 value5 = broken * second
-
+value6 = 800
+value7 = C:\Users\test\Local\Temp\input.top

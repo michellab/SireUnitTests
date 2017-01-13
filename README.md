@@ -80,7 +80,7 @@ SireUnitTests so that your tests can be merged in as well.
 
 Formal releases of Sire will still look for the tests using a `git clone`. Where `git` is not available on the
 local machine, then `sire_test` will attempt to download a packaged version of the tests from the download
-part of the [siremol](http://siremol.org) website.
+part of the [Sire website](http://siremol.org).
 
 To create such a release package, outside the SireUnitTests directory type
 

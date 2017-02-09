@@ -171,8 +171,7 @@ def test_nvt_setup(verbose=False):
     if verbose:
         print ("========NVT energy test done========")
 
-# renaming to disable
-def _pvt_test_nve_setup(verbose=False):
+def test_nve_setup(verbose=False):
     if verbose:
         print ("=========NVE energy test============")
 
@@ -193,7 +192,7 @@ def _pvt_test_nve_setup(verbose=False):
     if verbose:
         print ("========NVE energy test done========")
 
-def test_nve(verbose=False):
+def _pvt_test_nve(verbose=False):
 
     openmm = _pvt_create_nve_OpenMM(system[mols.number()])
     openmm_nrg = openmm.getPotentialEnergy(system).value()

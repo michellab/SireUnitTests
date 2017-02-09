@@ -171,7 +171,8 @@ def test_nvt_setup(verbose=False):
     if verbose:
         print ("========NVT energy test done========")
 
-def test_nve_setup(verbose=False):
+# renaming to disable
+def _pvt_test_nve_setup(verbose=False):
     if verbose:
         print ("=========NVE energy test============")
 

@@ -26,20 +26,7 @@ lj_cutoff = 1000 * angstrom
 lj_feather = 999.5 * angstrom
 #############################################################
 
-def test_one_molecule(verbose = False):
-    try:
-        # check if we have this
-        r = AmberRst()
-    except:
-        return
-
-    rst_file = "../io/ose.crd"
-    top_file = "../io/ose.top"
-
-    # Load the molecule using the old and new parser
-    mol1 = Amber().readCrdTop(rst_file, top_file)[0].moleculeAt(0).molecule()
-    mol2 = MoleculeParser.read(rst_file, top_file)[MolIdx(0)].molecule()
-
+def _pvt_compare_molecules(mol1, mol2, verbose):
     # compare the residues
     assert_equal( mol1.nResidues(), mol2.nResidues() )
 
@@ -103,20 +90,124 @@ def test_one_molecule(verbose = False):
 
     assert_equal( bonds1.nFunctions(), bonds2.nFunctions() )
 
+    for func in bonds1.potentials():
+        p1 = func.function()
+        p2 = bonds2.potential(func.atom0(), func.atom1())
+
+        if verbose:
+            print("%s-%s = %s versus %s" % (func.atom0(), func.atom1(), \
+                                            p1, p2))
+
+        assert_equal( p1, p2 )
+
     angles1 = mol1.property("angle")
     angles2 = mol2.property("angle")
 
     assert_equal( angles1.nFunctions(), angles2.nFunctions() )
+
+    for func in angles1.potentials():
+        p1 = func.function()
+        p2 = angles2.potential(func.atom0(), func.atom1(), func.atom2())
+
+        if verbose:
+            print("%s-%s-%s = %s versus %s" % (func.atom0(), func.atom1(), \
+                                               func.atom2(), p1, p2))
+
+        assert_equal( p1, p2 )
 
     dihedrals1 = mol1.property("dihedral")
     dihedrals2 = mol2.property("dihedral")
 
     assert_equal( dihedrals1.nFunctions(), dihedrals2.nFunctions() )
 
+    for func in dihedrals1.potentials():
+        p1 = func.function()
+        p2 = dihedrals2.potential(func.atom0(), func.atom1(), \
+                                  func.atom2(), func.atom3())
+
+        if verbose:
+            print("%s-%s-%s-%s = %s versus %s" % (func.atom0(), func.atom1(), \
+                                                  func.atom2(), func.atom3(), \
+                                                  p1, p2))
+
+        assert_equal( p1, p2 )
+
     impropers1 = mol1.property("improper")
     impropers2 = mol2.property("improper")
 
-    assert_equal( improper1.nFunctions(), impropers2.nFunctions() )
+    assert_equal( impropers1.nFunctions(), impropers2.nFunctions() )
+
+    for func in impropers1.potentials():
+        p1 = func.function()
+        p2 = impropers2.potential(func.atom0(), func.atom1(), \
+                                  func.atom2(), func.atom3())
+
+        if verbose:
+            print("%s-%s-%s-%s = %s versus %s" % (func.atom0(), func.atom1(), \
+                                                  func.atom2(), func.atom3(), \
+                                                  p1, p2))
+
+        assert_equal( p1, p2 )
+
+
+def test_one_molecule(verbose = False):
+    try:
+        # check if we have this
+        r = AmberRst()
+    except:
+        return
+
+    rst_file = "../io/ose.crd"
+    top_file = "../io/ose.top"
+
+    # Load the molecule using the old and new parser
+    if verbose:
+        print("Loading single molecule using old parser...")
+
+    mol1 = Amber().readCrdTop(rst_file, top_file)[0].moleculeAt(0).molecule()
+
+    if verbose:
+        print("Loading single molecule using new parser...")
+
+    mol2 = MoleculeParser.read(rst_file, top_file)[MolIdx(0)].molecule()
+
+    _pvt_compare_molecules(mol1, mol2, verbose)
+
+def test_lots_of_molecules(verbose = False):
+    try:
+        # check if we have this
+        r = AmberRst()
+    except:
+        return
+
+    rst_file = "../io/proteinbox.crd"
+    top_file = "../io/proteinbox.top"
+
+    # Load the box of molecules using the old and new parser
+    if verbose:
+        print("Loading box of molecules using old parser...")
+
+    (mols1,space1) = Amber().readCrdTop(rst_file, top_file)
+
+    if verbose:
+        print("Loading box of molecules using new parser...")
+
+    system2 = MoleculeParser.read(rst_file, top_file)
+    
+    if verbose:
+        print("Comparing all molecules in the boxes...")
+
+    mols2 = system2[MGIdx(0)]
+    space2 = system2.property("space")
+
+    assert_equal( space1, space2 )
+    assert_equal( mols1.nMolecules(), mols2.nMolecules() )
+
+    for i in range(0, mols1.nMolecules()):
+        if verbose:
+            print("\nComparing molecule %d..." % (i+1))
+
+        _pvt_compare_molecules( mols1[MolIdx(i)].molecule(), mols2[MolIdx(i)].molecule(), verbose )
 
 def _pvt_test_rst(verbose = False):
     rst_file = "../io/proteinbox.crd"
@@ -265,6 +356,8 @@ def _pvt_test_nrg(verbose=False):
 
 if __name__ == "__main__":
     test_one_molecule(True)
+    test_lots_of_molecules(True)
+
     #test_rst(True)
     #test_parm(True)
     #test_nrg(True)

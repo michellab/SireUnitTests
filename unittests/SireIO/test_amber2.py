@@ -34,9 +34,6 @@ def _pvt_compare_molecules(mol1, mol2, verbose):
         res1 = mol1.residue( ResIdx(i) )
         res2 = mol2.residue( ResIdx(i) )
 
-        if verbose:
-            print("%s versus %s" % (res1,res2))
-
         assert_equal( res1.name(), res2.name() )
         assert_equal( res1.number(), res2.number() )
 
@@ -47,108 +44,118 @@ def _pvt_compare_molecules(mol1, mol2, verbose):
         atom1 = mol1.atom( AtomIdx(i) )
         atom2 = mol2.atom( AtomIdx(i) )
 
-        if verbose:
-            print("%s versus %s" % (atom1,atom2))
-
         assert_equal( atom1.name(), atom2.name() )
         assert_equal( atom1.number(), atom2.number() )
 
         for p in ["coordinates", "charge", "LJ", "mass", "element", "ambertype"]:
             p1 = atom1.property(p)
             p2 = atom2.property(p)
-
-            print(" -- %s versus %s" % (p1,p2))
             assert_equal( p1, p2 )
 
-    # compare the connectivity
-    conn1 = mol1.property("connectivity")
-    conn2 = mol2.property("connectivity")
-
     if verbose:
-        print("\nConnectivity")
-        print(conn1)
-        print(conn2)
+        print("Compared nAtoms = %s : all equal" % mol1.nAtoms())
 
-    assert_equal( conn1.nConnections(), conn2.nConnections() )
+    # compare the connectivity
+    try:
+        conn1 = mol1.property("connectivity")
+        conn2 = mol2.property("connectivity")
+        have_connectivity = True
+    except:
+        have_connectivity = False
 
-    for i in range(0,mol1.nAtoms()):
-        idx = AtomIdx(i)
+    if have_connectivity:
+        assert_equal( conn1.nConnections(), conn2.nConnections() )
 
-        assert_equal( conn1.nConnections(idx), conn2.nConnections(idx) )
+        for i in range(0,mol1.nAtoms()):
+            idx = AtomIdx(i)
 
-        bonded1 = conn1.connectionsTo(idx)
-        bonded2 = conn2.connectionsTo(idx)
+            assert_equal( conn1.nConnections(idx), conn2.nConnections(idx) )
 
-        assert_equal( len(bonded1), len(bonded2) )
+            bonded1 = conn1.connectionsTo(idx)
+            bonded2 = conn2.connectionsTo(idx)
 
-        for atom in bonded1:
-            assert( atom in bonded2 )
+            assert_equal( len(bonded1), len(bonded2) )
+
+            for atom in bonded1:
+                assert( atom in bonded2 )
+
+        if verbose:
+            print("Connectivity is equal")
 
     # compare the bond, angle, dihedral and improper functions
-    bonds1 = mol1.property("bond")
-    bonds2 = mol2.property("bond")
+    try:
+        bonds1 = mol1.property("bond")
+        bonds2 = mol2.property("bond")
+        have_bonds = True
+    except:
+        have_bonds = False
 
-    assert_equal( bonds1.nFunctions(), bonds2.nFunctions() )
+    if have_bonds:
+        assert_equal( bonds1.nFunctions(), bonds2.nFunctions() )
 
-    for func in bonds1.potentials():
-        p1 = func.function()
-        p2 = bonds2.potential(func.atom0(), func.atom1())
-
-        if verbose:
-            print("%s-%s = %s versus %s" % (func.atom0(), func.atom1(), \
-                                            p1, p2))
-
-        assert_equal( p1, p2 )
-
-    angles1 = mol1.property("angle")
-    angles2 = mol2.property("angle")
-
-    assert_equal( angles1.nFunctions(), angles2.nFunctions() )
-
-    for func in angles1.potentials():
-        p1 = func.function()
-        p2 = angles2.potential(func.atom0(), func.atom1(), func.atom2())
+        for func in bonds1.potentials():
+            p1 = func.function()
+            p2 = bonds2.potential(func.atom0(), func.atom1())
+            assert_equal( p1, p2 )
 
         if verbose:
-            print("%s-%s-%s = %s versus %s" % (func.atom0(), func.atom1(), \
-                                               func.atom2(), p1, p2))
+            print("Compared nBonds = %s : all equal" % bonds1.nFunctions())
 
-        assert_equal( p1, p2 )
+    try:
+        angles1 = mol1.property("angle")
+        angles2 = mol2.property("angle")
+        have_angles = True
+    except:
+        have_angles = False
 
-    dihedrals1 = mol1.property("dihedral")
-    dihedrals2 = mol2.property("dihedral")
+    if have_angles:
+        assert_equal( angles1.nFunctions(), angles2.nFunctions() )
 
-    assert_equal( dihedrals1.nFunctions(), dihedrals2.nFunctions() )
-
-    for func in dihedrals1.potentials():
-        p1 = func.function()
-        p2 = dihedrals2.potential(func.atom0(), func.atom1(), \
-                                  func.atom2(), func.atom3())
-
-        if verbose:
-            print("%s-%s-%s-%s = %s versus %s" % (func.atom0(), func.atom1(), \
-                                                  func.atom2(), func.atom3(), \
-                                                  p1, p2))
-
-        assert_equal( p1, p2 )
-
-    impropers1 = mol1.property("improper")
-    impropers2 = mol2.property("improper")
-
-    assert_equal( impropers1.nFunctions(), impropers2.nFunctions() )
-
-    for func in impropers1.potentials():
-        p1 = func.function()
-        p2 = impropers2.potential(func.atom0(), func.atom1(), \
-                                  func.atom2(), func.atom3())
+        for func in angles1.potentials():
+            p1 = func.function()
+            p2 = angles2.potential(func.atom0(), func.atom1(), func.atom2())
+            assert_equal( p1, p2 )
 
         if verbose:
-            print("%s-%s-%s-%s = %s versus %s" % (func.atom0(), func.atom1(), \
-                                                  func.atom2(), func.atom3(), \
-                                                  p1, p2))
+            print("Compared nAngles = %s : all equal" % angles1.nFunctions()) 
 
-        assert_equal( p1, p2 )
+    try:
+        dihedrals1 = mol1.property("dihedral")
+        dihedrals2 = mol2.property("dihedral")
+        have_dihs = True
+    except:
+        have_dihs = False
 
+    if have_dihs:
+        assert_equal( dihedrals1.nFunctions(), dihedrals2.nFunctions() )
+
+        for func in dihedrals1.potentials():
+            p1 = func.function()
+            p2 = dihedrals2.potential(func.atom0(), func.atom1(), \
+                                      func.atom2(), func.atom3())
+            assert_equal( p1, p2 )
+
+        if verbose:
+            print("Compared nDihedrals = %s : all equal" % dihedrals1.nFunctions()) 
+
+    try:
+        impropers1 = mol1.property("improper")
+        impropers2 = mol2.property("improper")
+        have_imps = True
+    except:
+        have_imps = False
+
+    if have_imps:
+        assert_equal( impropers1.nFunctions(), impropers2.nFunctions() )
+
+        for func in impropers1.potentials():
+            p1 = func.function()
+            p2 = impropers2.potential(func.atom0(), func.atom1(), \
+                                      func.atom2(), func.atom3())
+            assert_equal( p1, p2 )
+
+        if verbose:
+            print("Compared nImpropers = %s : all equal" % impropers1.nFunctions()) 
 
 def test_one_molecule(verbose = False):
     try:

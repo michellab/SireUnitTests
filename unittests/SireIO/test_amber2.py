@@ -157,6 +157,11 @@ def _pvt_compare_molecules(mol1, mol2, verbose):
         if verbose:
             print("Compared nImpropers = %s : all equal" % impropers1.nFunctions()) 
 
+    intra1 = mol1.property("intrascale")
+    intra2 = mol2.property("intrascale")
+
+    assert_equal( intra1, intra2 )
+
 def test_one_molecule(verbose = False):
     try:
         # check if we have this
@@ -176,7 +181,8 @@ def test_one_molecule(verbose = False):
     if verbose:
         print("Loading single molecule using new parser...")
 
-    mol2 = MoleculeParser.read(rst_file, top_file)[MolIdx(0)].molecule()
+    mol2 = MoleculeParser.read(rst_file, top_file, \
+             {"parallel":BooleanProperty(False)})[MolIdx(0)].molecule()
 
     _pvt_compare_molecules(mol1, mol2, verbose)
 

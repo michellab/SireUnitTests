@@ -170,10 +170,41 @@ def _pvt_compare_molecules(mol1, mol2, verbose):
         if verbose:
             print("Compared nImpropers = %s : all equal" % impropers1.nFunctions()) 
 
-    intra1 = mol1.property("intrascale")
-    intra2 = mol2.property("intrascale")
+    if have_connectivity:
+        # now calculate an intramolecular energy
+        if verbose:
+            print("Compare IntraCLJ energy...")
 
-    #assert_equal( intra1, intra2 )
+        ff1 = IntraFF()
+        ff2 = IntraFF()
+
+        ff1.add(mol1)
+        ff2.add(mol2)
+
+        nrg1 = ff1.energy().value()
+        nrg2 = ff2.energy().value()
+
+        if verbose:
+            print("%s versus %s" % (nrg1,nrg2))
+
+        assert_almost_equal( nrg1, nrg2 )
+
+        if verbose:
+            print("Compare Internal bond/angle/dihedral energy...")
+
+        ff1 = InternalFF()
+        ff2 = InternalFF()
+
+        ff1.add(mol1)
+        ff2.add(mol2)
+
+        nrg1 = ff1.energy().value()
+        nrg2 = ff2.energy().value()
+
+        if verbose:
+            print("%s versus %s" % (nrg1,nrg2))
+
+        assert_almost_equal( nrg1, nrg2 )
 
 def test_one_molecule(verbose = False):
     try:

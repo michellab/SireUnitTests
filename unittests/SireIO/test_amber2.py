@@ -106,7 +106,7 @@ def _pvt_compare_molecules(mol1, mol2, verbose):
     if have_bonds:
         assert_equal( bonds1.nFunctions(), bonds2.nFunctions() )
 
-        for func in bonds1.potentials():
+        for func in bonds1.potentials()[0:min(150,bonds1.nFunctions())]:
             p1 = func.function()
             p2 = bonds2.potential(func.atom0(), func.atom1())
             assert_equal( p1, p2 )
@@ -124,7 +124,7 @@ def _pvt_compare_molecules(mol1, mol2, verbose):
     if have_angles:
         assert_equal( angles1.nFunctions(), angles2.nFunctions() )
 
-        for func in angles1.potentials():
+        for func in angles1.potentials()[0:min(150,angles1.nFunctions())]:
             p1 = func.function()
             p2 = angles2.potential(func.atom0(), func.atom1(), func.atom2())
             assert_equal( p1, p2 )
@@ -142,7 +142,7 @@ def _pvt_compare_molecules(mol1, mol2, verbose):
     if verbose and have_dihs:
         assert_equal( dihedrals1.nFunctions(), dihedrals2.nFunctions() )
 
-        for func in dihedrals1.potentials():
+        for func in dihedrals1.potentials()[0:min(150,dihedrals1.nFunctions())]:
             p1 = func.function()
             p2 = dihedrals2.potential(func.atom0(), func.atom1(), \
                                       func.atom2(), func.atom3())
@@ -162,7 +162,7 @@ def _pvt_compare_molecules(mol1, mol2, verbose):
     if verbose and have_imps:
         assert_equal( impropers1.nFunctions(), impropers2.nFunctions() )
 
-        for func in impropers1.potentials():
+        for func in impropers1.potentials()[0:min(150,impropers1.nFunctions())]:
             p1 = func.function()
             p2 = impropers2.potential(func.atom0(), func.atom1(), \
                                       func.atom2(), func.atom3())
@@ -262,7 +262,7 @@ def test_lots_of_molecules(verbose = False):
     assert_equal( space1, space2 )
     assert_equal( mols1.nMolecules(), mols2.nMolecules() )
 
-    for i in range(0, mols1.nMolecules()):
+    for i in range(0, 20):
         if verbose:
             print("\nComparing molecule %d..." % (i+1))
 
@@ -319,22 +319,14 @@ def test_parm(verbose = False):
 
 def test_nrg(verbose=False):
 
-    top_file = "../io/proteinbox.top"
-    crd_file = "../io/proteinbox.crd"
+    top_file = "../io/ose.top"
+    crd_file = "../io/ose.crd"
 
-    system = MoleculeParser.read(top_file, crd_file)[MGIdx(0)]
+    system = MoleculeParser.read(top_file, crd_file)
 
-    # Overload, we want to calc the energy in a non periodic box for comparison with Sander
     space = Cartesian()
 
-    moleculeNumbers = system.molNums()
-    moleculeList = []
-
     solute = system[MolWithResID("OSE")].molecule()
-
-    for moleculeNumber in moleculeNumbers:
-        molecule = system[moleculeNumber].molecule()
-        moleculeList.append(molecule)
 
     system = System()
 
@@ -408,9 +400,8 @@ def test_nrg(verbose=False):
     assert_almost_equal( system.energy().value(), -34.880, 2 )
 
 if __name__ == "__main__":
-    #test_one_molecule(True)
-    #test_lots_of_molecules(True)
-
+    test_one_molecule(True)
+    test_lots_of_molecules(True)
     test_rst(True)
     test_parm(True)
     test_nrg(True)

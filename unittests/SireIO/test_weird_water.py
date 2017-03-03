@@ -139,7 +139,7 @@ def _pvt_compare_molecules(mol1, mol2, verbose):
     except:
         have_dihs = False
 
-    if verbose and have_dihs:
+    if have_dihs:
         assert_equal( dihedrals1.nFunctions(), dihedrals2.nFunctions() )
 
         for func in dihedrals1.potentials():
@@ -159,7 +159,7 @@ def _pvt_compare_molecules(mol1, mol2, verbose):
     except:
         have_imps = False
 
-    if verbose and have_imps:
+    if have_imps:
         assert_equal( impropers1.nFunctions(), impropers2.nFunctions() )
 
         for func in impropers1.potentials():
@@ -208,31 +208,7 @@ def _pvt_compare_molecules(mol1, mol2, verbose):
 
         assert_almost_equal( nrg1, nrg2 )
 
-def test_one_molecule(verbose = False):
-    try:
-        # check if we have this
-        r = AmberRst()
-    except:
-        return
-
-    rst_file = "../io/ose.crd"
-    top_file = "../io/ose.top"
-
-    # Load the molecule using the old and new parser
-    if verbose:
-        print("Loading single molecule using old parser...")
-
-    mol1 = Amber().readCrdTop(rst_file, top_file)[0].moleculeAt(0).molecule()
-
-    if verbose:
-        print("Loading single molecule using new parser...")
-
-    mol2 = MoleculeParser.read(rst_file, top_file,
-            {"parallel":BooleanProperty(False)})[MolIdx(0)].molecule()
-
-    _pvt_compare_molecules(mol1, mol2, verbose)
-
-def test_lots_of_molecules(verbose = False):
+def test_weird_water(verbose = False):
     try:
         # check if we have this
         r = AmberRst()
@@ -262,155 +238,15 @@ def test_lots_of_molecules(verbose = False):
     assert_equal( space1, space2 )
     assert_equal( mols1.nMolecules(), mols2.nMolecules() )
 
-    for i in range(0, mols1.nMolecules()):
-        if verbose:
-            print("\nComparing molecule %d..." % (i+1))
+    # this water causes problems
+    water1 = mols1[MolIdx(333)].molecule()
+    water2 = mols2[MolIdx(333)].molecule()
 
-        _pvt_compare_molecules( mols1[MolIdx(i)].molecule(), mols2[MolIdx(i)].molecule(), verbose )
-
-def test_rst(verbose = False):
-    rst_file = "../io/proteinbox.crd"
-
-    rst = AmberRst(rst_file)
-
-    if verbose:
-        print(rst)
-
-    assert_equal( len(rst.coordinates()), 56056 )
-
-def test_parm(verbose = False):
-    top_file = "../io/proteinbox.top"
-
-    prm = AmberParm(top_file)
-
-    if verbose:
-        print(prm)
-
-    flags = prm.flags()
-
-    if verbose:
-        print(flags) 
-
-    assert_equal( len(flags), 44 )
-
-    pointers = prm.intData("POINTERS")
-
-    if verbose:
-        print(pointers)
-
-    assert_equal( len(pointers), 31 )
-
-    atom_names = prm.stringData("ATOM_NAME")
-    charges = prm.floatData("CHARGE")
-    atomic_numbers = prm.intData("ATOMIC_NUMBER")
-    masses = prm.floatData("MASS")
-    atom_type_indexes = prm.intData("ATOM_TYPE_INDEX")
-
-    nats = len(atom_names)
-
-    assert_equal( len(charges), nats )
-    assert_equal( len(atomic_numbers), nats )
-    assert_equal( len(masses), nats )
-    assert_equal( len(atom_type_indexes), nats )
-
-    system = prm.toSystem()
-
-    print(system)
-
-def test_nrg(verbose=False):
-
-    top_file = "../io/proteinbox.top"
-    crd_file = "../io/proteinbox.crd"
-
-    system = MoleculeParser.read(top_file, crd_file)[MGIdx(0)]
-
-    # Overload, we want to calc the energy in a non periodic box for comparison with Sander
-    space = Cartesian()
-
-    moleculeNumbers = system.molNums()
-    moleculeList = []
-
-    solute = system[MolWithResID("OSE")].molecule()
-
-    for moleculeNumber in moleculeNumbers:
-        molecule = system[moleculeNumber].molecule()
-        moleculeList.append(molecule)
-
-    system = System()
-
-    solute = MoleculeGroup("solute", solute)
-
-    # Add these groups to the System
-    system.add(solute)
-
-    # Now solute bond, angle, dihedral energy
-    solute_intraff = InternalFF("solute_intraff")
-    solute_intraff.add(solute)
-
-    # Now solute intramolecular CLJ energy
-    solute_intraclj = IntraCLJFF("solute_intraclj")
-    solute_intraclj.add(solute)
-
-    # Here is the list of all forcefields
-    forcefields = [ solute_intraff, solute_intraclj ]
- 
-    # Add these forcefields to the system
-    for forcefield in forcefields:
-        system.add(forcefield)
-
-    system.setProperty( "space", space )
-    system.setProperty( "switchingFunction", 
-                        HarmonicSwitchingFunction(coulomb_cutoff, coulomb_feather,
-                                                  lj_cutoff, lj_feather) ) 
-    system.setProperty( "combiningRules", VariantProperty(combining_rules) )
-
-    total_nrg = solute_intraclj.components().total() + solute_intraff.components().total()
-
-    e_total = system.totalComponent()
-    system.setComponent( e_total, total_nrg )
-
-    if verbose:
-        print("\nTotal energy ")
-        print(system.energy())
-
-        print("Components energies ")
-        for component in list(system.energyComponents().keys()):
-            print(component, system.energyComponents().value(component) * kcal_per_mol)
-
-        print("The AMBER14/sander energies for this system are ") 
-        print("""
-   NSTEP       ENERGY          RMS            GMAX         NAME    NUMBER
-      1      -3.4880E+01     1.3388E+01     6.2845E+01     C2         20
-
- BOND    =        5.1844  ANGLE   =       10.0783  DIHED      =       20.1271
- VDWAALS =       -1.7278  EEL     =     -256.9757  HBOND      =        0.0000
- 1-4 VDW =       10.6377  1-4 EEL =      177.7958  RESTRAINT  =        0.0000
-""")
-
-        diff = abs( -34.880 - system.energy().value() )
-        print("Difference = %s" % diff)
-
-    e_bond = system.energy( solute_intraff.components().bond() ).value()
-    e_ang = system.energy( solute_intraff.components().angle() ).value()
-    e_dih = system.energy( solute_intraff.components().dihedral() ).value() + \
-            system.energy( solute_intraff.components().improper() ).value()
-    
-    assert_almost_equal( e_bond, 5.1844, 2 )
-    assert_almost_equal( e_ang, 10.0783, 2 )
-    assert_almost_equal( e_dih, 20.1271, 2 )
-
-    e_coul = system.energy( solute_intraclj.components().coulomb() ).value()
-    e_lj = system.energy( solute_intraclj.components().lj() ).value()
-
-    assert_almost_equal( e_coul, -256.9757 + 177.7958, 2 )
-    assert_almost_equal( e_lj, -1.7278 + 10.6377, 2 )
-
-    assert_almost_equal( system.energy().value(), -34.880, 2 )
+    try:
+        _pvt_compare_molecules(water1, water2, verbose )
+    except:
+        Sire.Stream.save( [water1,water2], "broken.s3" )
+        raise
 
 if __name__ == "__main__":
-    #test_one_molecule(True)
-    #test_lots_of_molecules(True)
-
-    test_rst(True)
-    test_parm(True)
-    test_nrg(True)
+    test_weird_water(True)

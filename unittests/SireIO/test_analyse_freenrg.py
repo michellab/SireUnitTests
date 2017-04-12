@@ -17,7 +17,8 @@ def test_analyse_freenrg(verbose=False):
         if line.find("Bennetts = 0.7754") != -1:
             if verbose:
                 print("Energy evaluated ok!")
-                return
+
+            return
 
     if verbose:
         print("Incorrect output?")

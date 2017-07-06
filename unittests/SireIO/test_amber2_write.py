@@ -1,5 +1,7 @@
 
 from Sire.IO import *
+from Sire.Mol import *
+from Sire.MM import *
 
 def test_write(verbose=False):
 
@@ -8,17 +10,19 @@ def test_write(verbose=False):
     except:
         return
 
-    #s = MoleculeParser.read("../io/ose.top", "../io/ose.crd")
-
     if verbose:
         print("Reading...")
 
-    s = MoleculeParser.read("../io/proteinbox.top", "../io/proteinbox.crd")
+    s = MoleculeParser.read("../io/ose.top", "../io/ose.crd")
+    #s = MoleculeParser.read("../io/proteinbox.top", "../io/proteinbox.crd")
+
+    #m = s[MolIdx(0)].molecule()
+    #print(m.property("amberparameters").bornRadii())
 
     if verbose:
         print("Extracting...")
 
-    p = AmberParm(s)
+    p = AmberPrm(s)
 
     if verbose:
         print("Writing...")

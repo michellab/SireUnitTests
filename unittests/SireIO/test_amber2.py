@@ -211,7 +211,7 @@ def _pvt_compare_molecules(mol1, mol2, verbose):
 def test_one_molecule(verbose = False):
     try:
         # check if we have this
-        r = AmberRst()
+        r = AmberRst7()
     except:
         return
 
@@ -235,7 +235,7 @@ def test_one_molecule(verbose = False):
 def test_lots_of_molecules(verbose = False):
     try:
         # check if we have this
-        r = AmberRst()
+        r = AmberRst7()
     except:
         return
 
@@ -271,7 +271,7 @@ def test_lots_of_molecules(verbose = False):
 def test_rst(verbose = False):
     rst_file = "../io/proteinbox.crd"
 
-    rst = AmberRst(rst_file)
+    rst = AmberRst7(rst_file)
 
     if verbose:
         print(rst)
@@ -281,7 +281,7 @@ def test_rst(verbose = False):
 def test_parm(verbose = False):
     top_file = "../io/proteinbox.top"
 
-    prm = AmberParm(top_file)
+    prm = AmberPrm(top_file)
 
     if verbose:
         print(prm)

@@ -50,27 +50,21 @@ def test_write(verbose=False):
         print("Reading...")
 
     s = MoleculeParser.read("../io/ose.top", "../io/ose.crd")
-
     #s = MoleculeParser.read("../io/proteinbox.top", "../io/proteinbox.crd")
-
-    #m = s[MolIdx(0)].molecule()
-    #print(m.property("amberparameters").bornRadii())
 
     # calculate the initial internal energy
     oldnrgs = _getEnergies(s)
 
     if verbose:
-        print("Extracting...")
-
-    p = AmberPrm(s)
-
-    if verbose:
         print("Writing...")
 
-    p.write("test.top")
+    filenames = MoleculeParser.write(s, "test")
+
+    if verbose:
+        print("Saved the system to file(s): %s" % filenames)
 
     # read this back in and check the energies
-    s = MoleculeParser.read("test.top", "../io/ose.crd")    
+    s = MoleculeParser.read(filenames)    
 
     newnrgs = _getEnergies(s)
 

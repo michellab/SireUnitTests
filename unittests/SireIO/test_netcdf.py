@@ -7,10 +7,15 @@ def test_netcdf(verbose=False):
 
     print(r)
 
+    print("Writing back to netcdf...")
+    r.writeToFile("test.rst")
+
+    print("...done")
+
     print(r.creatorApplication())
     print(r.time())
 
-    s = MoleculeParser.read("../io/NA16.rst", "../io/NA16.top")
+    s = MoleculeParser.read("test.rst", "../io/NA16.top")
 
     r7 = AmberRst7(s)
     r7.writeToFile("test.rst7")

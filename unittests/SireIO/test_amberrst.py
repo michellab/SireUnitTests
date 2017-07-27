@@ -1,5 +1,9 @@
 
 from Sire.IO import *
+from Sire.MM import *
+from Sire.FF import *
+
+import os
 
 from nose.tools import assert_equal,assert_almost_equal
 
@@ -13,6 +17,39 @@ def _assert_vecs_equal(vals0, vals1):
 
     for i in range(0,len(vals0)):
         _assert_vec_equal( vals0[i], vals1[i] )
+
+def _getEnergies(s):
+    intraclj = IntraFF("intraclj")
+    intraclj.add(s.molecules())
+
+    intraff = InternalFF("intraff")
+    intraff.setUse14Calculation(True)
+    intraff.add(s.molecules())
+
+    ffs = ForceFields()
+    ffs.add(intraclj)
+    ffs.add(intraff)
+
+    return ffs.energies()
+
+def _printCompareEnergies(oldnrgs, newnrgs):
+    keys = list(oldnrgs.keys())
+    keys.sort()
+
+    for key in keys:
+        print("%s: %s  %s" % (key, oldnrgs[key],newnrgs[key]))
+
+def _assert_almost_equal(oldnrgs, newnrgs):
+    oldkeys = list(oldnrgs.keys())
+    newkeys = list(newnrgs.keys())
+
+    oldkeys.sort()
+    newkeys.sort()
+
+    assert_equal( oldkeys, newkeys )
+
+    for key in oldkeys:
+        assert_almost_equal( oldnrgs[key], newnrgs[key], 5 )
 
 def test_amberrst(verbose=False):
 
@@ -58,6 +95,8 @@ def test_amberrst(verbose=False):
 
     new2file = AmberRst("test.rst")
 
+    print(new2file.warnings())
+
     if verbose:
         print("Comparing the data...")
     
@@ -69,6 +108,29 @@ def test_amberrst(verbose=False):
     _assert_vec_equal( new2file.boxAngles(), oldfile.boxAngles() )
     assert_equal( new2file.createdFromRestart(), oldfile.createdFromRestart() )
     assert_almost_equal( new2file.time(), oldfile.time() )
+
+    if verbose:
+        print("Writing back to a full file...")
+
+    os.system("rm test.rst test.prm7")
+
+    MoleculeParser.write(s, "test")
+
+    if verbose:
+        print("Re-reading the data from the written file...")
+
+    s2 = MoleculeParser.read("test.prm7", "test.rst")
+
+    if verbose:
+        print("Comparing energies...")
+
+    oldnrgs = _getEnergies(s)
+    newnrgs = _getEnergies(s2)
+
+    if verbose:
+        _printCompareEnergies(oldnrgs,newnrgs)
+
+    _assert_almost_equal(oldnrgs, newnrgs)
 
 if __name__ == "__main__":
     test_amberrst(True)

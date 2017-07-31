@@ -31,9 +31,32 @@ def _assert_almost_equal(oldpots, newpots):
     except:
         has_atom3 = False
 
+    # the potentials may not be in the same order...
     for i in range(0,len(oldpots)):
         op = oldpots[i]
-        np = newpots[i]
+        np = None
+
+        for j in list(range(i,len(newpots))) + list(range(0,i)):
+            np = newpots[j]
+
+            if op.atom0() == np.atom0() and op.atom1() == np.atom1():
+                if has_atom2:
+                    if op.atom2() == np.atom2():
+                        if has_atom3:
+                            if op.atom3() == np.atom3():
+                                break
+                        else:
+                            break
+                    else:
+                        break
+                else:
+                    break
+
+            np = None
+
+        if np is None:
+            print("Cannot find atoms for %s in new potentials!" % op)
+            assert_equal( 1, 0 )
 
         if op != np:
             assert_equal(op.atom0(), np.atom0())

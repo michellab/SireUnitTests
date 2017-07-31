@@ -54,7 +54,7 @@ def _pvt_test_fixed_center(center_method, verbose = False):
         if verbose:
             print("Completed 25 moves...")
 
-        ligand = system[ligand.number()].molecule()
+        ligand = system[ligand.number()][0].molecule()
 
         if center_method:
             new_center = center_method.getPoint(ligand)

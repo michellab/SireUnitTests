@@ -17,6 +17,7 @@ def test_gro87(verbose=False):
     if not has_gro87:
         return
 
+    grofile = "../io/water.gro"
     grofile = "../io/urea.gro"
 
     if verbose:

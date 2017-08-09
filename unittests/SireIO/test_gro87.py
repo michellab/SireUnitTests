@@ -18,7 +18,7 @@ def test_gro87(verbose=False):
         return
 
     grofile = "../io/water.gro"
-    grofile = "../io/urea.gro"
+    #grofile = "../io/urea.gro"
 
     if verbose:
         print("Reading the Gro87 file using the Gro87 parser...")

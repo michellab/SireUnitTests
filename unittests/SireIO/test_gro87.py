@@ -13,6 +13,12 @@ except:
     # No Gro87 support
     has_gro87 = False
 
+def _assert_strings_equal( x, y ):
+    assert_equal( len(x), len(y) )
+
+    for i in range(0,len(x)):
+        assert_equal( x[i], y[i] )
+
 def _assert_equal( x, y, diff ):
     if abs(x-y) > diff:
         assert_equal(x, y)
@@ -66,7 +72,13 @@ def test_gro_rst(verbose=False):
     assert_equal( g.hasVelocities(), a.hasVelocities() )
 
     _assert_almost_equal( g.coordinates(), a.coordinates() )
-    _assert_almost_equal( g.velocities(), a.velocities() )
+
+    avels = a.velocities()
+    # convert avels from angstrom / (20.455 ps) to angstrom / ps
+    for i in range(0,len(avels)):
+        avels[i] = (1.0/20.455) * avels[i]
+
+    _assert_almost_equal( g.velocities(), avels )
 
     if verbose:
         print("Writing...")
@@ -87,9 +99,9 @@ def test_gro_rst(verbose=False):
     _assert_almost_equal( g.coordinates(), g2.coordinates() )
     _assert_almost_equal( g.velocities(), g2.velocities() )
     _assert_almost_equal( g.atomNumbers(), g2.atomNumbers() )
-    _assert_almost_equal( g.atomNames(), g2.atomNames() )
+    _assert_strings_equal( g.atomNames(), g2.atomNames() )
     _assert_almost_equal( g.residueNumbers(), g2.residueNumbers() )
-    _assert_almost_equal( g.residueNames(), g2.residueNames() )
+    _assert_strings_equal( g.residueNames(), g2.residueNames() )
 
     assert_equal( g.boxV1(), g2.boxV1() )
     assert_equal( g.boxV2(), g2.boxV2() )

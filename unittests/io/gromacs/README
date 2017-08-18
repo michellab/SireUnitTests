@@ -1,0 +1,17 @@
+This is a copy of the the "share/top" directory from Gromacs 5.1.4
+
+These files have not been modified and are distributed under the same
+license as Gromacs
+
+"GROMACS is free software, distributed under the GNU Lesser General
+Public License (LGPL) Version 2.1. See section 1 for details. GROMACS
+includes optional code covered by several different licences as
+described below.  The GROMACS package in its entirety may be copied,
+modified or distributed according to the conditions described in
+section 1.  However, in the interests of clarity and completeness,
+some individual parts of GROMACS that can be used under their
+respective licenses are also noted here."
+
+== lines from original README ==
+The gmx and gmx2 force fields have long been deprecated, and
+have now been removed.

@@ -1,4 +1,3 @@
-
 from Sire.IO import *
 from Sire.Mol import *
 
@@ -19,26 +18,13 @@ def test_pdb2(verbose=False):
 
     pdbfile = "../io/ntrc.pdb"
 
-    if verbose:
-        print("Reading the file using the old PDB parser...")
+    p = PDB2(pdbfile)
 
-    oldmols = PDB().read(pdbfile)
-
-    if verbose:
-        print("Reading the file using the new PDB parser...")
-
-    newmols = MoleculeParser.read(pdbfile)
-
-    # make sure the same number of molecules have been written
-    assert_equal( oldmols.nMolecules(), newmols.nMolecules() )
-
-    # now compare the protein loaded from the file by both parsers
-    oldprot = oldmols[MolWithResID("ALA")]
-    newprot = newmols[MolWithResID("ALA")]
-
-    # write some tests that compare these two proteins
-    assert_equal( oldprot.nAtoms(), newprot.nAtoms() )
-
+    # Testing that we're reading data correctly.
+    # Currently reading ATOM, HELIX, and SHEET records ok.
+    assert_equal( p.num_atom, 1910 )
+    assert_equal( p.num_helix, 4 )
+    assert_equal( p.num_sheet, 3 )
 
 if __name__ == "__main__":
     test_pdb2(True)

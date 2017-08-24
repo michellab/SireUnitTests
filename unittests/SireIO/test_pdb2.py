@@ -16,15 +16,23 @@ def test_pdb2(verbose=False):
     if not has_pdb2:
         return
 
+    # This is a useful test file since it contains a large
+    # assortment of PDB records.
     pdbfile = "../io/ntrc.pdb"
 
+    # Parse the file into a PDB2 object.
     p = PDB2(pdbfile)
 
-    # Testing that we're reading data correctly.
-    # Currently reading ATOM, HELIX, and SHEET records ok.
-    assert_equal( p.num_atom, 1910 )
-    assert_equal( p.num_helix, 4 )
-    assert_equal( p.num_sheet, 3 )
+    # First check that we're parsing the various records correctly.
+    assert_equal( p.nTitles(), 119 )
+    assert_equal( p.nAtoms(), 1910 )
+    assert_equal( p.nHelices(), 4 )
+    assert_equal( p.nSheets(), 3 )
+    assert( p.hasCrystal() )
+    assert( p.hasTransOrig() )
+    assert( p.hasTransScale() )
+
+    # Now validate data for specifc objects...
 
 if __name__ == "__main__":
     test_pdb2(True)

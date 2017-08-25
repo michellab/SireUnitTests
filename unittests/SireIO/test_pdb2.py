@@ -16,34 +16,33 @@ def test_pdb2(verbose=False):
     if not has_pdb2:
         return
 
-    # This is a useful test file since it contains a large
-    # assortment of PDB records.
-    pdbfile = "../io/ntrc.pdb"
+    # These are useful test files since they contain a large assortment of PDB
+    # record types, including a MASTER record for data validation.
+    pdbfiles = [ "../io/ntrc.pdb", "../io/1P38.pdb", "../io/dioxin.pdb" ]
 
-    # Parse the file into a PDB2 object.
-    p = PDB2(pdbfile)
+    for file in pdbfiles:
+        # Parse the file into a PDB2 object.
+        p = PDB2(file)
 
-    # If there is a master record for this file, then validate
-    # the parsed data against it.
-    if p.hasMaster():
-        # Extract the master record.
-        m = p.getMaster()
+        # If there is a master record for this file, then validate
+        # the parsed data against it.
+        if p.hasMaster():
+            # Extract the master record.
+            m = p.getMaster()
 
-        # Extract the title record.
-        t = p.getTitle();
+            # Extract the title record.
+            t = p.getTitle();
 
-        # Work out the number of coordinate transformation records.
-        # A complete object counts as 3 records, i.e. 1 for each dimension.
-        num_transform = 3 * (p.hasTransOrig() + p.hasTransScale() + p.hasTransMatrix() )
+            # Work out the number of coordinate transformation records.
+            # A complete object counts as 3 records, i.e. 1 for each dimension.
+            num_transform = 3 * ( p.hasTransOrig() + p.hasTransScale() + p.hasTransMatrix() )
 
-        # Validate data.
-        assert_equal( t.nRemarks(), m.nRemarks() )
-        assert_equal( p.nAtoms(), m.nAtoms() )
-        assert_equal( p.nHelices(), m.nHelices() )
-        assert_equal( p.nSheets(), m.nSheets() )
-        assert_equal( num_transform, m.nTransforms() )
-
-    # Now validate data for specifc objects...
+            # Validate data.
+            assert_equal( t.nRemarks(), m.nRemarks() )
+            assert_equal( p.nAtoms(), m.nAtoms() )
+            assert_equal( p.nHelices(), m.nHelices() )
+            assert_equal( p.nSheets(), m.nSheets() )
+            assert_equal( num_transform, m.nTransforms() )
 
 if __name__ == "__main__":
     test_pdb2(True)

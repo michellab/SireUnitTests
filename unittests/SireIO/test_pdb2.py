@@ -23,14 +23,25 @@ def test_pdb2(verbose=False):
     # Parse the file into a PDB2 object.
     p = PDB2(pdbfile)
 
-    # First check that we're parsing the various records correctly.
-    assert_equal( p.nTitles(), 119 )
-    assert_equal( p.nAtoms(), 1910 )
-    assert_equal( p.nHelices(), 4 )
-    assert_equal( p.nSheets(), 3 )
-    assert( p.hasCrystal() )
-    assert( p.hasTransOrig() )
-    assert( p.hasTransScale() )
+    # If there is a master record for this file, then validate
+    # the parsed data against it.
+    if p.hasMaster():
+        # Extract the master record.
+        m = p.getMaster()
+
+        # Extract the title record.
+        t = p.getTitle();
+
+        # Work out the number of coordinate transformation records.
+        # A complete object counts as 3 records, i.e. 1 for each dimension.
+        num_transform = 3 * (p.hasTransOrig() + p.hasTransScale() + p.hasTransMatrix() )
+
+        # Validate data.
+        assert_equal( t.nRemarks(), m.nRemarks() )
+        assert_equal( p.nAtoms(), m.nAtoms() )
+        assert_equal( p.nHelices(), m.nHelices() )
+        assert_equal( p.nSheets(), m.nSheets() )
+        assert_equal( num_transform, m.nTransforms() )
 
     # Now validate data for specifc objects...
 

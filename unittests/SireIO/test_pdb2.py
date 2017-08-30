@@ -1,6 +1,7 @@
 from Sire.IO import *
 from Sire.Mol import *
 
+from glob import glob
 from nose.tools import assert_equal, assert_almost_equal
 
 # check that we have PDB2 support in this version of Sire
@@ -16,12 +17,13 @@ def test_pdb2(verbose=False):
     if not has_pdb2:
         return
 
-    # These are useful test files since they contain a large assortment of PDB
-    # record types, including a MASTER record for data validation.
-    pdbfiles = [ "../io/ntrc.pdb", "../io/1P38.pdb", "../io/dioxin.pdb" ]
+    # Glob all of the PDB files in the example file directory.
+    pdbfiles = glob('../io/*pdb')
 
     for file in pdbfiles:
         # Parse the file into a PDB2 object.
+        # Errors should be thrown if the record data in a file
+        # doesn't match the PDB format.
         p = PDB2(file)
 
         # If there is a master record for this file, then validate

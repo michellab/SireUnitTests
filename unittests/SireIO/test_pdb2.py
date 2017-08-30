@@ -42,6 +42,7 @@ def test_pdb2(verbose=False):
             assert_equal( p.nAtoms(), m.nAtoms() )
             assert_equal( p.nHelices(), m.nHelices() )
             assert_equal( p.nSheets(), m.nSheets() )
+            assert_equal( p.nTers(), m.nTers() )
             assert_equal( num_transform, m.nTransforms() )
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 
 from Sire.IO import *
+from Sire.MM import *
 from Sire.Mol import *
 from Sire.Base import *
 
@@ -29,6 +30,8 @@ def test_grotop(verbose=False):
     g = GroTop("../io/urea.top", {"GROMACS_PATH":gromacs_path})
 
     print(g)
+    #print(g.atomTypes())
+    print(g.bonds())
 
 if __name__ == "__main__":
     test_grotop(True)

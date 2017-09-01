@@ -15,9 +15,9 @@ def _test_atomid( mol, id, verbose ):
     charge = mol.evaluate().charge().value()
 
     try:
-        nats_id = mol[id].count()
-        mass_id = mol[id].evaluate().mass().value()
-        chg_id = mol[id].evaluate().charge().value()
+        nats_id = mol.atoms(id).count()
+        mass_id = mol.atoms(id).evaluate().mass().value()
+        chg_id = mol.atoms(id).evaluate().charge().value()
     except:
         nats_id = 0
         mass_id = 0
@@ -33,7 +33,7 @@ def _test_atomid( mol, id, verbose ):
         chg_neg_id = 0
 
     if verbose:
-        print("%s : natoms = %s, mass = %s, charge = %s" % (id,nats_id,mass_id,chg_id))
+        print("\n%s : natoms = %s, mass = %s, charge = %s" % (id,nats_id,mass_id,chg_id))
         print("%s : natoms = %s, mass = %s, charge = %s" % \
                  (id.inverse(),nats_neg_id,mass_neg_id,chg_neg_id))
         print("Total : natoms = %s, mass = %s, charge = %s" % (natoms,mass,charge))

@@ -1,7 +1,7 @@
-
 from Sire.IO import *
 from Sire.Mol import *
 
+from glob import glob
 from nose.tools import assert_equal, assert_almost_equal
 
 # check that we have PDB2 support in this version of Sire
@@ -17,28 +17,35 @@ def test_pdb2(verbose=False):
     if not has_pdb2:
         return
 
-    pdbfile = "../io/ntrc.pdb"
+    # Glob all of the PDB files in the example file directory.
+    pdbfiles = glob('../io/*pdb')
 
-    if verbose:
-        print("Reading the file using the old PDB parser...")
+    for file in pdbfiles:
+        # Parse the file into a PDB2 object.
+        # Errors should be thrown if the record data in a file
+        # doesn't match the PDB format.
+        p = PDB2(file)
 
-    oldmols = PDB().read(pdbfile)
+        # If there is a master record for this file, then validate
+        # the parsed data against it.
+        if p.hasMaster():
+            # Extract the master record.
+            m = p.getMaster()
 
-    if verbose:
-        print("Reading the file using the new PDB parser...")
+            # Extract the title record.
+            t = p.getTitle();
 
-    newmols = MoleculeParser.read(pdbfile)
+            # Work out the number of coordinate transformation records.
+            # A complete object counts as 3 records, i.e. 1 for each dimension.
+            num_transform = 3 * ( p.hasTransOrig() + p.hasTransScale() + p.hasTransMatrix() )
 
-    # make sure the same number of molecules have been written
-    assert_equal( oldmols.nMolecules(), newmols.nMolecules() )
-
-    # now compare the protein loaded from the file by both parsers
-    oldprot = oldmols[MolWithResID("ALA")]
-    newprot = newmols[MolWithResID("ALA")]
-
-    # write some tests that compare these two proteins
-    assert_equal( oldprot.nAtoms(), newprot.nAtoms() )
-
+            # Validate data.
+            assert_equal( t.nRemarks(), m.nRemarks() )
+            assert_equal( p.nAtoms(), m.nAtoms() )
+            assert_equal( p.nHelices(), m.nHelices() )
+            assert_equal( p.nSheets(), m.nSheets() )
+            assert_equal( p.nTers(), m.nTers() )
+            assert_equal( num_transform, m.nTransforms() )
 
 if __name__ == "__main__":
     test_pdb2(True)

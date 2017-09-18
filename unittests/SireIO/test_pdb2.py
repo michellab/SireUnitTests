@@ -1,3 +1,4 @@
+from Sire.Base import *
 from Sire.IO import *
 from Sire.Mol import *
 
@@ -13,7 +14,10 @@ except:
     # No PDB2 support
     has_pdb2 = False
 
-def test_pdb2(verbose=False):
+# General test of ability to read PDB files.
+# All PDB files in the "../io/" directory are parsed and data
+# is validated for all files containing a MASTER record.
+def test_read(verbose=False):
     if not has_pdb2:
         return
 
@@ -47,5 +51,44 @@ def test_pdb2(verbose=False):
             assert_equal( p.nTers(), m.nTers() )
             assert_equal( num_transform, m.nTransforms() )
 
+# Specific atom coordinate data validation test for file "../io/ntrc.pdb".
+def test_atom_coords(verbose=False):
+    if not has_pdb2:
+        return
+
+    # Test atoms.
+    atoms = ["CA", "CB", "N", "O", "HB"]
+
+    # Test coordinates.
+    coords = [[-13.721,  -3.484, 14.690],
+              [-10.695,  -0.294, 14.759],
+              [ -8.536,  -2.557, 13.277],
+              [ -7.037,  -1.615,  9.350],
+              [ -5.045,   2.118,  8.812]]
+
+    # Parse the PDB file.
+    p = PDB2("../io/ntrc.pdb")
+
+    # Create a molecular system.
+    s = p.toSystem()
+
+    # Get the first molecule.
+    m = s[MolIdx(0)]
+
+    # Loop over all of the atoms.
+    for i in range(0, len(atoms)):
+
+        # Extract the atom from the residue "i + 1".
+        a = m.atom(AtomName(atoms[i]) + ResNum(i+1))
+
+        # Extract the atom coordinates.
+        c = a.property("coordinates")
+
+        # Validate parsed coordinates against known values.
+        assert_almost_equal( c[0], coords[i][0] )
+        assert_almost_equal( c[1], coords[i][1] )
+        assert_equal( c[2], coords[i][2] )
+
 if __name__ == "__main__":
-    test_pdb2(True)
+    test_read(True)
+    test_atom_coords(True)

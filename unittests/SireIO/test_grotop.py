@@ -31,7 +31,15 @@ def test_grotop(verbose=False):
 
     print(g)
     #print(g.atomTypes())
-    print(g.bonds())
+    #print(g.bondPotentials())
+    #print(g.anglePotentials())
+    #print(g.dihedralPotentials())
+
+    for mol in g.moleculeTypes():
+        print("MOL: %s" % mol)
+
+        for atom in mol.atoms():
+            print("ATOM: %s" % atom)
 
 if __name__ == "__main__":
     test_grotop(True)

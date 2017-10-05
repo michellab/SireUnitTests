@@ -67,6 +67,43 @@ def test_atom_coords(verbose=False):
         assert_almost_equal( c[1], coords[i][1] )
         assert_equal( c[2], coords[i][2] )
 
+# Residue and chain validation test for file "../io/complex.mol2".
+def test_residues(verbose=False):
+    if not has_mol2:
+        return
+
+    # Parse the Mol2 file.
+    p = Mol2("../io/complex.mol2")
+
+    # Create a molecular system.
+    s = p.toSystem()
+
+    # Get the two molecules.
+    m1 = s[MolIdx(0)]
+    m2 = s[MolIdx(1)]
+
+    # Get the chains from the molecules.
+    c1 = m1.chains()
+    c2 = m2.chains()
+
+    # Check the number of chains in each molecule.
+    assert_equal( len(c1), 3 )
+    assert_equal( len(c2), 1 )
+
+    # Check the number of residues in each chain of the first molecule.
+    assert_equal( len(c1[0].residues()), 118 )
+    assert_equal( len(c1[1].residues()), 114 )
+    assert_equal( len(c1[2].residues()), 118 )
+
+    # Check the number of residues in the single chain of the second molecule.
+    assert_equal( len(c2[0].residues()), 1 )
+
+    # Check some specific residue names in the first chain from the first molecule.
+    assert_equal( c1[0].residues()[0].name().toString(), "ResName('PRO1')" )
+    assert_equal( c1[1].residues()[1].name().toString(), "ResName('MET2')" )
+    assert_equal( c1[1].residues()[2].name().toString(), "ResName('PHE3')" )
+
 if __name__ == "__main__":
     test_read(True)
     test_atom_coords(True)
+    test_residues(True)

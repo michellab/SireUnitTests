@@ -29,7 +29,7 @@ def test_read(verbose=False):
         # doesn't match the Mol2 format.
         p = Mol2(file)
 
-# Specific atom coordinate data validation test for file "../io/complex_6.mol2".
+# Specific atom coordinate data validation test for file "../io/complex.mol2".
 def test_atom_coords(verbose=False):
     if not has_mol2:
         return
@@ -45,7 +45,7 @@ def test_atom_coords(verbose=False):
               [ -9.8700,  -6.5500, -15.2480]]
 
     # Parse the Mol2 file.
-    p = Mol2("../io/complex_6.mol2")
+    p = Mol2("../io/complex.mol2")
 
     # Create a molecular system.
     s = p.toSystem()

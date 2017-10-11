@@ -103,7 +103,29 @@ def test_residues(verbose=False):
     assert_equal( c1[1].residues()[1].name().toString(), "ResName('MET2')" )
     assert_equal( c1[1].residues()[2].name().toString(), "ResName('PHE3')" )
 
+# Test that all files the parser can convert a Sire molecule
+# back into the correct data format, ready to be written to file.
+def test_write(verbose=False):
+    if not has_mol2:
+        return
+
+    # Glob all of the Mol2 files in the example file directory.
+    mol2files = glob('../io/*mol2')
+
+    for file in mol2files:
+        # Parse the file into a Mol2 object.
+        # Errors should be thrown if the record data in a file
+        # doesn't match the Mol2 format.
+        p = Mol2(file)
+
+        # Construct a Sire molecular system.
+        s = p.toSystem()
+
+        # Now parse the molecular system.
+        p = Mol2(s)
+
 if __name__ == "__main__":
     test_read(True)
+    test_write(True)
     test_atom_coords(True)
     test_residues(True)

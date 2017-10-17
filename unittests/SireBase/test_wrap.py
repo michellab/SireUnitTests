@@ -39,3 +39,6 @@ def test_wrap():
     assert_equal( water.property("type").value(), "ligand" )
     assert_equal( water.property("alpha").value(), 0.5 )
     assert_equal( water.property("copies").value(), 1 )
+
+if __name__ == "__main__":
+    test_wrap()

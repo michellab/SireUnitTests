@@ -20,39 +20,39 @@ def _pvt_test_props(ff, verbose = False):
 
     d = ff.property("dielectric[f]")
 
-    assert( d == 2 )
+    assert( d.value() == 2 )
 
     ff.setProperty("dielectric[all]", wrap(3))
 
     d = ff.property("dielectric[f]")
 
-    assert( d == 3 )
+    assert( d.value() == 3 )
 
     ff.setProperty("combiningRules[all]", wrap("geometric"))
-    assert( ff.property("combiningRules") == "geometric" )
-    assert( ff.property("combiningRules[default]") == "geometric" )
-    assert( ff.property("combiningRules[f]") == "geometric" )
+    assert( ff.property("combiningRules").value() == "geometric" )
+    assert( ff.property("combiningRules[default]").value() == "geometric" )
+    assert( ff.property("combiningRules[f]").value() == "geometric" )
 
     ff.setProperty("combiningRules", wrap("arithmetic"))
-    assert( ff.property("combiningRules") == "arithmetic" )
-    assert( ff.property("combiningRules[default]") == "arithmetic" )
-    assert( ff.property("combiningRules[f]") == "geometric" )
+    assert( ff.property("combiningRules").value() == "arithmetic" )
+    assert( ff.property("combiningRules[default]").value() == "arithmetic" )
+    assert( ff.property("combiningRules[f]").value() == "geometric" )
 
     ff.setProperty("combiningRules[default]", wrap("geometric"))
-    assert( ff.property("combiningRules") == "geometric" )
-    assert( ff.property("combiningRules[default]") == "geometric" )
-    assert( ff.property("combiningRules[f]") == "geometric" )
+    assert( ff.property("combiningRules").value() == "geometric" )
+    assert( ff.property("combiningRules[default]").value() == "geometric" )
+    assert( ff.property("combiningRules[f]").value() == "geometric" )
 
     ff.setProperty("combiningRules[all]", wrap("arithmetic"))
-    assert( ff.property("combiningRules") == "arithmetic" )
-    assert( ff.property("combiningRules[default]") == "arithmetic" )
-    assert( ff.property("combiningRules[f]") == "arithmetic" )
+    assert( ff.property("combiningRules").value() == "arithmetic" )
+    assert( ff.property("combiningRules[default]").value() == "arithmetic" )
+    assert( ff.property("combiningRules[f]").value() == "arithmetic" )
 
-    ff.setProperty("alpha[all]", VariantProperty(5.0))
-    assert( ff.property("alpha[next]") == 5.0 )
+    ff.setProperty("alpha[all]", wrap(5.0))
+    assert( ff.property("alpha[next]").value() == 5.0 )
 
     ff.setProperty("alpha[next]", wrap(2.0))
-    assert( ff.property("alpha[next]") == 2.0 )
+    assert( ff.property("alpha[next]").value() == 2.0 )
 
 def test_props(verbose=False):
     ff = InterFF()

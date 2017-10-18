@@ -358,8 +358,55 @@ def test_deselect(verbose=False):
     if verbose:
         print("...done")
 
+def test_invert(verbose=False):
+    if verbose:
+        print("Testing inversion...", end="")
+        sys.stdout.flush()
+
+    s0 = mol.selection()
+    s0 = s0.selectAll()
+    assert_true( s0.selectedAll() )
+
+    for i in range(0,50):
+        if verbose and i % 5 == 0:
+            print(".", end="")
+            sys.stdout.flush()
+
+        s1 = mol.selection()
+        s1 = s1.deselectAll()
+        s0 = s0.selectAll()
+
+        # generate a random set to subtract
+        for j in range(0,rangen.randInt(1,300)):
+            s1 = s1.select( AtomIdx(rangen.randInt(0,mol.nAtoms()-1)) )
+
+        s0 = s0.subtract(s1)
+
+        assert_equal( s0.nSelected(), mol.nAtoms() - s1.nSelected() )
+
+        for atom in s0.selectedAtoms():
+            assert_false( s1.selected(atom) )
+
+        s0 = s0.invert()
+
+        assert_equal( s0.nSelected(), s1.nSelected() )
+
+        for atom in s0.selectedAtoms():
+            assert_true( s1.selected(atom) )
+
+        s0 = s0.invert()
+
+        assert_equal( s0.nSelected(), mol.nAtoms() - s1.nSelected() )
+
+        for atom in s0.selectedAtoms():
+            assert_false( s1.selected(atom) )
+
+    if verbose:
+        print("...done!")
+
 if __name__ == "__main__":
     test_select(True)
     test_multi_select(True)
     test_intersect(True)
     test_deselect(True)
+    test_invert(True)

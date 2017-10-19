@@ -121,7 +121,7 @@ def test_write(verbose=False):
         # Construct a Sire molecular system.
         s = p.toSystem()
 
-        # Now parse the molecular system.
+        # Now re-parse the molecular system.
         p = Mol2(s)
 
 if __name__ == "__main__":

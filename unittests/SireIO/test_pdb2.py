@@ -89,6 +89,29 @@ def test_atom_coords(verbose=False):
         assert_almost_equal( c[1], coords[i][1] )
         assert_equal( c[2], coords[i][2] )
 
+# Test that all files the parser can convert a Sire molecule
+# back into the correct data format, ready to be written to file.
+def test_write(verbose=False):
+    if not has_pdb2:
+        return
+
+    # Glob all of the PDB files in the example file directory.
+    pdbfiles = glob('../io/*pdb')
+
+    for file in pdbfiles:
+        print(file)
+        # Parse the file into a PDB object.
+        # Errors should be thrown if the record data in a file
+        # doesn't match the Mol2 format.
+        p = PDB2(file)
+
+        # Construct a Sire molecular system.
+        s = p.toSystem()
+
+        # Now re-parse the molecular system.
+        p = PDB2(s)
+
 if __name__ == "__main__":
     test_read(True)
+    test_write(True)
     test_atom_coords(True)

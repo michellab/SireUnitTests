@@ -27,7 +27,8 @@ def test_grotop(verbose=False):
     if verbose:
         print("Reading in gromacs top file...")
 
-    g = GroTop("../io/urea.top", {"GROMACS_PATH":gromacs_path})
+    #g = GroTop("../io/urea.top", {"GROMACS_PATH":gromacs_path})
+    g = GroTop("../io/dppc.top", {"GROMACS_PATH":gromacs_path})
 
     print(g)
     #print(g.atomTypes())

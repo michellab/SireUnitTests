@@ -17,8 +17,10 @@ def parse(format, x=None):
     else:
         return False
 
-# Test for round-trip file conversion.
-# format1 --> format2 --> format1
+# Test for round-trip file conversion,
+# i.e. format1 --> format2 --> format1
+# Eventually this should check that a minimal set of properties that
+# are essential for simulation are preserved during interconversion.
 def test_round_trip(file, format1, format2, verbose=False):
     if not parse(format1):
         print("ERROR: No support for format: %s" % (format1))
@@ -103,6 +105,10 @@ def test_round_trip(file, format1, format2, verbose=False):
                 a1 = m1.atom(AtomIdx(j))
                 a2 = m2.atom(AtomIdx(j))
                 a3 = m3.atom(AtomIdx(j))
+
+                # Check that the atom names match.
+                assert_equal( a1.name().value(), a2.name().value() )
+                assert_equal( a1.name().value(), a2.name().value() )
 
                 # Extract the atom coordinates.
                 c1 = a1.property("coordinates")

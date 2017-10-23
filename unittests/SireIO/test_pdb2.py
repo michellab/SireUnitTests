@@ -17,7 +17,7 @@ except:
 # General test of ability to read and write PDB files.
 # All PDB files in the "../io/" directory are parsed.
 # Once the input file is parsed we then check that the parser constructs a
-# Sire Molecule from the parsed dat. Following this, we then check that the
+# Sire Molecule from the parsed data. Following this, we then check that the
 # parser can convert the molecule back into the correct data format, ready to
 # be written to file.
 def test_read_write(verbose=False):

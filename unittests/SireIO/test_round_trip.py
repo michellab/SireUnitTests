@@ -144,6 +144,13 @@ def test_round_trip(file, format1, format2, verbose=False):
                     assert_equal( a1.chain().name().value(),
                                   a3.chain().name().value() )
 
+                # Check the element symbol matches.
+                if a1.hasProperty("element"):
+                    assert_equal( a1.property("element").symbol(),
+                                  a2.property("element").symbol() )
+                    assert_equal( a1.property("element").symbol(),
+                                  a3.property("element").symbol() )
+
         if verbose:
             print("Passed!\n")
 

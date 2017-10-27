@@ -31,7 +31,7 @@ def test_read_write(verbose=False):
     for file in pdbfiles:
 
         # Test in parallel and serial mode.
-        for use_par in {True, False}:
+        for use_par in [True, False]:
 
             if verbose:
                 print("Reading PDB file: %s" % (file))
@@ -73,7 +73,7 @@ def test_atom_coords(verbose=False):
               [ -5.045,   2.118,  8.812]]
 
     # Test in parallel and serial mode.
-    for use_par in {True, False}:
+    for use_par in [True, False]:
 
         if verbose:
             print("Reading PDB file: ../io/ntrc.pdb")

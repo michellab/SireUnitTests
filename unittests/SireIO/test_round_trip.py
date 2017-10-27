@@ -34,7 +34,7 @@ def test_round_trip(file, format1, format2, verbose=False):
           "conversion: %s --> %s --> %s\n" % (format1, format2, format1))
 
     # Test in parallel and serial mode.
-    for use_par in {True, False}:
+    for use_par in [True, False]:
 
         if verbose:
             print("Reading file: %s" % (file))

@@ -31,7 +31,7 @@ def test_read_write(verbose=False):
     for file in mol2files:
 
         # Test in parallel and serial mode.
-        for use_par in {True, False}:
+        for use_par in [True, False]:
 
             if verbose:
                 print("Reading Mol2 file: %s" % (file))
@@ -71,7 +71,7 @@ def test_atom_coords(verbose=False):
               [ -9.8700,  -6.5500, -15.2480]]
 
     # Test in parallel and serial mode.
-    for use_par in {True, False}:
+    for use_par in [True, False]:
 
         if verbose:
             print("Reading Mol2 file: ../io/complex.mol2")
@@ -115,7 +115,7 @@ def test_residues(verbose=False):
         return
 
     # Test in parallel and serial mode.
-    for use_par in {True, False}:
+    for use_par in [True, False]:
 
         if verbose:
             print("Reading Mol2 file: ../io/complex.mol2")

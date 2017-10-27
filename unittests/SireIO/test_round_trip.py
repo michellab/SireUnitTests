@@ -7,13 +7,13 @@ from nose.tools import assert_equal, assert_almost_equal
 
 # Helper function for calling arbitrary parsers.
 # Add in support as needed.
-def parse(format, x=None):
+def parse(format, x=None, use_par=False):
     if   format == 'PDB':
         if x == None: return PDB2()
-        else:         return PDB2(x)
+        else:         return PDB2(x, {"parallel" : BooleanProperty(use_par)})
     elif format == 'Mol2':
         if x == None: return Mol2()
-        else:         return Mol2(x)
+        else:         return Mol2(x, {"parallel" : BooleanProperty(use_par)})
     else:
         return False
 
@@ -41,7 +41,7 @@ def test_round_trip(file, format1, format2, verbose=False):
             print("Parallel = %s" % (use_par))
 
         # Parse the file into the parser object.
-        p = parse(format1, file)
+        p = parse(format1, file, use_par)
 
         if verbose:
             print("Constructing first molecular system...")
@@ -53,7 +53,7 @@ def test_round_trip(file, format1, format2, verbose=False):
             print("Converting first molecular system to %s format..." % (format2))
 
         # Now construct data records in the second format using the molecular system.
-        p = parse(format2, s1)
+        p = parse(format2, s1, use_par)
 
         p.writeToFile('test.pdb');
 
@@ -67,7 +67,7 @@ def test_round_trip(file, format1, format2, verbose=False):
             print("Converting second molecular system back to %s format..." % (format1))
 
         # Now construct original data records from the molecular system.
-        p = parse(format1, s2)
+        p = parse(format1, s2, use_par)
 
         if verbose:
             print("Constructing final molecular system...")

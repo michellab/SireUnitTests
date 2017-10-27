@@ -50,7 +50,7 @@ def test_read_write(verbose=False):
                 print("Reconstructing Mol2 data from molecular system...")
 
             # Now re-parse the molecular system.
-            p = Mol2(s)
+            p = Mol2(s, {"parallel" : BooleanProperty(use_par)})
 
             if verbose:
                 print("Passed!\n")

@@ -40,7 +40,7 @@ def test_read_write(verbose=False):
             # Parse the file into a PDB2 object.
             # Errors should be thrown if the record data in a file
             # doesn't match the PDB format.
-            p = PDB2(file)
+            p = PDB2(file, {"parallel" : BooleanProperty(use_par)})
 
             if verbose:
                 print("Constructing molecular system...")
@@ -52,7 +52,7 @@ def test_read_write(verbose=False):
                 print("Reconstructing PDB data from molecular system...")
 
             # Now re-parse the molecular system.
-            p = PDB2(s)
+            p = PDB2(s, {"parallel" : BooleanProperty(use_par)})
 
             if verbose:
                 print("Passed!\n")

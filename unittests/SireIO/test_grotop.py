@@ -27,8 +27,8 @@ def test_grotop(verbose=False):
     if verbose:
         print("Reading in gromacs top file...")
 
-    #g = GroTop("../io/urea.top", {"GROMACS_PATH":gromacs_path})
-    g = GroTop("../io/dppc.top", {"GROMACS_PATH":gromacs_path})
+    g = GroTop("../io/urea.top", {"GROMACS_PATH":gromacs_path})
+    #g = GroTop("../io/dppc.top", {"GROMACS_PATH":gromacs_path})
 
     print(g)
     #print(g.atomTypes())
@@ -41,6 +41,15 @@ def test_grotop(verbose=False):
 
         for atom in mol.atoms():
             print("ATOM: %s" % atom)
+
+        for bond, param in mol.bonds().items():
+            print("BOND: %s | %s" % (bond,param))
+
+        for angle, param in mol.angles().items():
+            print("ANGLE: %s | %s" % (angle,param))
+
+        for dihedral, param in mol.dihedrals().items():
+            print("DIHEDRAL: %s | %s" % (dihedral,param))
 
 if __name__ == "__main__":
     test_grotop(True)

@@ -59,14 +59,6 @@ Urea         3
 [ system ]
 Urea in Water
 
-#define PRINT_TEST
-
-#ifdef PRINT_TEST
-HELLO WORLD
-#endif
-
-PRINT HELLO PRINT_TEST
-
 [ molecules ]
 ;molecule name   nr.
 Urea             1

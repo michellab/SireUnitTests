@@ -5,51 +5,57 @@ from Sire.Mol import *
 from glob import glob
 from nose.tools import assert_equal, assert_almost_equal
 
-# check that we have PDB2 support in this version of Sire
+# Check that we have PDB2 support in this version of Sire.
 has_pdb2 = True
 
 try:
     p = PDB2()
 except:
-    # No PDB2 support
+    # No PDB2 support.
     has_pdb2 = False
 
-# General test of ability to read PDB files.
-# All PDB files in the "../io/" directory are parsed and data
-# is validated for all files containing a MASTER record.
-def test_read(verbose=False):
+# General test of ability to read and write PDB files.
+# All PDB files in the "../io/" directory are parsed.
+# Once the input file is parsed we then check that the parser constructs a
+# Sire Molecule from the parsed data. Following this, we then check that the
+# parser can convert the molecule back into the correct data format, ready to
+# be written to file.
+def test_read_write(verbose=False):
     if not has_pdb2:
         return
 
     # Glob all of the PDB files in the example file directory.
     pdbfiles = glob('../io/*pdb')
 
+    # Loop over all files.
     for file in pdbfiles:
-        # Parse the file into a PDB2 object.
-        # Errors should be thrown if the record data in a file
-        # doesn't match the PDB format.
-        p = PDB2(file)
 
-        # If there is a master record for this file, then validate
-        # the parsed data against it.
-        if p.hasMaster():
-            # Extract the master record.
-            m = p.getMaster()
+        # Test in parallel and serial mode.
+        for use_par in [True, False]:
 
-            # Extract the title record.
-            t = p.getTitle();
+            if verbose:
+                print("Reading PDB file: %s" % (file))
+                print("Parallel = %s" % (use_par))
 
-            # Work out the number of coordinate transformation records.
-            # A complete object counts as 3 records, i.e. 1 for each dimension.
-            num_transform = 3 * ( p.hasTransOrig() + p.hasTransScale() + p.hasTransMatrix() )
+            # Parse the file into a PDB2 object.
+            # Errors should be thrown if the record data in a file
+            # doesn't match the PDB format.
+            p = PDB2(file, {"parallel" : BooleanProperty(use_par)})
 
-            # Validate data.
-            assert_equal( t.nRemarks(), m.nRemarks() )
-            assert_equal( p.nAtoms(), m.nAtoms() )
-            assert_equal( p.nHelices(), m.nHelices() )
-            assert_equal( p.nSheets(), m.nSheets() )
-            assert_equal( p.nTers(), m.nTers() )
-            assert_equal( num_transform, m.nTransforms() )
+            if verbose:
+                print("Constructing molecular system...")
+
+            # Construct a Sire molecular system.
+            s = p.toSystem()
+
+            if verbose:
+                print("Reconstructing PDB data from molecular system...")
+
+            # Now re-parse the molecular system.
+            p = PDB2(s, {"parallel" : BooleanProperty(use_par)})
+
+            if verbose:
+                print("Passed!\n")
 
 # Specific atom coordinate data validation test for file "../io/ntrc.pdb".
 def test_atom_coords(verbose=False):
@@ -66,29 +72,45 @@ def test_atom_coords(verbose=False):
               [ -7.037,  -1.615,  9.350],
               [ -5.045,   2.118,  8.812]]
 
-    # Parse the PDB file.
-    p = PDB2("../io/ntrc.pdb")
+    # Test in parallel and serial mode.
+    for use_par in [True, False]:
 
-    # Create a molecular system.
-    s = p.toSystem()
+        if verbose:
+            print("Reading PDB file: ../io/ntrc.pdb")
+            print("Parallel = %s" % (use_par))
 
-    # Get the first molecule.
-    m = s[MolIdx(0)]
+        # Parse the PDB file.
+        p = PDB2('../io/ntrc.pdb', {"parallel" : BooleanProperty(use_par)})
 
-    # Loop over all of the atoms.
-    for i in range(0, len(atoms)):
+        if verbose:
+            print("Constructing molecular system...")
 
-        # Extract the atom from the residue "i + 1".
-        a = m.atom(AtomName(atoms[i]) + ResNum(i+1))
+        # Create a molecular system.
+        s = p.toSystem()
 
-        # Extract the atom coordinates.
-        c = a.property("coordinates")
+        # Get the first molecule.
+        m = s[MolIdx(0)]
 
-        # Validate parsed coordinates against known values.
-        assert_almost_equal( c[0], coords[i][0] )
-        assert_almost_equal( c[1], coords[i][1] )
-        assert_equal( c[2], coords[i][2] )
+        if verbose:
+            print("Checking atomic coordinates...")
+
+        # Loop over all of the atoms.
+        for i in range(0, len(atoms)):
+
+            # Extract the atom from the residue "i + 1".
+            a = m.atom(AtomName(atoms[i]) + ResNum(i+1))
+
+            # Extract the atom coordinates.
+            c = a.property("coordinates")
+
+            # Validate parsed coordinates against known values.
+            assert_almost_equal( c[0], coords[i][0] )
+            assert_almost_equal( c[1], coords[i][1] )
+            assert_equal( c[2], coords[i][2] )
+
+        if verbose:
+            print("Passed!\n")
 
 if __name__ == "__main__":
-    test_read(True)
+    test_read_write(True)
     test_atom_coords(True)

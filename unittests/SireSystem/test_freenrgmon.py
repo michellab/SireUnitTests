@@ -64,15 +64,15 @@ def _pvt_calculateEnergy(lamval, verbose):
 
     de = nrg_f - nrg
 
-    soft_cljff01.setProperty("alpha0", VariantProperty(lamval))
-    soft_cljff02.setProperty("alpha0", VariantProperty(1-lamval))
-    soft_cljff01.setProperty("alpha1", VariantProperty(lamval_f))
-    soft_cljff02.setProperty("alpha1", VariantProperty(1-lamval_f))
+    soft_cljff01.setProperty("alpha0", wrap(lamval))
+    soft_cljff02.setProperty("alpha0", wrap(1-lamval))
+    soft_cljff01.setProperty("alpha1", wrap(lamval_f))
+    soft_cljff02.setProperty("alpha1", wrap(1-lamval_f))
 
-    soft_cljff01.setProperty("coulombPower", VariantProperty(0))
-    soft_cljff01.setProperty("shiftDelta", VariantProperty(1.1))
-    soft_cljff02.setProperty("coulombPower", VariantProperty(0))
-    soft_cljff02.setProperty("shiftDelta", VariantProperty(1.1))
+    soft_cljff01.setProperty("coulombPower", wrap(0))
+    soft_cljff01.setProperty("shiftDelta", wrap(1.1))
+    soft_cljff02.setProperty("coulombPower", wrap(0))
+    soft_cljff02.setProperty("shiftDelta", wrap(1.1))
 
     sys = System()
     sys.add(cljff01)

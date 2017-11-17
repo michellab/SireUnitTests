@@ -21,7 +21,7 @@ def parse(format, x=None, use_par=False):
 # i.e. format1 --> format2 --> format1
 # Eventually this should check that a minimal set of properties that
 # are essential for simulation are preserved during interconversion.
-def test_round_trip(file, format1, format2, verbose=False):
+def _test_round_trip(file, format1, format2, verbose=False):
     if not parse(format1):
         print("ERROR: No support for format: %s" % (format1))
         return
@@ -154,6 +154,12 @@ def test_round_trip(file, format1, format2, verbose=False):
         if verbose:
             print("Passed!\n")
 
+def test_round_trip1(verbose=False):
+    _test_round_trip('../io/ntrc.pdb', 'PDB', 'Mol2', verbose)
+
+def test_round_trip2(verbose=False):
+    _test_round_trip('../io/complex.mol2', 'Mol2', 'PDB', verbose)
+
 if __name__ == "__main__":
-    test_round_trip('../io/ntrc.pdb', 'PDB', 'Mol2', True)
-    test_round_trip('../io/complex.mol2', 'Mol2', 'PDB', True)
+    test_round_trip1(True)
+    test_round_trip2(True)

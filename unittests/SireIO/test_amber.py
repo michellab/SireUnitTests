@@ -69,7 +69,7 @@ def test_nrg(verbose=False):
     system.setProperty( "switchingFunction", 
                         HarmonicSwitchingFunction(coulomb_cutoff, coulomb_feather,
                                                   lj_cutoff, lj_feather) ) 
-    system.setProperty( "combiningRules", VariantProperty(combining_rules) )
+    system.setProperty( "combiningRules", wrap(combining_rules) )
 
     total_nrg = solute_intraclj.components().total() + solute_intraff.components().total()
 

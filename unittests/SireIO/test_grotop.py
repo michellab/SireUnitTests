@@ -28,18 +28,35 @@ def test_grotop(verbose=False):
     if verbose:
         print("Reading in gromacs top file...")
 
-    g = GroTop("../io/urea.top", {"GROMACS_PATH":gromacs_path})
-    #g = GroTop("../io/dppc.top", {"GROMACS_PATH":gromacs_path})
+    files = ["../io/urea.top", "../io/urea.gro"]
 
-    print(g.warnings())
+    s = MoleculeParser.read( files, {"GROMACS_PATH":gromacs_path})
 
-    print(g)
+    # check parameters...
+    for i in range(0,s.nMolecules()):
+        m = s[MolIdx(i)]
 
-    print(g.groSystem())
+        print(m.propertyKeys())
 
-    s = g.toSystem()
+        for atom in m.atoms():
+            print(atom, atom.property("charge"), atom.property("LJ"))
+            print(atom.property("atomtype"), atom.property("charge_group"))    
 
-    print(s)
+    p = PDB2(s)
+
+    p.writeToFile("test.pdb")
+
+    m = Mol2(s)
+
+    m.writeToFile("test.mol2")
+
+    g = Gro87(s)
+
+    g.writeToFile("test.gro")
+
+    prm = AmberPrm(s)
+
+    prm.writeToFile("test.prm")
 
 def test_grosys(verbose=False):
 

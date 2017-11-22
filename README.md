@@ -2,11 +2,11 @@
 
 This is the repository that contains all of the unit tests for [Sire](http://siremol.org). This is held
 separately from the main [Sire GitHub repository](https://github.com/michellab/Sire) as these tests are
-updated on a seperate release cycle to Sire, and are downloaded dynamically by the sire_tests executable.
+updated on a separate release cycle to Sire, and are downloaded dynamically by the sire_tests executable.
 This uses `git pull` to pull the latest version of all of the unit tests every time it runs, thereby
 enabling us to add new tests that will be performed by all currently installed versions of the code.
 
-## Layout
+## Layout
 
 The main directory is `unittests`. Inside this are subdirectories of all of the tests to perform. The
 `sire_test` program (which is actually the [sire_test.py](https://github.com/michellab/Sire/blob/devel/wrapper/python/scripts/sire_test.py)),
@@ -30,10 +30,10 @@ from nose.tools import assert_almost_equal
 # thing to be tested
 
 def test_something(verbose=False):
-    """Test function. If 'verbose' is False, then this test must not print to the screen"""    
+    """Test function. If 'verbose' is False, then this test must not print to the screen"""
 
     # the code to run the test. This should raise an exception
-    # if the test fails. For example, 
+    # if the test fails. For example,
     x = 3.5
     y = 9 * 0.5
 
@@ -111,7 +111,7 @@ To create a C++ test, add the following C++ code anywhere within Sire;
 
     void function_name(bool verbose)
 
-    where if 'verbose' is false, the test should not print anything to the screen 
+    where if 'verbose' is false, the test should not print anything to the screen
 */
 void test_something(bool verbose)
 {

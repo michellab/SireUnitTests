@@ -34,8 +34,8 @@ def test_read_write(verbose=False):
         for use_par in [True, False]:
 
             if verbose:
-                print("Reading Mol2 file: %s" % (file))
-                print("Parallel = %s" % (use_par))
+                print("Reading Mol2 file: %s" % file)
+                print("Parallel = %s" % use_par)
 
             # Parse the file into a Mol2 object.
             p = Mol2(file, {"parallel" : BooleanProperty(use_par)})
@@ -75,7 +75,7 @@ def test_atom_coords(verbose=False):
 
         if verbose:
             print("Reading Mol2 file: ../io/complex.mol2")
-            print("Parallel = %s" % (use_par))
+            print("Parallel = %s" % use_par)
 
         # Parse the Mol2 file.
         p = Mol2('../io/complex.mol2', {"parallel" : BooleanProperty(use_par)})
@@ -104,7 +104,7 @@ def test_atom_coords(verbose=False):
             # Validate parsed coordinates against known values.
             assert_almost_equal( c[0], coords[i][0] )
             assert_almost_equal( c[1], coords[i][1] )
-            assert_equal( c[2], coords[i][2] )
+            assert_almost_equal( c[2], coords[i][2] )
 
         if verbose:
             print("Passed!\n")
@@ -119,7 +119,7 @@ def test_residues(verbose=False):
 
         if verbose:
             print("Reading Mol2 file: ../io/complex.mol2")
-            print("Parallel = %s" % (use_par))
+            print("Parallel = %s" % use_par)
 
         # Parse the Mol2 file.
         p = Mol2('../io/complex.mol2', {"parallel" : BooleanProperty(use_par)})

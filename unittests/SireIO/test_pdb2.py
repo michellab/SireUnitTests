@@ -34,8 +34,8 @@ def test_read_write(verbose=False):
         for use_par in [True, False]:
 
             if verbose:
-                print("Reading PDB file: %s" % (file))
-                print("Parallel = %s" % (use_par))
+                print("Reading PDB file: %s" % file)
+                print("Parallel = %s" % use_par)
 
             # Parse the file into a PDB2 object.
             # Errors should be thrown if the record data in a file
@@ -77,7 +77,7 @@ def test_atom_coords(verbose=False):
 
         if verbose:
             print("Reading PDB file: ../io/ntrc.pdb")
-            print("Parallel = %s" % (use_par))
+            print("Parallel = %s" % use_par)
 
         # Parse the PDB file.
         p = PDB2('../io/ntrc.pdb', {"parallel" : BooleanProperty(use_par)})
@@ -106,7 +106,7 @@ def test_atom_coords(verbose=False):
             # Validate parsed coordinates against known values.
             assert_almost_equal( c[0], coords[i][0] )
             assert_almost_equal( c[1], coords[i][1] )
-            assert_equal( c[2], coords[i][2] )
+            assert_almost_equal( c[2], coords[i][2] )
 
         if verbose:
             print("Passed!\n")

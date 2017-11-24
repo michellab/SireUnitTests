@@ -42,7 +42,7 @@ def test_multi_parse(verbose=False):
             files = glob('%s/*' % dir)
 
             if verbose:
-                print("Constructing molecular systems from: %s" % files)
+                print("Constructing molecular system from: %s" % files)
                 print("Parallel = %s" % use_par)
 
             # Construct a molecular system from the three input files.
@@ -65,7 +65,7 @@ def test_molecular_structure(verbose=False):
                  '../io/namd/tiny/par_all22_prot.inp']
 
         if verbose:
-            print("Constructing molecular systems from: %s" % files)
+            print("Constructing molecular system from: %s" % files)
             print("Parallel = %s" % use_par)
 
         # Construct a molecular system from the three input files.

@@ -23,11 +23,11 @@ def parse(format, x=None, use_par=False):
 # are essential for simulation are preserved during interconversion.
 def _test_round_trip(file, format1, format2, verbose=False):
     if not parse(format1):
-        print("ERROR: No support for format: %s" % (format1))
+        print("ERROR: No support for format: %s" % format1)
         return
 
     if not parse(format2):
-        print("ERROR: No support for format: %s" % (format2))
+        print("ERROR: No support for format: %s" % format2)
         return
 
     print("Testing round-trip file "\
@@ -37,8 +37,8 @@ def _test_round_trip(file, format1, format2, verbose=False):
     for use_par in [True, False]:
 
         if verbose:
-            print("Reading file: %s" % (file))
-            print("Parallel = %s" % (use_par))
+            print("Reading file: %s" % file)
+            print("Parallel = %s" % use_par)
 
         # Parse the file into the parser object.
         p = parse(format1, file, use_par)
@@ -50,7 +50,7 @@ def _test_round_trip(file, format1, format2, verbose=False):
         s1 = p.toSystem()
 
         if verbose:
-            print("Converting first molecular system to %s format..." % (format2))
+            print("Converting first molecular system to %s format..." % format2)
 
         # Now construct data records in the second format using the molecular system.
         p = parse(format2, s1, use_par)
@@ -64,7 +64,7 @@ def _test_round_trip(file, format1, format2, verbose=False):
         s2 = p.toSystem()
 
         if verbose:
-            print("Converting second molecular system back to %s format..." % (format1))
+            print("Converting second molecular system back to %s format..." % format1)
 
         # Now construct original data records from the molecular system.
         p = parse(format1, s2, use_par)

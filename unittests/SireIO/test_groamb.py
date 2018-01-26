@@ -11,6 +11,7 @@ def _addForceFields(s):
     intraclj = IntraFF("intraclj")
     intraclj.add(s.molecules())
     intraff = InternalFF("intraff")
+    intraff.enable14Calculation()
     intraff.add(s.molecules())
 
     s = System(s)

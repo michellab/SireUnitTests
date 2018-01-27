@@ -4,8 +4,8 @@ from Sire.FF import *
 
 from nose.tools import assert_equal
 
-amber14coul = 0.5
-amber14lj = 0.833
+amber14coul = 1.0 / 1.2
+amber14lj = 0.5
 
 try:
     amber = MMDetail()

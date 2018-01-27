@@ -2,6 +2,7 @@
 from Sire.IO import *
 from Sire.System import *
 from Sire.MM import *
+from Sire.Mol import *
 
 from nose.tools import assert_equal, assert_almost_equal
 
@@ -28,6 +29,15 @@ def test_groamb(verbose=False):
     # load up the gromacs file
     s = MoleculeParser.read("../io/urea.top", "../io/urea.gro",
                             {"GROMACS_PATH":"../io/gromacs"})
+
+    # assert that all of the molecules have an amber-style forcefield
+    for i in range(0,s.nMolecules()):
+        ff = s[MolIdx(i)].property("forcefield")
+
+        if verbose:
+            print("Forcefield %s ==\n%s" % (s[MolIdx(i)],ff))
+
+        assert_equal( ff.isAmberStyle(), True )
 
     if verbose:
         print("Saving to amber files...")

@@ -40,15 +40,51 @@ def _assert_almost_equal(oldnrgs, newnrgs):
 
     assert_equal( oldkeys, newkeys )
 
+    newsum = 0
+    oldsum = 0
+
     for key in oldkeys:
-        assert_almost_equal( oldnrgs[key], newnrgs[key], 5 )
+        if str(key).find("dihedral") == -1 and str(key).find("improper") == -1:
+            assert_almost_equal( oldnrgs[key], newnrgs[key], 3 )
+        else:
+            newsum += newnrgs[key]
+            oldsum += oldnrgs[key]
+
+    # this is the sum of improper and dihedral energy
+    assert_almost_equal(oldsum, newsum, 3)
+
+def test_ambergro(verbose=False):
+
+    if verbose:
+        print("Reading Amber file...")
+
+    s = MoleculeParser.read("../io/ose.top", "../io/ose.crd")
+    #s = MoleculeParser.read("../io/NA16.top", "../io/NA16.rst")
+
+    oldnrgs = _getEnergies(s)
+
+    if verbose:
+        print("Converting to gromacs format...")
+
+    g = GroTop(s)
+    g.writeToFile("test.top")
+
+    g87 = Gro87(s)
+    g87.writeToFile("test.gro")
+
+    if verbose:
+        print("Re-reading from the gromacs file...")
+
+    s = MoleculeParser.read("test.top", "test.gro")
+
+    newnrgs = _getEnergies(s)
+
+    if verbose:
+        _printCompareEnergies(oldnrgs,newnrgs)
+    
+    _assert_almost_equal(oldnrgs, newnrgs)
 
 def test_growrite(verbose=False):
-
-    try:
-        s = MoleculeParser.read
-    except:
-        return
 
     if verbose:
         print("Reading...")
@@ -78,5 +114,6 @@ def test_growrite(verbose=False):
     _assert_almost_equal(oldnrgs, newnrgs)
 
 if __name__ == "__main__":
+    test_ambergro(True)
     test_growrite(True)
 

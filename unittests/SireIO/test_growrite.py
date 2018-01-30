@@ -61,13 +61,19 @@ def test_ambergro(verbose=False):
     s = MoleculeParser.read("../io/ose.top", "../io/ose.crd")
     #s = MoleculeParser.read("../io/NA16.top", "../io/NA16.rst")
 
+    if verbose:
+        print("Calculating energies...")
+
     oldnrgs = _getEnergies(s)
 
     if verbose:
-        print("Converting to gromacs format...")
+        print("Converting to gromacs format... topology...")
 
     g = GroTop(s)
     g.writeToFile("test.top")
+
+    if verbose:
+        print("...coordinates/velocities...")
 
     g87 = Gro87(s)
     g87.writeToFile("test.gro")
@@ -76,6 +82,9 @@ def test_ambergro(verbose=False):
         print("Re-reading from the gromacs file...")
 
     s = MoleculeParser.read("test.top", "test.gro")
+
+    if verbose:
+        print("Calculating energies...")
 
     newnrgs = _getEnergies(s)
 

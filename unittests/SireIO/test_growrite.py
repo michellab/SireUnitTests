@@ -43,7 +43,7 @@ def _assert_almost_equal(oldnrgs, newnrgs):
     for key in oldkeys:
         assert_almost_equal( oldnrgs[key], newnrgs[key], 5 )
 
-def test_write(verbose=False):
+def test_growrite(verbose=False):
 
     try:
         s = MoleculeParser.read
@@ -53,8 +53,8 @@ def test_write(verbose=False):
     if verbose:
         print("Reading...")
 
-    #s = MoleculeParser.read("../io/ose.top", "../io/ose.crd")
-    s = MoleculeParser.read("../io/proteinbox.top", "../io/proteinbox.crd")
+    s = MoleculeParser.read("../io/urea.top", "../io/urea.gro", 
+                            {"GROMACS_PATH":"../io/gromacs"})
 
     # calculate the initial internal energy
     oldnrgs = _getEnergies(s)
@@ -78,5 +78,5 @@ def test_write(verbose=False):
     _assert_almost_equal(oldnrgs, newnrgs)
 
 if __name__ == "__main__":
-    test_write(True)
+    test_growrite(True)
 

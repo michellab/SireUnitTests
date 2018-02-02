@@ -93,6 +93,28 @@ def test_ambergro(verbose=False):
     
     _assert_almost_equal(oldnrgs, newnrgs)
 
+    if verbose:
+        print("Writing back to amber...")
+
+    # write back to amber and test
+    a = AmberPrm(s)
+    a.writeToFile("test.prm")
+
+    if verbose:
+        print("Reading back...")
+
+    s = MoleculeParser.read("test.prm", "test.gro")
+
+    if verbose:
+        print("Getting energies...")
+
+    newnrgs = _getEnergies(s)
+    
+    if verbose:
+        _printCompareEnergies(oldnrgs,newnrgs)
+    
+    _assert_almost_equal(oldnrgs, newnrgs)    
+
 def test_growrite(verbose=False):
 
     if verbose:

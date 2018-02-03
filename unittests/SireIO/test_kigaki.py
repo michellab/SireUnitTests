@@ -8,6 +8,34 @@ from Sire.CAS import *
 
 from nose.tools import assert_equal, assert_almost_equal
 
+def _same_function(f1, f2, x, start, end):
+    delta = (end - start) / 25
+
+    for i in range(0,26):
+        val = {x:(start + i*delta)}
+        v1 = f1.evaluate(val)
+        v2 = f2.evaluate(val)
+
+        if abs(v2-v1) > 0.001:
+            return False
+
+    return True
+
+def _same_atoms(a1, a2):
+    if a1.atom0() != a2.atom0() or a1.atom1() != a1.atom1():
+        return False
+
+    try:
+        if a1.atom2() != a2.atom2():
+            return False
+
+        if a1.atom3() != a2.atom3():
+            return False
+    except:
+        pass
+
+    return True
+
 def _assert_almost_equal(a, b, tol):
     if abs(a - b) > 0.1:
         assert_almost_equal(a, b, tol)
@@ -48,6 +76,74 @@ def _printCompareEnergies(oldnrgs, newnrgs):
 
     for key in keys:
         print("%s: %s  %s" % (key, oldnrgs[key], newnrgs[key]))
+
+def _compare_dihedrals(d1, d2, verbose):
+    ps1 = []
+    ps2 = []
+
+    # only compare non-zero dihedrals
+    for p in d1.potentials():
+        if not p.function().isZero():
+           ps1.append(p)
+    
+    for p in d2.potentials(): 
+        if not p.function().isZero():
+           ps2.append(p)
+
+    assert_equal( len(ps1), len(ps2) )
+
+    for i in range(0,len(ps1)):
+        p1 = ps1[i]
+        p2 = ps2[i]
+
+        # find the matching atomids...
+        if not _same_atoms(p1,p2):
+            p2 = None
+
+            for i in range(0,len(ps2)):
+                if _same_atoms(p1,ps2[i]):
+                    p2 = ps2[i]
+                    break
+
+        if p2 is None:
+            if verbose:
+                print("Cannot find the dihedral matching '%s'" % p1)
+            assert_equal(p1,p2)
+
+        if not _same_function(p1.function(), p2.function(), 
+                              Symbol("phi"), 0, 3.141):
+            if verbose:
+                print("FAILED: %s != %s" % (p1, p2))
+
+            assert_equal(p1.function(), p2.function())
+
+def _atom(m,i):
+    a = m.atom(AtomIdx(i))
+    r = a.residue()
+    return "%s:%s:%s" % (a.name().value(),r.name().value(),r.number().value())
+
+def _print_different_scls(scl1,scl2,mol1):
+    for i in range(0,scl1.nAtoms()):
+        for j in range(0,scl2.nAtoms()):
+            s1 = scl1.get(AtomIdx(i),AtomIdx(j))
+            s2 = scl2.get(AtomIdx(i),AtomIdx(j))
+            if s1 != s2:
+                print("%s %s : %s %s" % (_atom(mol1,i),_atom(mol1,j),s1,s2))
+
+def _compare_nbscl(scl1,scl2,m,verbose):
+    assert_equal(scl1.nAtoms(), scl2.nAtoms())
+
+    for i in range(0,scl1.nAtoms()):
+        for j in range(0,scl2.nAtoms()):
+            s1 = scl1.get(AtomIdx(i), AtomIdx(j))
+            s2 = scl2.get(AtomIdx(i), AtomIdx(j))
+
+            if s1 != s2:
+                if verbose:
+                    print("FAIL: %s %s" % (i,j))
+                    _print_different_scls(scl1,scl2,m)
+
+                assert_equal(s1,s2)
 
 def test_kigaki(verbose=False):
 
@@ -107,6 +203,17 @@ def test_kigaki(verbose=False):
     s2 = MoleculeParser.read("test.prm7", "test.rst")
 
     if verbose:
+        print("Comparing intramolecular terms...")
+
+    for i in range(0,s.nMolecules()):
+        mol1 = s[MolIdx(i)]
+        mol2 = s2[MolIdx(i)]
+        _compare_dihedrals(mol1.property("dihedral"),
+                           mol2.property("dihedral"), verbose)
+        _compare_nbscl(mol1.property("intrascale"),
+                       mol2.property("intrascale"), mol1, verbose)
+
+    if verbose:
         print("Calculating energies...")
 
     nrgs2 = _getEnergies(s2)
@@ -114,7 +221,7 @@ def test_kigaki(verbose=False):
     if verbose:
         _printCompareEnergies(nrgs,nrgs2)
 
-    #_assert_all_almost_equal(nrgs, nrgs2)    
+    _assert_all_almost_equal(nrgs, nrgs2)    
 
     # write back to gromacs...
     if verbose:

@@ -53,13 +53,12 @@ def _assert_almost_equal(oldnrgs, newnrgs):
     # this is the sum of improper and dihedral energy
     assert_almost_equal(oldsum, newsum, 3)
 
-def test_ambergro(verbose=False):
+def _test_ambergro(files, verbose=False):
 
     if verbose:
         print("Reading Amber file...")
 
-    s = MoleculeParser.read("../io/ose.top", "../io/ose.crd")
-    #s = MoleculeParser.read("../io/NA16.top", "../io/NA16.rst")
+    s = MoleculeParser.read(files)
 
     if verbose:
         print("Calculating energies...")
@@ -114,6 +113,17 @@ def test_ambergro(verbose=False):
         _printCompareEnergies(oldnrgs,newnrgs)
     
     _assert_almost_equal(oldnrgs, newnrgs)    
+
+def test_ambergro(verbose=False):
+    if verbose:
+        print("\nTesting ose.top/ose.crd")
+
+    _test_ambergro(["../io/ose.top","../io/ose.crd"], verbose)
+
+    #if verbose:
+    #    print("\nTesting ethanol.grotop/ethanol.gro")
+
+    #_test_ambergro(["../io/ethanol.grotop","../io/ethanol.gro"], verbose)
 
 def test_growrite(verbose=False):
 

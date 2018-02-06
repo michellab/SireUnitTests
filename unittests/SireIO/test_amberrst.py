@@ -114,6 +114,9 @@ def test_amberrst(verbose=False):
 
     os.system("rm test.rst test.prm7")
 
+    if verbose:
+        print("Writing...")
+
     MoleculeParser.write(s, "test")
 
     if verbose:

@@ -185,12 +185,13 @@ def test_kigaki(verbose=False):
         print("Bond: %s versus %s" % (bond, gbond))
         print("Angle: %s versus %s" % (angle, gangle))
         print("Dihedral: %s versus %s" % (dihedral, gdihedral))
+        print("Dihedral: %s kJ mol-1 versus %s kJ mol-1" % (dihedral.to(kJ_per_mol), gdihedral.to(kJ_per_mol)))
         print("LJ14: %s versus %s" % (lj14, glj14))
         print("COUL14: %s versus %s" % (coul14,gcoul14))
 
     _assert_almost_equal(bond.value(), gbond.value(), 2)
     _assert_almost_equal(angle.value(), gangle.value(), 2)
-    #_assert_almost_equal(dihedral.value(), gdihedral.value(), 2)
+    _assert_almost_equal(dihedral.value(), gdihedral.value(), 2)
     _assert_almost_equal(lj14.value(), glj14.value(), 2)
     _assert_almost_equal(coul14.value(), gcoul14.value(), 2)
 

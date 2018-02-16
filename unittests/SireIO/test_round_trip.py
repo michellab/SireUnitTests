@@ -10,10 +10,10 @@ from nose.tools import assert_equal, assert_almost_equal
 def parse(format, x=None, use_par=False):
     if   format == 'PDB':
         if x == None: return PDB2()
-        else:         return PDB2(x, {"parallel" : BooleanProperty(use_par)})
+        else:         return PDB2(x, {"parallel" : wrap(use_par)})
     elif format == 'Mol2':
         if x == None: return Mol2()
-        else:         return Mol2(x, {"parallel" : BooleanProperty(use_par)})
+        else:         return Mol2(x, {"parallel" : wrap(use_par)})
     else:
         return False
 

@@ -1,4 +1,3 @@
-
 from Sire.IO import *
 from Sire.MM import *
 from Sire.Mol import *
@@ -57,7 +56,7 @@ def test_dihedrals(verbose=False):
 
         if verbose:
              print("%s == %s ??" % (amberdihedral,pot))
-        
+
         _assert_expressions_equal( pot, amberdihedral.toExpression(Symbol("phi")),
                                    Symbol("phi") )
 
@@ -73,10 +72,43 @@ def test_impropers(verbose=False):
 
         _assert_expressions_equal( pot, amberdihedral.toExpression(Symbol("phi")),
                                    Symbol("phi") )
+def test_dihedral_forms(verbose=False):
+
+    # The symbol for the expression.
+    Phi = Symbol("Phi")
+
+    # Try to create an AmberDihedral from a pure AMBER style dihedral series.
+    # All terms have positive cosine factors.
+    f = Expression(0.3 * (1 + Cos(Phi)) + 0.8 * (1 + Cos(4 * Phi)))
+    d = AmberDihedral(f, Phi)
+
+    # Assert that the expression is the same.
+    assert d.toExpression(Phi) == f
+
+    # Try to create an AmberDihedral from a using terms with positive and
+    # negative cosine factors, as can be present in CHARMM.
+    f = Expression(0.3 * (1 + Cos(Phi)) - 0.8 * (1 + Cos(4 * Phi)))
+    d = AmberDihedral(f, Phi)
+
+    # Assert that the expression is the same.
+    assert d.toExpression(Phi) == f
+
+    # Try to create an AmberDihedral from a using terms with positive and
+    # negative cosine factors, with the negative arising from a representation
+    # of the form k [ 1 - Cos(Phi) ], rather than -k [ 1 + Cos(Phi) ]. These
+    # can occur in Gromacs.
+    f = Expression(0.3 * (1 + Cos(Phi)) + 0.8 * (1 - Cos(4 * Phi)))
+    d = AmberDihedral(f, Phi)
+
+    # Create a value object: Phi = 2.0.
+    val = Values(SymbolValue(Phi.ID(), 2.0))
+
+    # Make sure both expressions evaluate to the same result.
+    assert_almost_equal(f.evaluate(val), d.toExpression(Phi).evaluate(val))
 
 if __name__ == "__main__":
     test_bonds(True)
     test_angles(True)
     test_dihedrals(True)
+    test_dihedral_forms(True)
     test_impropers(True)
-

@@ -106,6 +106,16 @@ def test_dihedral_forms(verbose=False):
     # Make sure both expressions evaluate to the same result.
     assert_almost_equal(f.evaluate(val), d.toExpression(Phi).evaluate(val))
 
+    # Now try a three-term expression that mixes all formats.
+    f = Expression(0.3 * (1 + Cos(Phi)) -1.2 * (1 + Cos(3 * Phi)) + 0.8 * (1 - Cos(4 * Phi)))
+    d = AmberDihedral(f, Phi)
+    assert_almost_equal(f.evaluate(val), d.toExpression(Phi).evaluate(val))
+
+    # Try a three-term expression with equal factors.
+    f = Expression(0.3 * (1 + Cos(Phi)) -0.3 * (1 + Cos(3 * Phi)) + 0.3 * (1 - Cos(4 * Phi)))
+    d = AmberDihedral(f, Phi)
+    assert_almost_equal(f.evaluate(val), d.toExpression(Phi).evaluate(val))
+
 if __name__ == "__main__":
     test_bonds(True)
     test_angles(True)

@@ -77,8 +77,41 @@ def test_dihedral_forms(verbose=False):
     # The symbol for the expression.
     Phi = Symbol("Phi")
 
-    # Try to create an AmberDihedral from a pure AMBER style dihedral series.
-    # All terms have positive cosine factors.
+    # First test single terms expressions.
+
+    # 1. Standard form.
+    f = Expression(0.3 * (1 + Cos(4*Phi - 2.0)))    # Functional form.
+    d = AmberDihedral(f, Phi)                       # The Amber dihedral object.
+    t = d[0]                                        # The dihedral part (term).
+
+    # Make sure k, periodicity, and phase are correct.
+    assert_almost_equal(t.k(), 0.3)
+    assert t.periodicity() == 4
+    assert_almost_equal(t.phase(), 2.0)
+
+    # 2. Negative k.
+    f = Expression(-0.3 * (1 + Cos(4*Phi - 2.0)))   # Functional form.
+    d = AmberDihedral(f, Phi)                       # The Amber dihedral object.
+    t = d[0]                                        # The dihedral part (term).
+
+    # Make sure k, periodicity, and phase are correct.
+    assert_almost_equal(t.k(), -0.3)
+    assert t.periodicity() == 4
+    assert_almost_equal(t.phase(), 2.0)
+
+    # 3. k [ 1 - cos(Phi - phase) ]
+    f = Expression(0.3 * (1 - Cos(4*Phi - 2.0)))    # Functional form.
+    d = AmberDihedral(f, Phi)                       # The Amber dihedral object.
+    t = d[0]                                        # The dihedral part (term).
+
+    # Make sure k, periodicity, and phase are correct.
+    assert_almost_equal(t.k(), 0.3)
+    assert t.periodicity() == 4
+    assert_almost_equal(t.phase(), 2.0 - pi)
+
+    # Now check series expressions with different types of term.
+
+    # A regular AMBER style dihedral series. All terms have positive cosine factors.
     f = Expression(0.3 * (1 + Cos(Phi)) + 0.8 * (1 + Cos(4 * Phi)))
     d = AmberDihedral(f, Phi)
 
@@ -86,7 +119,7 @@ def test_dihedral_forms(verbose=False):
     assert d.toExpression(Phi) == f
 
     # Try to create an AmberDihedral from a using terms with positive and
-    # negative cosine factors, as can be present in CHARMM.
+    # negative cosine factors. These appear in the CHARMM force field.
     f = Expression(0.3 * (1 + Cos(Phi)) - 0.8 * (1 + Cos(4 * Phi)))
     d = AmberDihedral(f, Phi)
 
@@ -106,7 +139,7 @@ def test_dihedral_forms(verbose=False):
     # Make sure both expressions evaluate to the same result.
     assert_almost_equal(f.evaluate(val), d.toExpression(Phi).evaluate(val))
 
-    # Now try a three-term expression that mixes all formats.
+    # Try a three-term expression that mixes all formats.
     f = Expression(0.3 * (1 + Cos(Phi)) -1.2 * (1 + Cos(3 * Phi)) + 0.8 * (1 - Cos(4 * Phi)))
     d = AmberDihedral(f, Phi)
     assert_almost_equal(f.evaluate(val), d.toExpression(Phi).evaluate(val))

@@ -40,7 +40,7 @@ def test_read_write(verbose=False):
             # Parse the file into a PDB2 object.
             # Errors should be thrown if the record data in a file
             # doesn't match the PDB format.
-            p = PDB2(file, {"parallel" : BooleanProperty(use_par)})
+            p = PDB2(file, {"parallel" : wrap(use_par)})
 
             if verbose:
                 print("Constructing molecular system...")
@@ -52,7 +52,7 @@ def test_read_write(verbose=False):
                 print("Reconstructing PDB data from molecular system...")
 
             # Now re-parse the molecular system.
-            p = PDB2(s, {"parallel" : BooleanProperty(use_par)})
+            p = PDB2(s, {"parallel" : wrap(use_par)})
 
             if verbose:
                 print("Passed!\n")
@@ -80,7 +80,7 @@ def test_atom_coords(verbose=False):
             print("Parallel = %s" % use_par)
 
         # Parse the PDB file.
-        p = PDB2('../io/ntrc.pdb', {"parallel" : BooleanProperty(use_par)})
+        p = PDB2('../io/ntrc.pdb', {"parallel" : wrap(use_par)})
 
         if verbose:
             print("Constructing molecular system...")

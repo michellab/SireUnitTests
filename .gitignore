@@ -26,3 +26,10 @@
 *.exe
 *.out
 *.app
+
+# Byte-compiled / optimized / DLL files.
+__pycache__/
+*.py[cod]
+
+# macOS folder attributes.
+.DS_Store

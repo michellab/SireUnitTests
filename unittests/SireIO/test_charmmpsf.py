@@ -103,7 +103,7 @@ def test_molecular_structure(verbose=False):
 
         assert_equal(num_bonds, 396)
         assert_equal(num_angles, 421)
-        assert_equal(num_dihedrals, 444)
+        assert_equal(num_dihedrals, 354)
         assert_equal(num_impropers, 35)
 
         if verbose:

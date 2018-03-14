@@ -38,7 +38,7 @@ def test_read_write(verbose=False):
                 print("Parallel = %s" % use_par)
 
             # Parse the file into a Mol2 object.
-            p = Mol2(file, {"parallel" : BooleanProperty(use_par)})
+            p = Mol2(file, {"parallel" : wrap(use_par)})
 
             if verbose:
                 print("Constructing molecular system...")
@@ -50,7 +50,7 @@ def test_read_write(verbose=False):
                 print("Reconstructing Mol2 data from molecular system...")
 
             # Now re-parse the molecular system.
-            p = Mol2(s, {"parallel" : BooleanProperty(use_par)})
+            p = Mol2(s, {"parallel" : wrap(use_par)})
 
             if verbose:
                 print("Passed!\n")
@@ -78,7 +78,7 @@ def test_atom_coords(verbose=False):
             print("Parallel = %s" % use_par)
 
         # Parse the Mol2 file.
-        p = Mol2('../io/complex.mol2', {"parallel" : BooleanProperty(use_par)})
+        p = Mol2('../io/complex.mol2', {"parallel" : wrap(use_par)})
 
         if verbose:
             print("Constructing molecular system...")
@@ -122,7 +122,7 @@ def test_residues(verbose=False):
             print("Parallel = %s" % use_par)
 
         # Parse the Mol2 file.
-        p = Mol2('../io/complex.mol2', {"parallel" : BooleanProperty(use_par)})
+        p = Mol2('../io/complex.mol2', {"parallel" : wrap(use_par)})
 
         if verbose:
             print("Constructing molecular system...")

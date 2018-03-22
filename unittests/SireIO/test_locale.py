@@ -158,7 +158,7 @@ def _test_broken_gro():
 
 
 def _test_broken_function(verbose, function):
-    cmd = "%s %s %s" % (sire_python, sys.argv[0], function)
+    cmd = "%s %s %s" % (sire_python, "test_locale.py", function)
 
     if verbose:
         print(cmd)

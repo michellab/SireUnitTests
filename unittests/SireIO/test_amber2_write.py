@@ -43,7 +43,7 @@ def _assert_almost_equal(oldnrgs, newnrgs):
     for key in oldkeys:
         assert_almost_equal( oldnrgs[key], newnrgs[key], 5 )
 
-def test_write(verbose=False):
+def _test_write(files, verbose=False):
 
     try:
         s = MoleculeParser.read
@@ -51,10 +51,9 @@ def test_write(verbose=False):
         return
 
     if verbose:
-        print("Reading...")
+        print("Reading... %s | %s" % (files[0],files[1]))
 
-    #s = MoleculeParser.read("../io/ose.top", "../io/ose.crd")
-    s = MoleculeParser.read("../io/proteinbox.top", "../io/proteinbox.crd")
+    s = MoleculeParser.read(files)
 
     # calculate the initial internal energy
     oldnrgs = _getEnergies(s)
@@ -76,6 +75,11 @@ def test_write(verbose=False):
         _printCompareEnergies(oldnrgs,newnrgs)
 
     _assert_almost_equal(oldnrgs, newnrgs)
+
+def test_write(verbose=False):
+    _test_write( ["../io/ose.top", "../io/ose.crd"], verbose )
+    _test_write( ["../io/thrombin.top", "../io/thrombin.rst7"], verbose )
+    _test_write( ["../io/proteinbox.top", "../io/proteinbox.crd"], verbose )
 
 if __name__ == "__main__":
     test_write(True)

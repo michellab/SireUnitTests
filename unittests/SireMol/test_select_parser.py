@@ -288,6 +288,33 @@ def test_engines(verbose=False):
         print(s)
         print(r)
     
+    s = Select("resname /ala/i")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    s = Select("resnum 1,3,5,7")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    s = Select("residx > -3")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    s = Select("atomidx 5:-1:3")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
 
 if __name__ == "__main__":
     test_selections(True)

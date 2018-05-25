@@ -331,6 +331,27 @@ def test_engines(verbose=False):
 
         assert( resnam == "ALA" or resnam == "LYS" or resnam == "LEU" )
 
+    s = Select("atomnam /ca/i or atomnam /n\.*/i")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    s = Select("resnam /ala/i or atomnam /ca/i")
+    r = s(mols)
+
+    if verbose:
+       print(s)
+       print(r)
+
+    s = Select("atomnam /ca/i or resnam /ala/i")
+    r = s(mols)
+        
+    if verbose: 
+       print(s)
+       print(r)
+
 if __name__ == "__main__":
     test_selections(True)
     test_engines(True)

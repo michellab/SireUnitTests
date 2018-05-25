@@ -2,6 +2,8 @@
 from Sire.Mol import *
 from Sire.IO import *
 
+from nose.tools import assert_equal
+
 try:
     s = Select()
     have_select = True
@@ -315,6 +317,19 @@ def test_engines(verbose=False):
     if verbose:
         print(s)
         print(r)
+
+    s = Select("resname /ala/i,/lys/i,/leu/i and atomnam /ca/i")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    for atom in r:
+        assert_equal( atom.name().value(), "CA" )
+        resnam = atom.residue().name().value()
+
+        assert( resnam == "ALA" or resnam == "LYS" or resnam == "LEU" )
 
 if __name__ == "__main__":
     test_selections(True)

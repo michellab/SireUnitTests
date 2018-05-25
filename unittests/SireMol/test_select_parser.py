@@ -1,5 +1,6 @@
 
 from Sire.Mol import *
+from Sire.IO import *
 
 try:
     s = Select()
@@ -15,65 +16,202 @@ def test_selections(verbose=False):
         print("\nBase name selections\n")
 
     s = Select("atomnam hello")
+
+    if verbose:
+        print(s)
+
     s = Select("resname goodbye")
+
+    if verbose:
+        print(s)
+
     s = Select("chainname world")
+
+    if verbose:
+        print(s)
+
     s = Select("(atomnam bracket)")
+
+    if verbose:
+        print(s)
+
     s = Select("((atomnam doublebracket))")
+
+    if verbose:
+        print(s)
+
     s = Select("(atomnam one and resnam two) and (resnam three)")
+
+    if verbose:
+        print(s)
+
     s = Select("(atomnam one and resnam two) and (resnam three and atomname four)")
+
+    if verbose:
+        print(s)
+
     s = Select("atomnam hello; resname goodbye")
+
+    if verbose:
+        print(s)
+
     s = Select("atomnam hello and resname goodbye")
+
+    if verbose:
+        print(s)
+
     s = Select("atomnam hello and resname goodbye and chainname world")
+
+    if verbose:
+        print(s)
+
     s = Select("atomnam hello and resname goodbye and (chainname world and resname one)")
+
+    if verbose:
+        print(s)
+
     #s = Select("atomnam hello and (resname goodbye and (chainname world and (resname one and atomname two)))")
+
+    #if verbose:
+    #    print(s)
 
     if verbose:
         print("\nMulti name\n")
 
     s = Select("atomname C,CA , N,O")
+
+    if verbose:
+        print(s)
+
     s = Select("atomname 'C 1',O")
+
+    if verbose:
+        print(s)
+
     s = Select("atomname /hello/")
+
+    if verbose:
+        print(s)
+
     s = Select("atomname /goodbye/i")
+
+    if verbose:
+        print(s)
+
     s = Select("atomname C,/hello/,'C 1',/goodbye/i")
+
+    if verbose:
+        print(s)
+
     s = Select("(atomname /CA/i or atomname /C/i) and resname /ALA/i")
+
+    if verbose:
+        print(s)
 
     if verbose:
         print("\nNumbers...\n")
 
     s = Select("atomnum 5")
+
+    if verbose:
+        print(s)
+
     s = Select("resnum 1:10")
+
+    if verbose:
+        print(s)
+
     s = Select("cgidx 1:10:2, 5, 2:10")
+
+    if verbose:
+        print(s)
+
     s = Select("resnum 100 and chainname A")
+
+    if verbose:
+        print(s)
+
     s = Select("resnum > 5 and resnum <= 100")
+
+    if verbose:
+        print(s)
 
     if verbose:
         print("\nWith/In/not...\n")
 
     s = Select("molecules with (resname /ala/i,/asp/i,/gly/i and atomname /ca/i)")
+
+    if verbose:
+        print(s)
+
     s = Select("atoms in residx 1:10")
+
+    if verbose:
+        print(s)
+
     s = Select("not resname ALA")
+
+    if verbose:
+        print(s)
+
     s = Select("chainname B and not atomname CA,C,N,O")
+
+    if verbose:
+        print(s)
 
     if verbose:
         print("\nSubscripting\n")
 
     s = Select("{atoms in resname ALA}[0:10]")
+
+    if verbose:
+        print(s)
+
     s = Select("atoms in {resname ALA}[0:10]")
+
+    if verbose:
+        print(s)
+
     s = Select("{resname ALA and atomname /ca/i}[5]")
+
+    if verbose:
+        print(s)
+
     s = Select("{molecules with resname /ala/i}[-1]")
+
+    if verbose:
+        print(s)
 
     if verbose:
         print("\nComments\n")
 
     s = Select("resname /* This is a comment */ ALA")
+
+    if verbose:
+        print(s)
+
     s = Select("resname /ala/i;\n//another comment\n resname /gly/i")
+
+    if verbose:
+        print(s)
+
     s = Select("{molecules /*comment*/ with resname /ala/i /*comment */}/*comment*/[-1]")
+
+    if verbose:
+        print(s)
 
     if verbose:
         print("\nWithin distance\n")
 
     s = Select("molecules within 5.0 of resname ALA")
+
+    if verbose:
+        print(s)
+
     s = Select("{atoms within 10 nm of molecules with resname /ala/i}[0:-1:100]")
+
+    if verbose:
+        print(s)
 
     if verbose:
         print("\nUser-supplied tokens\n")
@@ -82,18 +220,75 @@ def test_selections(verbose=False):
 
     s = Select("protein")
 
+    if verbose:
+        print(s)
+
     Select.setToken("ligand", "resname /lig/i")
 
     s = Select("protein or ligand")
+
+    if verbose:
+        print(s)
+
     s = Select("{protein}[0]")
+
+    if verbose:
+        print(s)
 
     if verbose:
         print("\nwhere parsing\n")
 
     s = Select("molecules where coords.min > 5,3,2")
+
+    if verbose:
+        print(s)
+
     s = Select("atoms where center within 3 of resname /ala/i")
+
+    if verbose:
+        print(s)
+
     s = Select("atoms where center <= (1,2,3)")
+
+    if verbose:
+        print("\njoin parsing\n")
+
+    s = Select("join residues in mol with resname /ala/i")
+
+    if verbose:
+        print(s)
+
+    s = Select("join resname ALA and atomname CA")
+
+    if verbose:
+        print(s)
+
+def test_engines(verbose=False):
+
+    if verbose:
+        print("\nReading molecules...")
+
+    mols = MoleculeParser.read("../io/kigaki.gro", "../io/kigaki.top",
+                               {"GROMACS_PATH":"../io/gromacs"})
+
+    if verbose:
+        print("Testing selections...")
+
+    s = Select("atomname /HW\.*/")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    s = Select("atomname CA")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+    
 
 if __name__ == "__main__":
     test_selections(True)
-
+    test_engines(True)

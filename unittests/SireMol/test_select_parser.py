@@ -1,6 +1,7 @@
 
 from Sire.Mol import *
 from Sire.IO import *
+from Sire.System import *
 
 from nose.tools import assert_equal
 
@@ -9,6 +10,18 @@ try:
     have_select = True
 except:
     have_select = False
+
+def _writeToFile(result, filename):
+    s = System()
+
+    m = MoleculeGroup("all")
+    for r in result:
+        m.add(r)
+
+    s.add(m)
+
+    p = PDB2(s)
+    p.writeToFile(filename)
 
 def test_selections(verbose=False):
     if not have_select:
@@ -451,6 +464,18 @@ def test_engines(verbose=False):
               element == Element("O"))
 
         assert_equal( ok, True ) 
+
+    s = Select("atoms within 2 of resname /ala/i")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+        for atom in r:
+            print(atom)
+
+    _writeToFile(r,"test.pdb")
 
 if __name__ == "__main__":
     test_selections(True)

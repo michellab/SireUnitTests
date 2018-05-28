@@ -370,6 +370,48 @@ def test_engines(verbose=False):
 
     assert_equal( Select("resname /glu/i or atomname /ca/i")(r).isEmpty(), True )
 
+    s = Select("join (resname /glu/i or atomname /h\.*/i)")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    s = Select("{atomname /h\.*/i}[-12:-1:2]")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    s = Select("{resname /ala/i}[0]")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    s = Select("atoms with resname /ala/i")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    s = Select("residues in (resname /glu/i or atomname /c\.*/i)")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    s = Select("molecules with atomname /hw\.*/i")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
 if __name__ == "__main__":
     test_selections(True)
     test_engines(True)

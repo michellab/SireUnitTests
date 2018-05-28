@@ -352,6 +352,24 @@ def test_engines(verbose=False):
        print(s)
        print(r)
 
+    s = Select("not resname /ala/i")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    assert_equal( Select("resname /ala/i")(r).isEmpty(), True )
+
+    s = Select("not (resname /glu/i or atomname /ca/i)")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r) 
+
+    assert_equal( Select("resname /glu/i or atomname /ca/i")(r).isEmpty(), True )
+
 if __name__ == "__main__":
     test_selections(True)
     test_engines(True)

@@ -265,6 +265,19 @@ def test_selections(verbose=False):
     if verbose:
         print(s)
 
+    if verbose:
+        print("\nelement parsing\n")
+
+    s = Select("element aluminium,iron,As,ca,iridium")
+
+    if verbose:
+        print(s)
+
+    s = Select("element dummy")
+
+    if verbose:
+        print(s)
+
 def test_engines(verbose=False):
 
     if verbose:
@@ -411,6 +424,33 @@ def test_engines(verbose=False):
     if verbose:
         print(s)
         print(r)
+
+    s = Select("element oxygen")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    for atom in r:
+        assert_equal( atom.property("element"), Element("O") )
+
+    s = Select("resname /ala/i and element carbon,H,o")
+    r = s(mols)
+
+    if verbose:
+        print(s)
+        print(r)
+
+    for atom in r:
+        assert_equal( atom.residue().name().value(), "ALA" )
+        
+        element = atom.property("element")
+
+        ok = (element == Element("C") or element == Element("H") or \
+              element == Element("O"))
+
+        assert_equal( ok, True ) 
 
 if __name__ == "__main__":
     test_selections(True)

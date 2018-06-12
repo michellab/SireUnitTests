@@ -21,10 +21,28 @@ def test_broken_prm(verbose=False):
     s2 = a.toSystem()
 
     if verbose:
-        print("Comparing the systems...")
+        print("Creating the system with coordinates...")
 
-    
-    assert_equal( s1, s2 )
+    s = MoleculeParser.read("../io/hsp90.top", "../io/hsp90.crd")
+
+    if verbose:
+        print(s)
+
+    p = PDB2(s)
+    p.writeToFile("test.pdb")
+
+def test_broken_zan(verbose=False):
+
+    if verbose:
+        print("Reading the file...")
+
+    a = AmberPrm("../io/ZWT.top")
+
+    if verbose:
+        print("Creating the system...")
+
+    s = a.toSystem()
 
 if __name__ == "__main__":
     test_broken_prm(True)
+    test_broken_zan(True)

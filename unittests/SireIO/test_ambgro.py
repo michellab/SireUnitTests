@@ -8,14 +8,23 @@ from Sire.Units import *
 
 from nose.tools import assert_equal, assert_almost_equal
 
+def _assert_almost_equal( a, b, tol=0.5 ):
+    if abs( a - b ) > tol:
+        assert_almost_equal(a, b, 2)    
+
 def _addForceFields(s):
     cljff = InterFF("cljff")
     cljff.add(s.molecules())
     intraclj = IntraFF("intraclj")
-    intraclj.add(s.molecules())
     intraff = InternalFF("intraff")
     intraff.enable14Calculation()
-    intraff.add(s.molecules())
+
+    #only calculate intramolecular energy of non-solvent molecules
+    for molnum in s.molNums():
+        mol = s[molnum]
+        if mol.nAtoms() > 3:
+            intraclj.add(mol)
+            intraff.add(mol)
 
     s = System(s)
     s.add(cljff)
@@ -23,6 +32,63 @@ def _addForceFields(s):
     s.add(intraclj)
 
     return s
+
+def test_small(verbose=False):
+    if verbose:
+        print("Reading small amber files...")
+
+    files = [ ("../io/ose.top", "../io/ose.crd" ),
+              ("../io/ala.top", "../io/ala.crd" ) ]
+
+    for file in files:
+        if verbose:
+            print("\nReading %s/%s" % file)
+
+        s = MoleculeParser.read(file[0], file[1])
+
+        if verbose:
+            print("Converting to gromacs...")
+ 
+        gtop = GroTop(s)
+        g87 = Gro87(s)
+
+        gtop.writeToFile("test.grotop")
+        g87.writeToFile("test.gro")
+
+        if verbose:
+            print("Re-reading from gromacs...")
+
+        s2 = MoleculeParser.read("test.gro", "test.grotop")
+
+        if verbose:
+            print("Adding forcefields...")
+
+        s = _addForceFields(s)
+        s2 = _addForceFields(s2)
+
+        if verbose:
+            print("Calculating energies...")
+
+        nrgs = s.energies()
+        # merge the dihedral and improper energies... 
+        dihsym = Symbol("E_{intraff}^{dihedral}")
+        impsym = Symbol("E_{intraff}^{improper}")
+        nrgs.set(dihsym, nrgs[dihsym] + nrgs[impsym])
+        nrgs.set(impsym, 0.0)
+
+        nrgs2 = s2.energies()    
+
+        keys = list(nrgs.keys())
+        keys.sort()
+
+        if verbose:
+            print("Energies:")
+            for key in keys:
+                print("%s:  %s  %s" % \
+                    (key, nrgs[key], nrgs2[key]))
+
+        for key in keys:
+            _assert_almost_equal( nrgs[key], nrgs2[key] )
 
 def test_ambgro(verbose=False):
     if verbose:
@@ -119,11 +185,12 @@ def test_ambgro(verbose=False):
                     (key, nrgs[key], nrgs2[key], nrgs3[key], nrgs4[key], nrgs5[key]))
 
     for key in keys:
-        assert_almost_equal( nrgs[key], nrgs4[key], 2 )
-        assert_almost_equal( nrgs[key], nrgs3[key], 2 )
-        assert_almost_equal( nrgs[key], nrgs2[key], 2 )
-        assert_almost_equal( nrgs[key], nrgs5[key], 2 )
+        _assert_almost_equal( nrgs[key], nrgs2[key] )
+        _assert_almost_equal( nrgs2[key], nrgs4[key] )
+        _assert_almost_equal( nrgs3[key], nrgs5[key] )
+        #_assert_almost_equal( nrgs[key], nrgs3[key] )
 
 if __name__ == "__main__":
+    test_small(True)
     test_ambgro(True)
 

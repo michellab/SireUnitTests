@@ -1,4 +1,3 @@
-
 from Sire.MM import *
 from Sire.FF import *
 from Sire.System import *
@@ -174,7 +173,7 @@ def test_sim(verbose = False):
     t.start()
     nrgs = oldsys.energies()
     oldns = t.nsecsElapsed()
-    
+
     t.start()
     nrgs = newsys.energies()
     newns = t.nsecsElapsed()
@@ -197,14 +196,14 @@ def test_sim(verbose = False):
         print("NEW SYS:  %s  %s  %s  : %s ms" % (newcnrg+newljnrg,newcnrg,newljnrg,
                                                  0.000001*newns))
         print("nAccepted() = %s, nRejected() = %s" % (new_naccepted, new_nrejected))
-    
+
     oldsys.mustNowRecalculateFromScratch()
     newsys.mustNowRecalculateFromScratch()
-    
+
     t.start()
     nrgs = oldsys.energies()
     oldns = t.nsecsElapsed()
-    
+
     t.start()
     nrgs = newsys.energies()
     newns = t.nsecsElapsed()
@@ -232,6 +231,45 @@ def test_sim(verbose = False):
     assert_almost_equal( newcnrg, r_newcnrg, 3 )
     assert_almost_equal( newljnrg, r_newljnrg, 3 )
 
+def test_property_map(verbose = False):
+
+    # Load the molecular system.
+    s = MoleculeParser.read(["../io/ala.top", "../io/ala.crd"])
+
+    # Get the first molecule.
+    mol = s.molecule(MolIdx(0))
+
+    # Make the molecule editable.
+    edit_mol = mol.edit()
+
+    # Copy the coordinates property to something else.
+    edit_mol.setProperty("backup", mol.property("coordinates"))
+
+    # Delete the coordinates property.
+    edit_mol.removeProperty("coordinates")
+
+    # Commit the changes.
+    mol = edit_mol.commit()
+
+    # Map the coordinates property.
+    prop_map = { "coordinates" : "backup" }
+
+    # Create an FF object.
+    intraclj = IntraFF("intraclj")
+
+    if verbose:
+        print("\nTrying to add molecule with mapped coordinates: %s" % prop_map)
+
+    # Try to add the molecule using the property map.
+    try:
+        intraclj.add(mol, prop_map)
+
+        if verbose:
+            print("[SUCCESS] Added molecule.")
+    except:
+        raise
+
 if __name__ == "__main__":
     test_energy(True)
     test_sim(True)
+    test_property_map(True)

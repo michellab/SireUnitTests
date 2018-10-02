@@ -111,6 +111,35 @@ def test_atom_coords(verbose=False):
         if verbose:
             print("Passed!\n")
 
+# Test that elements are inferred correctly when the PDB file is a PSF companion
+# used for a NAMD simulation. Here the element data is often missing, and this
+# section of the record line is used to label the residue to which each atom
+# belongs.
+def test_psf_companion(verbose=False):
+
+    # Load the PDB file.
+    p = PDB2('../io/psf_companion.pdb')
+
+    # Create the molecular system.
+    s = p.toSystem()
+
+    # Create the list of elements.
+    elements = [ Element("C"),
+                 Element("C"),
+                 Element("O"),
+                 Element("N"),
+                 Element("H"),
+                 Element("C"),
+                 Element("C"),
+                 Element("C"),
+                 Element("O"),
+                 Element("N") ]
+
+    # Now assert that the elements are correct.
+    for i, atom in enumerate(s.molecule(MolIdx(0)).atoms()):
+        assert atom.property("element") == elements[i]
+
 if __name__ == "__main__":
     test_read_write(True)
     test_atom_coords(True)
+    test_psf_companion(True)

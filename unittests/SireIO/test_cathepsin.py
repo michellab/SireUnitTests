@@ -21,15 +21,19 @@ for prm in prms:
 
     inputs[prm] = rst
 
-def _get_first_molecule(s):
+def _get_first_molecules(s):
     m = MoleculeGroup("all")
-    mol = s[MolIdx(0)]
-
     intraff = InternalFF("intraff")
     intraclj = IntraCLJFF("intraclj")
 
-    intraff.add(mol)
-    intraclj.add(mol)
+    for i in range(0,s.nMolecules()):
+        mol = s[MolIdx(i)]
+
+        # only add non-water molecules
+        if mol.nAtoms() > 5:
+            m.add(mol)
+            intraff.add(mol)
+            intraclj.add(mol)
 
     s = System()
     s.add(m)
@@ -67,7 +71,7 @@ def _compare_energies(nrgs1, nrgs2):
 
     for key in keys:
         diff = abs(nrgs1[key] - nrgs2[key])
-        if diff > 0.001:
+        if diff > 0.1:
             print(key)
             assert_equal(nrgs1[key], nrgs2[key])
 
@@ -94,15 +98,22 @@ def _test_input(prm, crd, verbose=False):
     if verbose:
         print("\nTesting triangle conversion to grotop")
 
-    s = _get_first_molecule(a.toSystem(r))
+    s = _get_first_molecules(a.toSystem(r))
     r = AmberRst7(s)
+
+    a = AmberPrm(s)
+
+    if verbose:
+        print(a)
 
     g = GroTop(s)
     g.writeToFile("test-%s.grotop" % root)
-    print(g)
+
+    if verbose:
+        print(g)
 
     g = GroTop("test-%s.grotop" % root)
-    s2 = _get_first_molecule(g.toSystem(r))
+    s2 = _get_first_molecules(g.toSystem(r))
 
     nrgs = _get_energies(s)
     nrgs2 = _get_energies(s2)
@@ -116,10 +127,14 @@ def _test_input(prm, crd, verbose=False):
         print("\nComparing backwards/forwards conversion")
 
     a2 = AmberPrm(s)
+
+    if verbose:
+        print(a2)
+
     a2.writeToFile("test-%s.prm7" % root)
     a2 = AmberPrm("test-%s.prm7" % root)
 
-    s2 = _get_first_molecule(a2.toSystem(r))
+    s2 = _get_first_molecules(a2.toSystem(r))
 
     nrgs2 = _get_energies(s2)
 
@@ -131,7 +146,10 @@ def _test_input(prm, crd, verbose=False):
 
 
 def test_cathepsin(verbose=False):
-    for prm in inputs.keys():
+    keys = list(inputs.keys())
+    keys.sort()
+
+    for prm in keys:
         _test_input(prm, inputs[prm], verbose)
 
 if __name__ == "__main__":

@@ -75,7 +75,7 @@ def _compare_energies(nrgs1, nrgs2):
             print(key)
             assert_equal(nrgs1[key], nrgs2[key])
 
-def _test_input(prm, crd, verbose=False):
+def _test_input(prm, crd, verbose=False, slow_tests=False):
     root = prm.split("/")[-1][0:-6]
 
     if verbose:
@@ -95,33 +95,34 @@ def _test_input(prm, crd, verbose=False):
 
     assert_equal(a.nAtoms(), a2.nAtoms())
 
-    if verbose:
-        print("\nTesting triangle conversion to grotop")
-
     s = _get_first_molecules(a.toSystem(r))
-    r = AmberRst7(s)
+    nrgs = _get_energies(s)
 
+    r = AmberRst7(s)
     a = AmberPrm(s)
 
     if verbose:
         print(a)
 
-    g = GroTop(s)
-    g.writeToFile("test-%s.grotop" % root)
+    if slow_tests:
+        if verbose:
+            print("\nTesting triangle conversion to grotop")
 
-    if verbose:
-        print(g)
+        g = GroTop(s)
+        g.writeToFile("test-%s.grotop" % root)
 
-    g = GroTop("test-%s.grotop" % root)
-    s2 = _get_first_molecules(g.toSystem(r))
+        if verbose:
+            print(g)
 
-    nrgs = _get_energies(s)
-    nrgs2 = _get_energies(s2)
+        g = GroTop("test-%s.grotop" % root)
+        s2 = _get_first_molecules(g.toSystem(r))
 
-    if verbose:
-        _print_energies(nrgs, nrgs2)
+        nrgs2 = _get_energies(s2)
 
-    _compare_energies(nrgs, nrgs2)
+        if verbose:
+            _print_energies(nrgs, nrgs2)
+
+        _compare_energies(nrgs, nrgs2)
 
     if verbose:
         print("\nComparing backwards/forwards conversion")
@@ -145,13 +146,13 @@ def _test_input(prm, crd, verbose=False):
     
 
 
-def test_cathepsin(verbose=False):
+def test_cathepsin(verbose=False, slow_tests=False):
     keys = list(inputs.keys())
     keys.sort()
 
     for prm in keys:
-        _test_input(prm, inputs[prm], verbose)
+        _test_input(prm, inputs[prm], verbose, slow_tests)
 
 if __name__ == "__main__":
-    test_cathepsin(True)
+    test_cathepsin(True, slow_tests=False)
 

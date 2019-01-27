@@ -8,7 +8,7 @@ from Sire.Maths import *
 from Sire.CAS import *
 from Sire.Units import *
 
-def test_wrapper(verbose=False):
+def _test_wrapper(verbose=False):
     s = MoleculeParser.read("../io/kcl.crd", "../io/kcl.top")
 
     space = s.property("space")
@@ -71,4 +71,4 @@ def test_wrapper(verbose=False):
         print("Moves complete")
 
 if __name__ == "__main__":
-    test_wrapper(True)
+    _test_wrapper(True)

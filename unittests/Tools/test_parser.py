@@ -16,7 +16,7 @@ params["test2"] = "0.5 * gram/(centimeter*centimeter*centimeter)"
 params["test3"] = 500
 
 @resolveParameters
-def test_resolveparams():
+def _test_resolveparams():
     
     print(params)
 
@@ -26,5 +26,5 @@ def test_resolveparams():
     print(dic_items)
 
 if __name__ == "__main__":
-    test_resolveparams(params)
+    _test_resolveparams(params)
 

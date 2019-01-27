@@ -9,7 +9,7 @@ from Sire.CAS import *
 from Sire.Units import *
 
 def test_wrapper(verbose=False):
-    s = MoleculeParser.read("../io/KCL-ok.crd", "../io/KCl-ok.top")
+    s = MoleculeParser.read("../io/kcl.crd", "../io/kcl.top")
 
     space = s.property("space")
 
@@ -43,10 +43,10 @@ def test_wrapper(verbose=False):
     move = RigidBodyMC(all)
     vmove = VolumeMove(all)
     moves = WeightedMoves()
-    moves.add(move, 100)
-    moves.add(vmove, 20)
+    moves.add(move, 10)
+    moves.add(vmove, 2)
 
-    mtsmc = MTSMC(moves, 100)
+    mtsmc = MTSMC(moves, 10)
     mtsmc.setFastEnergyComponent(fast_s)
     mtsmc.setSlowEnergyComponent(slow_s)
 

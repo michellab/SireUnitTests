@@ -1,3 +1,4 @@
+# coding: utf-8
 
 from Sire.Tools import resolveParameters,readParams,Parameter
 from Sire.Units import *
@@ -16,7 +17,7 @@ params["test2"] = "0.5 * gram/(centimeter*centimeter*centimeter)"
 params["test3"] = 500
 
 @resolveParameters
-def _test_resolveparams():
+def test_resolveparams():
     
     print(params)
 
@@ -26,5 +27,5 @@ def _test_resolveparams():
     print(dic_items)
 
 if __name__ == "__main__":
-    _test_resolveparams(params)
+    test_resolveparams(params)
 

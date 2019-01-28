@@ -25,8 +25,6 @@ def _test_resolveparams():
 
     print(dic_items)
 
-    raise ValueError()
-
 def test_resolveparams(verbose=False):
     _test_resolveparams(params)
 

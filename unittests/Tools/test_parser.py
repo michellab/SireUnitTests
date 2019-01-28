@@ -1,4 +1,3 @@
-# coding: utf-8
 
 from Sire.Tools import resolveParameters,readParams,Parameter
 from Sire.Units import *
@@ -25,6 +24,8 @@ def test_resolveparams():
     dic_items = list(distance_restraints_dict.val.items())
 
     print(dic_items)
+
+    raise ValueError()
 
 if __name__ == "__main__":
     test_resolveparams(params)

@@ -95,7 +95,9 @@ def _test_input(prm, crd, verbose=False, slow_tests=False):
 
     assert_equal(a.nAtoms(), a2.nAtoms())
 
-    s = _get_first_molecules(a.toSystem(r))
+    full_s = a.toSystem(r)
+
+    s = _get_first_molecules(full_s)
     nrgs = _get_energies(s)
 
     r = AmberRst7(s)
@@ -143,7 +145,23 @@ def _test_input(prm, crd, verbose=False, slow_tests=False):
         _print_energies(nrgs, nrgs2)
 
     _compare_energies(nrgs, nrgs2)
-    
+
+    if verbose:
+       print("Comparing writing to coordinate files")
+
+    r = AmberRst(full_s)
+    r.writeToFile("test-%s.rst" % root)
+
+    s2 = MoleculeParser.read(prm, "test-%s.rst" % root)
+
+    s2 = _get_first_molecules(s2)
+
+    nrgs2 = _get_energies(s2)
+
+    if verbose:
+        _print_energies(nrgs, nrgs2)
+
+    _compare_energies(nrgs, nrgs2)    
 
 
 def test_cathepsin(verbose=False, slow_tests=False):
@@ -153,6 +171,6 @@ def test_cathepsin(verbose=False, slow_tests=False):
     for prm in keys:
         _test_input(prm, inputs[prm], verbose, slow_tests)
 
+
 if __name__ == "__main__":
     test_cathepsin(True, slow_tests=False)
-

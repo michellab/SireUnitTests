@@ -33,8 +33,8 @@ pert = ['../io/CR_Toluene_methane_MORPH.pert']
 
 
 def _combR_test(top, crd, pert, combining_rules, verbose=False):
-
-	 if verbose:
+    
+    if verbose:
         print("Testing whether geometric and arithmetic combining rules provide the same output")
 
 

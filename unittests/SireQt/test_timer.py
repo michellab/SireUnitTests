@@ -24,7 +24,7 @@ def test_timer(verbose=True):
         print("Slept for 1 s == %s ms" % (0.000001*ns))
 
     assert( ns >= 990000000 )
-    assert( ns <= 1010000000 )
+    assert( ns <= 1300000000 )
 
 if __name__ == "__main__":
     test_timer(True)

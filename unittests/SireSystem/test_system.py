@@ -23,14 +23,24 @@ def test_system(verbose=False):
 
     cljff.setSpace(vol)
 
+    if verbose:
+        print("Reading pdb...")
+
     mols = PDB().read("../io/water.pdb")
                                                 
     if verbose:
+        print(mols)
         print("Read in %d molecules!" % mols.nMolecules())
 
     i = 0
 
+    if verbose:
+        print("Getting the first molecule...")
+
     mol = mols.moleculeAt(0).molecule()
+
+    if verbose:
+        print("About to edit...")
 
     mol = mol.edit().atom( AtomName("O00") ) \
                         .setProperty("LJ", LJParameter(3.15363*angstrom,  \
@@ -43,10 +53,16 @@ def test_system(verbose=False):
                         .setProperty("charge", -1.04 * mod_electron).molecule() \
              .commit()
 
+    if verbose:
+        print("Edited molecule...")
+
     charges = mol.property("charge")
     ljs = mol.property("LJ")
 
     cljff.add(mol)
+
+    if verbose:
+        print("Setting charges...")
 
     for i in range(1, mols.nMolecules()):
         mol = mols.moleculeAt(i).molecule()
@@ -56,6 +72,9 @@ def test_system(verbose=False):
                  .commit()
 
         cljff.add(mol)
+
+    if verbose:
+        print("Creating system...")
 
     system = System()
 

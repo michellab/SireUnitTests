@@ -9,7 +9,9 @@ from Sire.Base import *
 
 from nose.tools import assert_almost_equal
 
-(mols, space) = Amber().readCrdTop("../io/waterbox.crd", "../io/waterbox.top")
+s = MoleculeParser.read("../io/waterbox.crd", "../io/waterbox.top")
+
+mols = s.molecules()
 
 molnums = mols.molNums()
 molnums.sort()

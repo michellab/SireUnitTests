@@ -117,8 +117,8 @@ def _pvt_calculateEnergy(lamval, verbose):
         print("%s : %s versus %s (should be equal)" % (lamval,dg,sys_dg))
         print("%s : %s versus %s (should be equal)" % (lamval,soft_dg,sys_soft_dg))
 
-    assert_almost_equal(dg, sys_dg, 5)
-    assert_almost_equal(soft_dg, sys_soft_dg, 5)
+    assert_almost_equal(dg, sys_dg, 3)
+    assert_almost_equal(soft_dg, sys_soft_dg, 3)
 
 def test_1(verbose=False):
     _pvt_calculateEnergy(0.0,verbose)

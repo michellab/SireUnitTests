@@ -12,7 +12,7 @@ import os
 
 from nose.tools import assert_equal
 
-sire_python = "%s/python" % Sire.Config.binary_directory
+sire_python = sys.executable
 
 gromacs_path = StringProperty("../io/gromacs")
 

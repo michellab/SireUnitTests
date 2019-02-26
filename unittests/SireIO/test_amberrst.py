@@ -112,7 +112,11 @@ def test_amberrst(verbose=False):
     if verbose:
         print("Writing back to a full file...")
 
-    os.system("rm test.rst test.prm7")
+    for t in ("test.rst", "test.prm7"):
+        try:
+            os.remove(t)
+        except:
+            pass
 
     if verbose:
         print("Writing...")

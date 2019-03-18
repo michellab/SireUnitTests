@@ -491,7 +491,7 @@ def setupForceFieldsFreeEnergy(system, space, RULE):
     else:
         system.setProperty("switchingFunction", NoCutoff())
 
-    system.setProperty("CombRules", VariantProperty(RULE))
+    system.setProperty("combiningRules", VariantProperty(RULE))
     system.setProperty("coulombPower", VariantProperty(coulomb_power.val))
     system.setProperty("shiftDelta", VariantProperty(shift_delta.val))
 
@@ -551,6 +551,7 @@ def setupMovesFreeEnergy(system, random_seed, REFERENCE, lam_val):
     Integrator_OpenMM.setPlatform(platform.val)
     Integrator_OpenMM.setConstraintType(constraint.val)
     Integrator_OpenMM.setCutoffType(cutoff_type.val)
+    Integrator_OpenMM.setCombiningRules(combining_rules.val)
     Integrator_OpenMM.setFieldDielectric(rf_dielectric.val)
     Integrator_OpenMM.setAlchemicalValue(lambda_val.val)
     Integrator_OpenMM.setAlchemicalArray(lambda_array.val)

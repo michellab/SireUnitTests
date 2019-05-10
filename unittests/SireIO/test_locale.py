@@ -10,9 +10,10 @@ import shlex
 import sys
 import os
 
-#from nose.tools import assert_equal
+from nose.tools import assert_equal
 
-sire_python = sys.executable
+sire_python = os.path.join(os.path.dirname(sys.executable), "sire_python")
+
 gromacs_path = StringProperty("../io/gromacs")
 
 def _test_broken_pdb():
@@ -42,14 +43,14 @@ def _test_broken_pdb():
 
     m2 = s[MolIdx(0)]
 
-    assert( m.nAtoms() == m2.nAtoms() )
+    assert_equal( m.nAtoms(), m2.nAtoms() )
 
     for i in range(0, m.nAtoms()):
         if verbose:
             print("%s vs %s" % (m.atoms()[i].property("coordinates"),
                                 m2.atoms()[i].property("coordinates")))
 
-        assert( m.atoms()[i].property("coordinates") == 
+        assert_equal( m.atoms()[i].property("coordinates"), 
                       m2.atoms()[i].property("coordinates") )
 
     # now try the same with PDB2
@@ -66,14 +67,14 @@ def _test_broken_pdb():
 
     m2 = s[MolIdx(0)]
 
-    assert( m.nAtoms() == m2.nAtoms() )
+    assert_equal( m.nAtoms(), m2.nAtoms() )
 
     for i in range(0, m.nAtoms()):
         if verbose:
             print("%s vs %s" % (m.atoms()[i].property("coordinates"),
                                 m2.atoms()[i].property("coordinates")))
 
-        assert( m.atoms()[i].property("coordinates") ==
+        assert_equal( m.atoms()[i].property("coordinates"),
                       m2.atoms()[i].property("coordinates") )
 
 def _test_broken_rst7():
@@ -110,7 +111,7 @@ def _test_broken_rst7():
             v1 = m1.atoms()[j].property("coordinates")
             v2 = m2.atoms()[j].property("coordinates")
 
-            assert(v1 == v2)
+            assert_equal(v1, v2)
 
     if verbose:
         print("All ok :-)")    
@@ -150,7 +151,7 @@ def _test_broken_gro():
             v1 = m1.atoms()[j].property("coordinates")
             v2 = m2.atoms()[j].property("coordinates")
 
-            assert(v1 == v2)
+            assert_equal(v1, v2)
 
     if verbose:
         print("All ok :-)")    
@@ -162,7 +163,7 @@ def _test_broken_function(verbose, function):
     if verbose:
         print(cmd)
 
-    env = dict(os.environ, LC_ALL="fr_FR")
+    env = dict(os.environ, LC_ALL="it_IT")
 
     if verbose:
         env["VERBOSE_TEST"] = "1"

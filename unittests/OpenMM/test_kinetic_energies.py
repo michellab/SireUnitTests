@@ -11,7 +11,10 @@ np = Sire.try_import("numpy")
 
 from nose.tools import assert_almost_equal
 plugins = os.path.join('lib','plugins')
-os.environ["OPENMM_PLUGIN_DIR"] = os.path.join(Sire.Base.getInstallDir(),plugins)
+try:
+    os.environ["OPENMM_PLUGIN_DIR"]
+except KeyError:
+    os.environ["OPENMM_PLUGIN_DIR"] = os.path.join(Sire.Base.getInstallDir(),plugins)
 
 
 (mols, space) = Amber().readCrdTop("../io/ethane.crd", "../io/ethane.top")

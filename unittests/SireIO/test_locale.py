@@ -12,7 +12,7 @@ import os
 
 from nose.tools import assert_equal
 
-sire_python = os.path.join(os.path.dirname(sys.executable), "sire_python")
+sire_python = getBinDir() + "/sire_python"
 
 gromacs_path = StringProperty("../io/gromacs")
 
@@ -50,7 +50,7 @@ def _test_broken_pdb():
             print("%s vs %s" % (m.atoms()[i].property("coordinates"),
                                 m2.atoms()[i].property("coordinates")))
 
-        assert_equal( m.atoms()[i].property("coordinates"), 
+        assert_equal( m.atoms()[i].property("coordinates"),
                       m2.atoms()[i].property("coordinates") )
 
     # now try the same with PDB2
@@ -114,7 +114,7 @@ def _test_broken_rst7():
             assert_equal(v1, v2)
 
     if verbose:
-        print("All ok :-)")    
+        print("All ok :-)")
 
 def _test_broken_gro():
     try:
@@ -125,7 +125,7 @@ def _test_broken_gro():
     if verbose:
         print("Loading the original GRO...")
 
-    s = MoleculeParser.read("../io/urea.top", "../io/urea.gro", 
+    s = MoleculeParser.read("../io/urea.top", "../io/urea.gro",
                             {"GROMACS_PATH":gromacs_path})
 
     if verbose:
@@ -137,7 +137,7 @@ def _test_broken_gro():
     if verbose:
         print("Re-reading...")
 
-    s = MoleculeParser.read("../io/urea.top", "test.gro", 
+    s = MoleculeParser.read("../io/urea.top", "test.gro",
                             {"GROMACS_PATH":gromacs_path})
 
     if verbose:
@@ -154,8 +154,7 @@ def _test_broken_gro():
             assert_equal(v1, v2)
 
     if verbose:
-        print("All ok :-)")    
-
+        print("All ok :-)")
 
 def _test_broken_function(verbose, function):
     cmd = "%s %s %s" % (sire_python, "test_locale.py", function)

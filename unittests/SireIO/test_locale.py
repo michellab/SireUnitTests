@@ -1,9 +1,9 @@
 
-#from Sire.IO import *
-#from Sire.Mol import *
-#from Sire.Base import *
+from Sire.IO import *
+from Sire.Mol import *
+from Sire.Base import *
 
-#import Sire.Config
+import Sire.Config
 
 import subprocess
 import shlex
@@ -12,9 +12,9 @@ import os
 
 from nose.tools import assert_equal
 
-sire_python = sys.executable
+sire_python = os.path.join(os.path.dirname(sys.executable), "sire_python")
 
-#gromacs_path = StringProperty("../io/gromacs")
+gromacs_path = StringProperty("../io/gromacs")
 
 def _test_broken_pdb():
     try:
@@ -163,7 +163,7 @@ def _test_broken_function(verbose, function):
     if verbose:
         print(cmd)
 
-    env = dict(os.environ, LC_ALL="fr_FR")
+    env = dict(os.environ, LC_ALL="it_IT")
 
     if verbose:
         env["VERBOSE_TEST"] = "1"
@@ -195,10 +195,10 @@ funcs["--test_broken_rst7"] = _test_broken_rst7
 funcs["--test_broken_gro"] = _test_broken_gro
 
 if __name__ == "__main__":
-    #if len(sys.argv) > 1:
-    #    funcs[sys.argv[1]]()
-    #else:
-    #    test_broken_pdb(True)
-    #    test_broken_rst7(True)
-    #    test_broken_gro(True)
-    print("DISABLING LOCALE TEST AS INFINITE LOOP")
+    if len(sys.argv) > 1:
+        funcs[sys.argv[1]]()
+    else:
+        test_broken_pdb(True)
+        test_broken_rst7(True)
+        test_broken_gro(True)
+    #print("DISABLING LOCALE TEST AS INFINITE LOOP")

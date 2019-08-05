@@ -28,7 +28,7 @@ def test_multi_parse(verbose=False):
 
     # Glob all of the NAMD example directories, removing the README.md file.
     dirs = glob('../io/namd/*')
-    dirs.remove('../io/namd/README.md')
+    [dirs.remove(d) for d in dirs if d.endswith('README.md')]
 
     print(dirs)
 

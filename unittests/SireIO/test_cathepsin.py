@@ -6,6 +6,7 @@ from Sire.MM import *
 from Sire.CAS import *
 
 import glob
+import os
 
 from nose.tools import assert_equal
 
@@ -85,6 +86,10 @@ def _test_input(prm, crd, verbose=False, slow_tests=False):
     r = AmberRst7(crd)
 
     a = AmberPrm(prm)
+
+    d = os.path.dirname("test-%s" % root)
+    if (not os.path.isdir(d)):
+        os.mkdir(d)
 
     a.writeToFile("test-%s.prm" % root)
 

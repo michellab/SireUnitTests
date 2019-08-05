@@ -1,5 +1,5 @@
 
-from Sire.IO import * 
+from Sire.IO import *
 from Sire.Mol import *
 from Sire.System import *
 from Sire.MM import *
@@ -88,7 +88,7 @@ def _test_input(prm, crd, verbose=False, slow_tests=False):
     a = AmberPrm(prm)
 
     d = os.path.dirname("test-%s" % root)
-    if (not os.path.isdir(d)):
+    if (not os.path.isdir(d) and d != ""):
         os.mkdir(d)
 
     a.writeToFile("test-%s.prm" % root)
@@ -166,7 +166,7 @@ def _test_input(prm, crd, verbose=False, slow_tests=False):
     if verbose:
         _print_energies(nrgs, nrgs2)
 
-    _compare_energies(nrgs, nrgs2)    
+    _compare_energies(nrgs, nrgs2)
 
 
 def test_cathepsin(verbose=False, slow_tests=False):

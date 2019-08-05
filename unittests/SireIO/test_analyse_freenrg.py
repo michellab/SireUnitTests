@@ -8,7 +8,11 @@ def test_analyse_freenrg(verbose=False):
     if verbose:
         print("Analysing free energy...")
 
-    output = os.popen("%s/analyse_freenrg -i ../io/freenrgs.s3" % Sire.Config.binary_directory).readlines()
+    if os.path.exists("%s/analyse_freenrg" % Sire.Config.binary_directory):
+        output = os.popen("%s/analyse_freenrg -i ../io/freenrgs.s3" % Sire.Config.binary_directory).readlines()
+    else:
+        output = os.popen("%s/sire_python %s/scripts/analyse_freenrg.py -i ../io/freenrgs.s3"
+            % (Sire.Config.binary_directory, Sire.Config.share_directory)).readlines()
 
     if verbose:
         print("Complete!")

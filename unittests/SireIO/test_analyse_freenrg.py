@@ -1,5 +1,6 @@
 
 import os
+import subprocess
 
 import Sire.Config
 
@@ -9,10 +10,13 @@ def test_analyse_freenrg(verbose=False):
         print("Analysing free energy...")
 
     if os.path.exists("%s/analyse_freenrg" % Sire.Config.binary_directory):
-        output = os.popen("%s/analyse_freenrg -i ../io/freenrgs.s3" % Sire.Config.binary_directory).readlines()
+        p = subprocess.Popen(("%s/analyse_freenrg -i ../io/freenrgs.s3" % Sire.Config.binary_directory).split(),
+                             stdout=subprocess.PIPE)
     else:
-        output = os.popen("%s/sire_python %s/scripts/analyse_freenrg.py -i ../io/freenrgs.s3"
-            % (Sire.Config.binary_directory, Sire.Config.share_directory)).readlines()
+        p = subprocess.Popen(("%s/sire_python %s/scripts/analyse_freenrg.py -i ../io/freenrgs.s3" % Sire.Config.binary_directory).split(),
+                             stdout=subprocess.PIPE)
+    output, _ = p.communicate()
+    output = output.decode("UTF-8").split("\n")
 
     if verbose:
         print("Complete!")

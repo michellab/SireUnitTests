@@ -13,7 +13,8 @@ def test_analyse_freenrg(verbose=False):
         p = subprocess.Popen(("%s/analyse_freenrg -i ../io/freenrgs.s3" % Sire.Config.binary_directory).split(),
                              stdout=subprocess.PIPE)
     else:
-        p = subprocess.Popen(("%s/sire_python %s/scripts/analyse_freenrg.py -i ../io/freenrgs.s3" % Sire.Config.binary_directory).split(),
+        p = subprocess.Popen(("%s/sire_python %s/scripts/analyse_freenrg.py -i ../io/freenrgs.s3" % (
+                             Sire.Config.binary_directory, Sire.Config.share_directory)).split(),
                              stdout=subprocess.PIPE)
     output, _ = p.communicate()
     output = output.decode("UTF-8").split("\n")

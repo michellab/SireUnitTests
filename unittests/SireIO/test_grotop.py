@@ -10,7 +10,7 @@ from nose.tools import assert_true, assert_false
 # check that we have GroTop support in this version of Sire
 has_grotop = True
 
-# Set the GROMACS_PATH to "../io/gromacs" as this is the 
+# Set the GROMACS_PATH to "../io/gromacs" as this is the
 # directory that contains all of the gromacs include files
 gromacs_path = StringProperty("../io/gromacs")
 
@@ -40,7 +40,7 @@ def test_grotop(verbose=False):
 
         for atom in m.atoms():
             print(atom, atom.property("charge"), atom.property("LJ"))
-            print(atom.property("atomtype"), atom.property("charge_group"))    
+            print(atom.property("atomtype"), atom.property("charge_group"))
 
     p = PDB2(s)
 
@@ -109,6 +109,38 @@ def test_grosys(verbose=False):
         else:
             assert_equal( s[i], "sodium" )
 
+def test_pairs(verbose=False):
+
+    # Load cyclohexane molecule and create System object.
+    files = ["../io/cyclohexane.gro", "../io/cyclohexane.top"]
+    s = MoleculeParser.read( files, {"GROMACS_PATH":gromacs_path})
+
+    # Convert to a GroTop object and write to file.
+    top = GroTop(s)
+    top.writeToFile("cyclohexane.top")
+
+    # Load validation toplogy file.
+    lines0 = []
+    with open("../io/cyclohexane_check.top", "r") as file:
+        for line in enumerate(file):
+            lines0.append(line)
+
+    # Load written topology file.
+    lines1 = []
+    with open("cyclohexane.top", "r") as file:
+        for line in enumerate(file):
+            lines1.append(line)
+
+    # Make sure files are the same size.
+    assert len(lines0) == len(lines1)
+
+    # Validate each record.
+    for x in range(0, len(lines0)):
+        # Ignore timestamp.
+        if x != 1:
+            assert lines0[x] == lines1[x]
+
 if __name__ == "__main__":
     test_grotop(True)
     test_grosys(True)
+    test_pairs(True)

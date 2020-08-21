@@ -1,3 +1,4 @@
+from math import sqrt
 from nose.tools import assert_almost_equal
 from random import random, randint
 
@@ -300,6 +301,49 @@ def test_energy(verbose=False):
     assert_almost_equal(p_oldcnrg, t_oldcnrg)
     assert_almost_equal(p_oldljnrg, t_oldljnrg)
 
+def test_equivalence(verbose=False):
+    # Assert that TriclinicBox objects constructed using lattice vectors,
+    # or lattice vector magnitudes and angles are equivalent.
+
+    # Cubic.
+    t0 = TriclinicBox.cubic(1)
+    t1 = TriclinicBox(1, 1, 1, 90*degrees, 90*degrees, 90*degrees)
+    assert_almost_equal(t0.vector0().x(), t1.vector0().x())
+    assert_almost_equal(t0.vector0().y(), t1.vector0().y())
+    assert_almost_equal(t0.vector0().z(), t1.vector0().z())
+    assert_almost_equal(t0.vector1().x(), t1.vector1().x())
+    assert_almost_equal(t0.vector1().y(), t1.vector1().y())
+    assert_almost_equal(t0.vector1().z(), t1.vector1().z())
+    assert_almost_equal(t0.vector2().x(), t1.vector2().x())
+    assert_almost_equal(t0.vector2().y(), t1.vector2().y())
+    assert_almost_equal(t0.vector2().z(), t1.vector2().z())
+
+    # Rhombic-dodecahedron (square).
+    t0 = TriclinicBox.rhombicDodecahedronSquare(1)
+    t1 = TriclinicBox(1, 1, 1, 60*degrees, 60*degrees, 90*degrees)
+    assert_almost_equal(t0.vector0().x(), t1.vector0().x())
+    assert_almost_equal(t0.vector0().y(), t1.vector0().y())
+    assert_almost_equal(t0.vector0().z(), t1.vector0().z())
+    assert_almost_equal(t0.vector1().x(), t1.vector1().x())
+    assert_almost_equal(t0.vector1().y(), t1.vector1().y())
+    assert_almost_equal(t0.vector1().z(), t1.vector1().z())
+    assert_almost_equal(t0.vector2().x(), t1.vector2().x())
+    assert_almost_equal(t0.vector2().y(), t1.vector2().y())
+    assert_almost_equal(t0.vector2().z(), t1.vector2().z())
+
+    # Rhombic-dodecahedron (hexagon).
+    t0 = TriclinicBox.rhombicDodecahedronHexagon(1)
+    t1 = TriclinicBox(1, 1, 1, 60*degrees, 60*degrees, 60*degrees)
+    assert_almost_equal(t0.vector0().x(), t1.vector0().x())
+    assert_almost_equal(t0.vector0().y(), t1.vector0().y())
+    assert_almost_equal(t0.vector0().z(), t1.vector0().z())
+    assert_almost_equal(t0.vector1().x(), t1.vector1().x())
+    assert_almost_equal(t0.vector1().y(), t1.vector1().y())
+    assert_almost_equal(t0.vector1().z(), t1.vector1().z())
+    assert_almost_equal(t0.vector2().x(), t1.vector2().x())
+    assert_almost_equal(t0.vector2().y(), t1.vector2().y())
+    assert_almost_equal(t0.vector2().z(), t1.vector2().z())
+
 if __name__ == "__main__":
     test_distances(True)
     test_minimum_distance(True)
@@ -308,3 +352,4 @@ if __name__ == "__main__":
     test_dihedrals(True)
     test_images_within(True)
     test_energy(True)
+    test_equivalence(True)

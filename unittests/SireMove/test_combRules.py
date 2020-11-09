@@ -647,18 +647,11 @@ def test_cr(TOP, CRD, PERT, RULE):
 
         print (" For the geometric combining rules the single point energy difference between sire and somd at lambda %s is %s " % (lambda_val.val,diff_geom) )
 if __name__ == '__main__':
-    TOP = '../io/CR_Toluene_methane_SYSTEM.top'
-    CRD = '../io/CR_Toluene_methane_SYSTEM.crd'
-    PERT = '../io/CR_Toluene_methane_MORPH.pert'
+    TOP = '../io/combRules/toluene_methane.top'
+    CRD = '../io/combRules/toluene_methane.crd'
+    PERT = '../io/combRules/toluene_methane.pert'
 
     test_cr(TOP, CRD, PERT, 'arithmetic')
     test_cr(TOP, CRD, PERT, 'geometric')
-    d= diff_arith - diff_geom
-    print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    print ("The difference of the single point energies is %s kcal/mol when using geometric and arithmetic combining rules" %d)
-    print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    if abs(d) > 0.0001:
-        if verbose:
-            print("WARNING! GEOMETRIC AND ARITHMETIC COMBINING RULES DO NOT GIVE THE SAME RESULT")
     assert_almost_equal(diff_arith, 0.0, 4)
     assert_almost_equal(diff_geom , 0.0, 4)

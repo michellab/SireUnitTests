@@ -25,8 +25,6 @@ from Sire.Analysis import *
 from Sire.Tools.DCDFile import *
 from Sire.Tools import Parameter, resolveParameters
 import Sire.Stream
-import time
-import numpy as np
 
 ####################################################################################################
 #
@@ -186,7 +184,7 @@ verbose = Parameter("verbose", False, """Print debug output""")
 
 
 def getDummies(molecule):
- 
+
     natoms = molecule.nAtoms()
     atoms = molecule.atoms()
 
@@ -220,7 +218,7 @@ def createSystemFreeEnergy(molecules, PERT):
     -------
     system : Sire.system
     """
-   
+
 
     moleculeNumbers = molecules.molNums()
     moleculeList = []
@@ -229,7 +227,7 @@ def createSystemFreeEnergy(molecules, PERT):
         molecule = molecules.molecule(moleculeNumber)[0].molecule()
         moleculeList.append(molecule)
 
-    # Scan input to find a molecule with passed residue number 
+    # Scan input to find a molecule with passed residue number
     # The residue name of the first residue in this molecule is
     # used to name the solute. This is used later to match
     # templates in the flex/pert files.
@@ -584,7 +582,7 @@ def setupMovesFreeEnergy(system, random_seed, REFERENCE, lam_val, RULE):
     mdmove = MolecularDynamics(molecules, Integrator_OpenMM, timestep.val,
                               {"velocity generator":velocity_generator})
 
-  
+
 
     moves = WeightedMoves()
     moves.add(mdmove, 1)
@@ -592,31 +590,24 @@ def setupMovesFreeEnergy(system, random_seed, REFERENCE, lam_val, RULE):
     if (not random_seed):
         random_seed = RanGenerator().randInt(100000, 1000000)
 
- 
-
     moves.setGenerator(RanGenerator(random_seed))
 
     return moves
-def test_cr(TOP, CRD, PERT, RULE):
-    combining_rules = Parameter("combining rules", RULE,
-                            """Combining rules to use for the non-bonded interactions.""")
 
+def combining_rules(TOP, CRD, PERT, RULE, verbose=False):
     amber = Amber()
-    
+
     (molecules, space) = amber.readCrdTop(CRD, TOP)
     system = createSystemFreeEnergy(molecules, PERT)
-    
+
     system = setupForceFieldsFreeEnergy(system, space, RULE)
     if random_seed.val:
         ranseed = random_seed.val
     else:
         ranseed = RanGenerator().randInt(100000, 1000000)
-    
-    
 
     moves = setupMovesFreeEnergy(system, ranseed, reference.val, lambda_val.val, RULE)
 
-    
     # Get energy from Sire
     nrg_sire = system.energy()
     # Get energy from SOMD
@@ -624,34 +615,40 @@ def test_cr(TOP, CRD, PERT, RULE):
     integrator = mdmoves.integrator()
     nrg_somd = integrator.getPotentialEnergy(system)
 
-    if (RULE == 'arithmetic'):
-        global diff_arith
-        diff_arith  = (nrg_sire - nrg_somd).value()
+    nrg_diff = (nrg_sire - nrg_somd).value()
+
+    if verbose:
         print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        print ("TESTING ARITHMETIC COMBINING RULES")
+        if RULE == 'arithmetic':
+            print ("TESTING ARITHMETIC COMBINING RULES")
+        else:
+            print ("TESTING GEOMETRIC COMBINING RULES")
         print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
         print ("* The energy from Sire is: %s" %nrg_sire)
         print ("* The energy from SOMD is: %s" % nrg_somd)
 
-        print (" For the arithmetic combining rules the single point energy difference between sire and somd at lambda %s is %s " % (lambda_val.val,diff_arith) )
-    elif (RULE == 'geometric'):
-        global diff_geom
-        diff_geom = (nrg_sire - nrg_somd).value()
-        print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        print ("TESTING GEOMETRIC COMBINING RULES")
-        print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        if RULE == 'arithmetic':
+            print (" For the arithmetic combining rules the single point energy difference between sire and somd at lambda %s is %s " % (lambda_val.val, nrg_diff) )
+        else:
+            print (" For the geometric combining rules the single point energy difference between sire and somd at lambda %s is %s " % (lambda_val.val, nrg_diff) )
 
-        print ("* The energy from Sire is: %s" %nrg_sire)
-        print ("* The energy from SOMD is: %s" % nrg_somd)
+    # Return the energy difference.
+    return nrg_diff
 
-        print (" For the geometric combining rules the single point energy difference between sire and somd at lambda %s is %s " % (lambda_val.val,diff_geom) )
-if __name__ == '__main__':
+def test_combining_rules(verbose=False):
+    # Set the paths to the test files.
     TOP = '../io/combRules/toluene_methane.top'
     CRD = '../io/combRules/toluene_methane.crd'
     PERT = '../io/combRules/toluene_methane.pert'
 
-    test_cr(TOP, CRD, PERT, 'arithmetic')
-    test_cr(TOP, CRD, PERT, 'geometric')
+    # Get the energetic difference betwirren Sire and SOMD using
+    # each combining rule.
+    diff_arith = combining_rules(TOP, CRD, PERT, 'arithmetic', verbose=verbose)
+    diff_geom  = combining_rules(TOP, CRD, PERT, 'geometric', verbose=verbose)
+
     assert_almost_equal(diff_arith, 0.0, 4)
     assert_almost_equal(diff_geom , 0.0, 4)
+
+if __name__ == '__main__':
+    test_combining_rules(True)

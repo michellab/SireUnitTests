@@ -228,6 +228,16 @@ def test_selections(verbose=False):
     if verbose:
         print(s)
 
+    s = Select("atoms within 10 nm of 1,2,3")
+
+    if verbose:
+        print(s)
+
+    s = Select("residues within 30 A of 1A,2nm,3pm")
+
+    if verbose:
+        print(s)
+
     if verbose:
         print("\nUser-supplied tokens\n")
 
@@ -315,7 +325,7 @@ def test_engines(verbose=False):
     if verbose:
         print(s)
         print(r)
-    
+
     s = Select("resname /ala/i")
     r = s(mols)
 
@@ -373,8 +383,8 @@ def test_engines(verbose=False):
 
     s = Select("atomnam /ca/i or resnam /ala/i")
     r = s(mols)
-        
-    if verbose: 
+
+    if verbose:
        print(s)
        print(r)
 
@@ -392,7 +402,7 @@ def test_engines(verbose=False):
 
     if verbose:
         print(s)
-        print(r) 
+        print(r)
 
     assert_equal( Select("resname /glu/i or atomname /ca/i")(r).isEmpty(), True )
 
@@ -457,13 +467,13 @@ def test_engines(verbose=False):
 
     for atom in r:
         assert_equal( atom.residue().name().value(), "ALA" )
-        
+
         element = atom.property("element")
 
         ok = (element == Element("C") or element == Element("H") or \
               element == Element("O"))
 
-        assert_equal( ok, True ) 
+        assert_equal( ok, True )
 
     s = Select("atoms within 2 of resname /ala/i")
     r = s(mols)

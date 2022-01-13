@@ -162,7 +162,7 @@ def _test_broken_function(verbose, function):
     if verbose:
         print(cmd)
 
-    env = dict(os.environ, LC_ALL="it_IT")
+    env = dict(os.environ, LC_ALL="it_IT.UTF-8")
 
     if verbose:
         env["VERBOSE_TEST"] = "1"

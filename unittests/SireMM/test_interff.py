@@ -128,8 +128,8 @@ def test_energy(verbose = False):
         print("NEW FF :  %s  %s  %s  : %s ms" % (newcnrg+newljnrg,newcnrg,newljnrg,
                                                  0.000001*newns))
 
-    assert_almost_equal( cnrg, newcnrg, 6 )
-    assert_almost_equal( ljnrg, newljnrg, 6 )
+    assert_almost_equal( cnrg, newcnrg, 2 )
+    assert_almost_equal( ljnrg, newljnrg, 3 )
     assert_almost_equal( oldcnrg, newcnrg, 1 )
     assert_almost_equal( oldljnrg, newljnrg, 1 )
 
@@ -194,10 +194,10 @@ def test_energy(verbose = False):
         print("NEW FF :  %s  %s  %s  : %s ms" % (r_newcnrg+r_newljnrg,r_newcnrg,r_newljnrg,
                                                  0.000001*newns))
 
-    assert_almost_equal( oldcnrg, r_oldcnrg, 6 )
-    assert_almost_equal( oldljnrg, r_oldljnrg, 6 )
-    assert_almost_equal( newcnrg, r_newcnrg, 6 )
-    assert_almost_equal( newljnrg, r_newljnrg, 6 )
+    assert_almost_equal( oldcnrg, r_oldcnrg, 3 )
+    assert_almost_equal( oldljnrg, r_oldljnrg, 3 )
+    assert_almost_equal( newcnrg, r_newcnrg, 3 )
+    assert_almost_equal( newljnrg, r_newljnrg, 3 )
 
 def test_sim(verbose = False):
 

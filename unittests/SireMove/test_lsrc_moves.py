@@ -9,7 +9,7 @@ def _pvt_test(sys, move, verbose):
 
     s = System(sys)
     g = move.generator()
-    g.seed()
+    g.seed(42)
     move.setGenerator(g)
 
     s.mustNowRecalculateFromScratch()
@@ -23,7 +23,7 @@ def _pvt_test(sys, move, verbose):
         if verbose:
             print("MOVE %s" % i)
 
-        move.move(s, 100, False)
+        move.move(s, 10, False)
 
     if verbose:
         print("Recalculating energies...")

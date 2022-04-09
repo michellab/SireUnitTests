@@ -85,7 +85,13 @@ def test_read_write(verbose=False):
                 for k in p1.keys():
                     assert p1[k] == p2[k]
 
-            assert m1.property("sdf_fields") == m2.property("sdf_fields")
+            if m1.hasProperty("sdf_fields"):
+                assert m1.property("sdf_fields") == m2.property("sdf_fields")
+
+            assert m1.property("sdf_counts") == m2.property("sdf_counts")
+
+            if m1.hasProperty("sdf_properties"):
+                assert m1.property("sdf_properties") == m2.property("sdf_properties")
 
             if verbose:
                 print("Passed!\n")
@@ -96,16 +102,17 @@ def test_atom_coords(verbose=False):
     if not has_sdf:
         return
 
-    # Test atoms.
-    atoms = ["N", "CA", "C", "O", "CB"]
-
     # Test coordinates.
-    coords = [[ -2.9880,  -2.0590,  -2.6220],
-              [ -3.8400,  -2.0910,  -7.4260],
-              [ -6.4250,  -3.9190, -10.9580],
-              [ -6.1980,  -6.0090, -14.2910],
-              [ -9.8700,  -6.5500, -15.2480]]
-
+    coords = [[ 0.5369,    0.9749,    0.0000], 
+              [ 1.4030,    0.4749,    0.0000],
+              [ 2.2690,    0.9749,    0.0000],
+              [ 1.8015,    0.0000,    0.0000],
+              [ 1.0044,    0.0000,    0.0000],
+              [ 1.9590,    1.5118,    0.0000],
+              [ 2.8059,    1.2849,    0.0000],
+              [ 2.5790,    0.4380,    0.0000], 
+              [ 0.0000,    0.6649,    0.0000]]
+ 
     # Test in parallel and serial mode.
     for use_par in [True, False]:
 
@@ -114,7 +121,7 @@ def test_atom_coords(verbose=False):
             print("Parallel = %s" % use_par)
 
         # Parse the SDF file.
-        p = Mol2('../io/challenge.sdf', {"parallel" : wrap(use_par)})
+        p = SDF('../io/challenge.sdf', {"parallel" : wrap(use_par)})
 
         if verbose:
             print("Constructing molecular system...")
@@ -129,10 +136,10 @@ def test_atom_coords(verbose=False):
             print("Checking atomic coordinates...")
 
         # Loop over all of the atoms.
-        for i in range(0, len(atoms)):
+        for i in range(0, len(coords)):
 
             # Extract the atom.
-            a = m.atom(AtomName(atoms[i]) + ResNum(1))
+            a = m.atoms()[i]
 
             # Extract the atom coordinates.
             c = a.property("coordinates")
@@ -147,4 +154,4 @@ def test_atom_coords(verbose=False):
 
 if __name__ == "__main__":
     test_read_write(True)
-    #test_atom_coords(True)
+    test_atom_coords(True)

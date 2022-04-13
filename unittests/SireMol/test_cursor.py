@@ -76,6 +76,9 @@ def test_cursor():
 
 
 def test_nav():
+    if not has_cursor:
+        return
+
     c = mols[0].cursor()
 
     mol = mols[0]

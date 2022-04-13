@@ -1,3 +1,22 @@
+*/test*.rst*
+*/test*.pdb
+*/test*.prm*
+*/*/test*.rst*
+*/*/test*.pdb
+*/*/test*.prm*
+*/test*.gro*
+*/*/test*.gro*
+*/test*.g87
+*/*/test*.g87
+*/test*.top
+*/*/test*.top
+*/test.mo*
+*/*/test.mo*
+*/test*.s3
+*/*/test*.s3
+*/tmp*.s3
+*/*/tmp*.s3
+
 # Compiled Object files
 *.slo
 *.lo

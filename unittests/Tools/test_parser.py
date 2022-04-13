@@ -9,7 +9,10 @@ distance_restraints_dict = Parameter("distance restraints dictionary", {},
                                      D the flat bottom radius. WARNING: PBC distance checks not implemented, avoid
                                      restraining pair of atoms that may diffuse out of the box.""")
 
-params = readParams("configfile")
+try:
+    params = readParams("configfile")
+except Exception:
+    params = readParams("Tools/configfile")
 
 params["test1"] = "5 angstrom"
 params["test2"] = "0.5 * gram/(centimeter*centimeter*centimeter)"

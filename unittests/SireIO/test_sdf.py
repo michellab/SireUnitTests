@@ -3,7 +3,6 @@ from Sire.IO import *
 from Sire.Mol import *
 
 from glob import glob
-from nose.tools import assert_equal, assert_almost_equal
 
 # Check that we have SDF support in this version of Sire.
 has_sdf = True
@@ -145,9 +144,9 @@ def test_atom_coords(verbose=False):
             c = a.property("coordinates")
 
             # Validate parsed coordinates against known values.
-            assert_almost_equal( c[0], coords[i][0] )
-            assert_almost_equal( c[1], coords[i][1] )
-            assert_almost_equal( c[2], coords[i][2] )
+            assert c[0] == coords[i][0]
+            assert c[1] == coords[i][1]
+            assert c[2] == coords[i][2]            
 
         if verbose:
             print("Passed!\n")

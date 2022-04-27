@@ -95,6 +95,23 @@ def test_complex_indexing():
     assert count == 6
 
 
+def test_single_select_is_right():
+    try:
+        import Sire as sr
+        mols = sr.load("../io/namd/alanin/alanin.psf")
+        mol = mols[0]
+    except Exception as e:
+        print("Skipping as this is an older version of Sire")
+        return
+
+    assert len(mol.segments()) == 1
+    assert mol.segments().names()[0] == mol.segment(0).name()
+
+    assert mol.segments("MAIN")[0].what() == sr.Mol.Segment.typeName()
+    assert mol.segment("MAIN").what() == sr.Mol.Segment.typeName()
+    assert mol["segname MAIN"].what() == sr.Mol.Molecule.typeName()
+
 if __name__ == "__main__":
     test_complex_indexing()
+    test_single_select_is_right()
 

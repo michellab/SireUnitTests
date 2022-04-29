@@ -24,6 +24,8 @@ def test_ng_system():
 
     assert mols.num_segments() == 0
 
+    assert len(mols["water"]) == 630
+
 
 if __name__ == "__main__":
     test_ng_system()

@@ -117,7 +117,7 @@ def test_pairs(verbose=False):
 
     # Convert to a GroTop object and write to file.
     top = GroTop(s)
-    top.writeToFile("test_cyclohexane.top")
+    top.writeToFile("cyclohexane.top")
 
     # Load validation toplogy file.
     lines0 = []
@@ -127,7 +127,7 @@ def test_pairs(verbose=False):
 
     # Load written topology file.
     lines1 = []
-    with open("test_cyclohexane.top", "r") as file:
+    with open("cyclohexane.top", "r") as file:
         for line in enumerate(file):
             lines1.append(line)
 

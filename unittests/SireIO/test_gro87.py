@@ -74,9 +74,9 @@ def test_gro_rst(verbose=False):
     _assert_almost_equal( g.coordinates(), a.coordinates() )
 
     avels = a.velocities()
-    # convert avels from angstrom / (20.455 ps) to angstrom / ps
+    # convert avels from angstrom / (20.455 ps) to nanometer / ps
     for i in range(0,len(avels)):
-        avels[i] = (1.0/20.455) * avels[i]
+        avels[i] = (0.1/20.455) * avels[i]
 
     _assert_almost_equal( g.velocities(), avels )
 

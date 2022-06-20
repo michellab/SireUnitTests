@@ -24,6 +24,7 @@ except KeyError:
     # Set to the default location of the bundled OpenMM package.
     os.environ["OPENMM_PLUGIN_DIR"] = getLibDir() + "/plugins"
 
+from nose.tools import assert_almost_equal
 from Sire.IO import *
 from Sire.Mol import *
 from Sire.CAS import *
@@ -39,7 +40,7 @@ from Sire.ID import *
 from Sire.Config import *
 from Sire.Analysis import *
 from Sire.Tools.DCDFile import *
-from Sire.Tools import Parameter, resolveParameters
+from Sire.Tools import Parameter, resolveParameters, readParams
 import Sire.Stream
 import time
 import numpy as np
@@ -64,10 +65,10 @@ temperature = Parameter("temperature", 25 * celsius, """Simulation temperature""
 
 pressure = Parameter("pressure", 1 * atm, """Simulation pressure""")
 
-topfile = Parameter("topfile", "SYSTEM.top",
+topfile = Parameter("topfile", "../io/receptor_ligand_restraints/SYSTEM.top",
                     """File name of the topology file containing the system to be simulated.""")
 
-crdfile = Parameter("crdfile", "SYSTEM.crd",
+crdfile = Parameter("crdfile", "../io/receptor_ligand_restraints/SYSTEM.crd",
                     """File name of the coordinate file containing the coordinates of the
                        system to be simulated.""")
 
@@ -185,10 +186,13 @@ turn_on_restraints_mode = Parameter("turn on receptor-ligand restraints mode", F
                                   """If true, lambda will be used to scale the receptor-ligand restraint strength. A dummy
                                   pert file mapping all original ligand atom parameters to themselves must be supplied.""")
 
-use_boresch_restraints = Parameter("use boresch restraints", False, 
+use_boresch_restraints = Parameter("use boresch restraints", True, 
                                     """Whether or not to use Boresch restraints between the ligand and receptor""")
 
-boresch_restraints_dict = Parameter("boresch restraints dictionary", {}, 
+boresch_restraints_dict = Parameter("boresch restraints dictionary", {"anchor_points":{"r1":4946, "r2":4944, "r3":4949, 
+                                    "l1":11, "l2":2, "l3":3},"equilibrium_values":{"r0":5.92, "thetaA0":1.85, "thetaB0":1.59,
+                                    "phiA0":-0.30, "phiB0":-1.55, "phiC0":2.90},"force_constants":{"kr":25.49, "kthetaA":66.74, 
+                                    "kthetaB":38.39, "kphiA":215.36, "kphiB":49.23, "kphiC":49.79}}, 
                                     """Dictionary of four dictionaries: anchor points in ligand, anchor points in receptor,
                                     equilibrium values for 6 Boresch-style external degrees of freedom, and associated force
                                     constants. Syntax is:
@@ -219,7 +223,7 @@ hydrogen_mass_repartitioning_factor = \
               'than a minimum mass).')
 
 ## Free energy specific keywords
-morphfile = Parameter("morphfile", "MORPH.pert",
+morphfile = Parameter("morphfile", "../io/receptor_ligand_restraints/MORPH.dummy.pert",
                       """Name of the morph file containing the perturbation to apply to the system.""")
 
 lambda_val = Parameter("lambda_val", 0.0,
@@ -245,6 +249,7 @@ simfile = Parameter("outdata_file", "simfile.dat", """Filename that records all 
 perturbed_resnum = Parameter("perturbed residue number",1,"""The residue number of the molecule to morph.""")
 
 verbose = Parameter("verbose", False, """Print debug output""")
+
 
 ####################################################################################################
 #
@@ -1618,394 +1623,93 @@ def generateDistanceRestraintsDict(system):
 
 ######## MAIN SCRIPTS  #############
 
-@resolveParameters
-def run():
+def getPotEnergy(boresch_restraints_on):
 
     try:
         host = os.environ['HOSTNAME']
     except KeyError:
         host = "unknown"
 
-    print("\n### Running Molecular Dynamics simulation on %s ###" % host)
     if verbose.val:
         print("###================= Simulation Parameters=====================###")
         Parameter.printAll()
         print ("###===========================================================###\n")
 
-    timer = QTime()
-    timer.start()
+    print("New run. Loading input and creating restart")
 
-    # Setup the system from scratch if no restart file is available
-    print("###================Setting up calculation=====================###")
-    if not os.path.exists(restart_file.val):
+    amber = Amber()
 
-        print("New run. Loading input and creating restart")
-
-        amber = Amber()
-
-        if os.path.exists(s3file.val):
-            (molecules, space) = Sire.Stream.load(s3file.val)
-        else:
-            (molecules, space) = amber.readCrdTop(crdfile.val, topfile.val)
-            Sire.Stream.save((molecules, space), s3file.val)
-
-        system = createSystem(molecules)
-
-        if center_solute.val:
-            system = centerSolute(system, space)
-
-        if use_restraints.val:
-            system = setupRestraints(system)
-
-        if turn_on_restraints_mode.val:
-            print('''In "turn on receptor-ligand restraints mode". Receptor-ligand
-                  restraint strengths will be scaled with lambda. Ensure that a dummy
-                  pert file which maps all original ligand atom parameters to themselves
-                  has been supplied.''')
-            system = saveTurnOnRestraintsModeProperty(system)
-
-        if use_distance_restraints.val:
-            restraints = None
-            if len(distance_restraints_dict.val) == 0:
-                print ("Distance restraints have been activated, but none have been specified. Will autogenerate.")
-                restraints = generateDistanceRestraintsDict(system)
-                # Save restraints
-                print ("Autogenerated distance restraints values: %s " % distance_restraints_dict)
-                stream = open("restraints.cfg",'w')
-                stream.write("distance restraints dictionary = %s\n" % restraints)
-                stream.close()
-            system = setupDistanceRestraints(system, restraints=restraints)
-
-        if use_boresch_restraints.val:
-            print("Setting up Boresch restraints...")
-            system = setupBoreschRestraints(system)
-
-        if hydrogen_mass_repartitioning_factor.val > 1.0:
-            system = repartitionMasses(system, hmassfactor=hydrogen_mass_repartitioning_factor.val)
-
-        # Note that this just set the mass to zero which freezes residues in OpenMM but Sire doesn't known that
-        if freeze_residues.val:
-            system = freezeResidues(system)
-
-        system = setupForcefields(system, space)
-
-        if debug_seed.val != 0:
-            print("Setting up the simulation with debugging seed %s" % debug_seed.val)
-
-        moves = setupMoves(system, debug_seed.val, gpu.val)
-
-        print("Saving restart")
-        Sire.Stream.save([system, moves], restart_file.val)
+    if os.path.exists(s3file.val):
+        (molecules, space) = Sire.Stream.load(s3file.val)
     else:
-        system, moves = Sire.Stream.load(restart_file.val)
-        move0 = moves.moves()[0]
-        integrator = move0.integrator()
-        integrator.setDeviceIndex(str(gpu.val))
-        move0.setIntegrator(integrator)
-        moves = WeightedMoves()
-        moves.add(move0)
-        print("Index GPU = %s " % moves.moves()[0].integrator().getDeviceIndex())
-        print("Loaded a restart file on which we have performed %d moves." % moves.nMoves())
-        #Maybe include a runtime error here!
-        if minimise.val:
-            print ('WARNING: You are trying to minimise from a restart! Revise your config file!')
-        if equilibrate.val:
-            print ('WARNING: You are trying to equilibrate from a restart! Revise your config file!')
+        (molecules, space) = amber.readCrdTop(crdfile.val, topfile.val)
+        Sire.Stream.save((molecules, space), s3file.val)
 
-    cycle_start = int(moves.nMoves() / nmoves.val) + 1
-    cycle_end = cycle_start + ncycles.val
+    system = createSystem(molecules)
 
-    if (save_coords.val):
-        trajectory = setupDCD(system)
+    if center_solute.val:
+        system = centerSolute(system, space)
+
+    if use_restraints.val:
+        system = setupRestraints(system)
+
+    if turn_on_restraints_mode.val:
+        print('''In "turn on receptor-ligand restraints mode". Receptor-ligand
+                restraint strengths will be scaled with lambda. Ensure that a dummy
+                pert file which maps all original ligand atom parameters to themselves
+                has been supplied.''')
+        system = saveTurnOnRestraintsModeProperty(system)
+
+    if use_distance_restraints.val:
+        restraints = None
+        if len(distance_restraints_dict.val) == 0:
+            print ("Distance restraints have been activated, but none have been specified. Will autogenerate.")
+            restraints = generateDistanceRestraintsDict(system)
+            # Save restraints
+            print ("Autogenerated distance restraints values: %s " % distance_restraints_dict)
+            stream = open("restraints.cfg",'w')
+            stream.write("distance restraints dictionary = %s\n" % restraints)
+            stream.close()
+        system = setupDistanceRestraints(system, restraints=restraints)
+
+    if boresch_restraints_on:
+        print("Setting up Boresch restraints...")
+        system = setupBoreschRestraints(system)
+
+    if hydrogen_mass_repartitioning_factor.val > 1.0:
+        system = repartitionMasses(system, hmassfactor=hydrogen_mass_repartitioning_factor.val)
+
+    # Note that this just set the mass to zero which freezes residues in OpenMM but Sire doesn't known that
+    if freeze_residues.val:
+        system = freezeResidues(system)
+
+    system = setupForcefields(system, space)
+
+    moves = setupMoves(system, debug_seed.val, gpu.val)
 
     mdmoves = moves.moves()[0]
     integrator = mdmoves.integrator()
-
-    print ("###===========================================================###\n")
-
-    if minimise.val:
-        print("###=======================Minimisation========================###")
-        print('Running minimisation.')
-        if verbose.val:
-            print ("Energy before the minimisation: " + str(system.energy()))
-            print ('Tolerance for minimisation: ' + str(minimise_tol.val))
-            print ('Maximum number of minimisation iterations: ' + str(minimise_max_iter.val))
-        integrator.setConstraintType("none")
-        system = integrator.minimiseEnergy(system, minimise_tol.val, minimise_max_iter.val)
-        system.mustNowRecalculateFromScratch()
-        if verbose.val:
-            print ("Energy after the minimization: " + str(system.energy()))
-            print ("Energy minimization done.")
-        integrator.setConstraintType(constraint.val)
-        print("###===========================================================###\n", flush=True)
-
-    if equilibrate.val:
-        print("###======================Equilibration========================###")
-        print ('Running equilibration.')
-        # Here we anneal lambda (To be determined)
-        if verbose.val:
-            print ('Equilibration timestep ' + str(equil_timestep.val))
-            print ('Number of equilibration steps: ' + str(equil_iterations.val))
-        system = integrator.equilibrateSystem(system, equil_timestep.val, equil_iterations.val)
-        system.mustNowRecalculateFromScratch()
-        if verbose.val:
-            print ("Energy after the equilibration: " + str(system.energy()))
-            print ('Equilibration done.\n')
-        print("###===========================================================###\n", flush=True)
-
-    simtime=nmoves.val*ncycles.val*timestep.val
-    print("###=======================somd run============================###")
-    print ("Starting somd run...")
-    print ("%s moves %s cycles, %s simulation time" %(nmoves.val, ncycles.val, simtime))
-
-    s1 = timer.elapsed() / 1000.
-    for i in range(cycle_start, cycle_end):
-        print("\nCycle = ", i, flush=True )
-        system = moves.move(system, nmoves.val, True)
-
-        if (save_coords.val):
-            writeSystemData(system, moves, trajectory, i)
-
-    s2 = timer.elapsed() / 1000.
-    print("Simulation took %d s " % ( s2 - s1))
-
-    print("Saving restart")
-    Sire.Stream.save([system, moves], restart_file.val)
+    nrg = integrator.getPotentialEnergy(system)
+    
+    return nrg
 
 
-@resolveParameters
-def runFreeNrg():
-    #if (save_coords.val):
-    #    buffer_freq = 500
-    #else:
-    #    buffer_freq = 0
+def test_boresch_restraints(verbose=False):
+    """Check that Boresch restraints give expected increase in energy"""
 
-    try:
-        host = os.environ['HOSTNAME']
-    except KeyError:
-        host = "unknown"
+    a = getPotEnergy(True)
+    print(getPotEnergy(True) - getPotEnergy(False))
+    print("SUCCESS")
 
-    print("### Running Single Topology Molecular Dynamics Free Energy on %s ###" % host)
-    if verbose.val:
-        print("###================= Simulation Parameters=====================###")
-        Parameter.printAll()
-        print ("###===========================================================###\n")
-
-    timer = QTime()
-    timer.start()
-    outfile = open(simfile.val, "ab")
-    lam_str = "%7.5f" % lambda_val.val
-    simtime=nmoves.val*ncycles.val*timestep.val
-    # Setup the system from scratch if no restart file is available
-    print("###================Setting up calculation=====================###")
-    if not os.path.exists(restart_file.val):
-
-        print("New run. Loading input and creating restart")
-
-        print("lambda is %s" % lambda_val.val)
-
-        amber = Amber()
-
-        if os.path.exists(s3file.val):
-            (molecules, space) = Sire.Stream.load(s3file.val)
-        else:
-            (molecules, space) = amber.readCrdTop(crdfile.val, topfile.val)
-            Sire.Stream.save((molecules, space), s3file.val)
-
-        system = createSystemFreeEnergy(molecules)
-
-        if (center_solute.val):
-            system = centerSolute(system, space)
-
-        if use_restraints.val:
-            system = setupRestraints(system)
-
-        if turn_on_restraints_mode.val:
-            print('''In "turn on receptor-ligand restraints mode". Lambda will be used to scale
-                  the strength of protein-ligand restraints. Ensure that a dummy pert file mapping 
-                  the original parameters for all ligand atoms to themselves has been supplied.''')
-                  
-            system = saveTurnOnRestraintsModeProperty(system)
-
-        if use_distance_restraints.val:
-            restraints = None
-            if len(distance_restraints_dict.val) == 0:
-                print ("Distance restraints have been activated, but none have been specified. Will autogenerate.")
-                restraints = generateDistanceRestraintsDict(system)
-                # Save restraints
-                print ("Autogenerated distance restraints values: %s " % distance_restraints_dict)
-                stream = open("restraints.cfg",'w')
-                stream.write("distance restraints dictionary = %s\n" % restraints)
-                stream.close()
-            system = setupDistanceRestraints(system, restraints=restraints)
-
-        if use_boresch_restraints.val:
-            print("Setting up Boresch restraints...")
-            system = setupBoreschRestraints(system)
-
-        if hydrogen_mass_repartitioning_factor.val > 1.0:
-            system = repartitionMasses(system, hmassfactor=hydrogen_mass_repartitioning_factor.val)
-
-        # Note that this just set the mass to zero which freezes residues in OpenMM but Sire doesn't known that
-        if freeze_residues.val:
-            system = freezeResidues(system)
-
-        system = setupForceFieldsFreeEnergy(system, space)
-
-        if debug_seed.val != 0:
-            print("Setting up the simulation with debugging seed %s" % debug_seed.val)
-
-        moves = setupMovesFreeEnergy(system, debug_seed.val, gpu.val, lambda_val.val)
-
-        print("Saving restart")
-        Sire.Stream.save([system, moves], restart_file.val)
-
-        print("Setting up sim file. ")
-
-        outfile.write(bytes("#This file was generated on "+time.strftime("%c")+"\n", "UTF-8"))
-        outfile.write(bytes("#Using the somd command, of the molecular library Sire version <%s> \n" %Sire.__version__,"UTF-8"))
-        outfile.write(bytes("#For more information visit: https://github.com/michellab/Sire\n#\n","UTF-8"))
-        outfile.write(bytes("#General information on simulation parameters:\n", "UTF-8"))
-        outfile.write(bytes("#Simulation used %s moves, %s cycles and %s of simulation time \n" %(nmoves.val,
-                                                                                        ncycles.val, simtime), "UTF-8"))
-        outfile.write(bytes("#Generating lambda is\t\t " + lam_str+"\n", "UTF-8"))
-        outfile.write(bytes("#Alchemical array is\t\t "+ str(lambda_array.val) +"\n", "UTF-8"))
-        outfile.write(bytes("#Generating temperature is \t"+str(temperature.val)+"\n", "UTF-8"))
-        outfile.write(bytes("#Energy was saved every "+str(energy_frequency.val)+ " steps \n#\n#\n", "UTF-8"))
-        outfile.write(bytes("# %8s %25s %25s %25s %25s %25s" % ("[step]", "[potential kcal/mol]", "[gradient kcal/mol]",
-        "[forward Metropolis]", "[backward Metropolis]", "[u_kl]\n"),
-                            "UTF-8"))
-
-    else:
-        system, moves = Sire.Stream.load(restart_file.val)
-        move0 = moves.moves()[0]
-        integrator = move0.integrator()
-        integrator.setDeviceIndex(str(gpu.val))
-        move0.setIntegrator(integrator)
-        moves = WeightedMoves()
-        moves.add(move0)
-        cycle_start = int(moves.nMoves() / nmoves.val)
-        cycle_end = cycle_start + ncycles.val
-        print("Index GPU = %s " % moves.moves()[0].integrator().getDeviceIndex())
-        print("Loaded a restart file on which we have performed %d moves." % moves.nMoves())
-        restart = True
-
-    cycle_start = int(moves.nMoves() / nmoves.val) + 1
-
-    if cycle_start > maxcycles.val:
-        print("Maxinum number of cycles reached (%s). If you wish to extend the simulation increase the value of the parameter maxcycle." % maxcycles.val)
-        sys.exit(-1)
-
-    cycle_end = cycle_start + ncycles.val
-
-    if (cycle_end > maxcycles.val):
-        cycle_end = maxcycles.val + 1
-
-    outgradients = open("gradients.dat", "a", 1)
-    outgradients.write("# lambda_val.val %s\n" % lam_str)
+    #assert_almost_equal( x, y )
 
 
-    if (save_coords.val):
-        trajectory = setupDCD(system)
+def test_multiple_distance_restraints(verbose=False):
+    """Check that Boresch restraints give expected increase in energy"""
 
-    mdmoves = moves.moves()[0]
-    integrator = mdmoves.integrator()
-    print ("###===========================================================###\n")
-    if minimise.val:
-        print("###=======================Minimisation========================###")
-        print('Running minimisation.')
-        #if verbose.val:
-        if True:
-            print ("Energy before the minimisation: " + str(system.energy()))
-            print ('Tolerance for minimisation: ' + str(minimise_tol.val))
-            print ('Maximum number of minimisation iterations: ' + str(minimise_max_iter.val))
-        system = integrator.minimiseEnergy(system, minimise_tol.val, minimise_max_iter.val)
-        system.mustNowRecalculateFromScratch()
-        #if verbose.val:
-        if True:
-            print ("Energy after the minimization: " + str(system.energy()))
-            print ("Energy minimization done.")
-        print("###===========================================================###\n")
+    pass
 
-    if equilibrate.val:
-        print("###======================Equilibration========================###")
-        print ('Running lambda equilibration to lambda=%s.' %lambda_val.val)
-        # Here we anneal lambda (To be determined)
-        if verbose.val:
-            print ('Equilibration timestep ' + str(equil_timestep.val))
-            print ('Number of equilibration steps: ' + str(equil_iterations.val))
-        system = integrator.annealSystemToLambda(system, equil_timestep.val, equil_iterations.val)
-        system.mustNowRecalculateFromScratch()
-        if verbose.val:
-            print ("Energy after the annealing: " + str(system.energy()))
-            print ('Lambda annealing done.\n')
-        print("###===========================================================###\n")
-
-
-    print("###====================somd-freenrg run=======================###")
-    print ("Starting somd-freenrg run...")
-    print ("%s moves %s cycles, %s simulation time" %(nmoves.val, ncycles.val, simtime))
-
-    softcore_lambda = False
-    if minimal_coordinate_saving.val:
-        if lambda_val.val == 1.0 or lambda_val.val == 0.0:
-            softcore_lambda = False
-        else:
-            softcore_lambda = True
-
-    grads = {}
-    grads[lambda_val.val] = AverageAndStddev()
-    s1 = timer.elapsed() / 1000.
-    for i in range(cycle_start, cycle_end):
-        print("\nCycle = ", i, "\n")
-        system = moves.move(system, nmoves.val, True)
-        if save_coords.val:
-            writeSystemData(system, moves, trajectory, i, softcore_lambda)
-
-        mdmoves = moves.moves()[0]
-        integrator = mdmoves.integrator()
-
-        #saving all data
-        beg = (nmoves.val*(i-1))
-        end = nmoves.val*(i-1)+nmoves.val
-        steps = list(range(beg, end, energy_frequency.val))
-        outdata = getAllData(integrator, steps)
-        gradients = integrator.getGradients()
-        fmt =" ".join(["%8d"] + ["%25.8e"] + ["%25.8e"] + ["%25.8e"] + ["%25.8e"] + ["%25.15e"]*(len(lambda_array.val)))
-        np.savetxt(outfile, outdata, fmt=fmt)
-
-        mean_gradient = np.average(gradients)
-        outgradients.write("%5d %20.10f\n" % (i, mean_gradient))
-        for gradient in gradients:
-            #grads[lambda_val.val].accumulate(gradients[i-1])
-            grads[lambda_val.val].accumulate(gradient)
-        # Save restart
-        print("Backing up previous restart")
-        cmd = "cp %s %s.previous" % (restart_file.val, restart_file.val)
-        os.system(cmd)
-        print ("Saving new restart")
-        Sire.Stream.save([system, moves], restart_file.val)
-    s2 = timer.elapsed() / 1000.
-    outgradients.flush()
-    outfile.flush()
-    outgradients.close()
-    outfile.close()
-    print("Simulation took %d s " % ( s2 - s1))
-    print("###===========================================================###\n")
-
-
-    if os.path.exists("gradients.s3"):
-        siregrads = Sire.Stream.load("gradients.s3")
-    else:
-        siregrads = Gradients()
-    siregrads = siregrads + Gradients(grads)
-
-    Sire.Stream.save(siregrads, "gradients.s3")
-
-    if buffered_coords_freq.val > 0:
-        system = clearBuffers(system)
-        # Necessary to write correct restart
-        system.mustNowRecalculateFromScratch()
 
 if __name__ == '__main__':
-    runFreeNrg()
+    test_boresch_restraints(True)
+#    test_multiple_distance_restraints(True)

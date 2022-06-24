@@ -1,4 +1,10 @@
 
+try:
+    import sire as sr
+    sr.use_old_api()
+except ImportError:
+    pass
+
 import Sire.Stream
 
 from Sire.MM import *
@@ -8,6 +14,12 @@ from Sire.Qt import *
 from Sire.Maths import *
 from Sire.Units import *
 from Sire.IO import *
+
+try:
+    from sire.legacy.MM import CLJAtoms
+    from sire.legacy.MM import CLJFunction
+except Exception as e:
+    print(e)
 
 from nose.tools import assert_almost_equal
 

@@ -1,4 +1,10 @@
 
+try:
+    import sire as sr
+    sr.use_old_api()
+except ImportError:
+    pass
+
 from Sire.IO import *
 from Sire.MM import *
 from Sire.Mol import *
@@ -21,7 +27,7 @@ def test_flex(verbose=False):
     s = MoleculeParser.read("../io/waterbox.gro", "../io/waterbox.grotop",
                             {"GROMACS_PATH":"../io/gromacs"})
 
-    water = s.search("molidx 0")[0]
+    water = s.search("molidx 0")[0].molecule()
 
     bonds = water.property("bond")
     angles = water.property("angle")

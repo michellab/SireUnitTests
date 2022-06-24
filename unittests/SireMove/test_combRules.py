@@ -2,6 +2,12 @@
 # Sire script to compare Sire and SOMD single point energies
 #
 
+try:
+    import sire as sr
+    sr.use_old_api()
+except ImportError:
+    pass
+
 import os
 import re
 import sys

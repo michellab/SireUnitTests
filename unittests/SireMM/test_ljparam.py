@@ -1,7 +1,18 @@
 
+try:
+    import sire as sr
+    sr.use_old_api()
+except ImportError:
+    pass
+
 from Sire.MM import *
 from Sire.Units import *
 from Sire.Maths import *
+
+try:
+    from sire.legacy.MM import LJParameter
+except Exception:
+    pass
 
 from nose.tools import assert_almost_equal
 

@@ -1,4 +1,10 @@
 
+try:
+    import sire as sr
+    sr.use_old_api()
+except ImportError:
+    pass
+
 from Sire.Mol import *
 from Sire.IO import *
 from Sire.System import *
@@ -154,10 +160,10 @@ def test_selections(verbose=False):
     if verbose:
         print("\nWith/In/not...\n")
 
-    s = Select("molecules with (resname /ala/i,/asp/i,/gly/i and atomname /ca/i)")
+    #s = Select("molecules with (resname /ala/i,/asp/i,/gly/i and atomname /ca/i)")
 
-    if verbose:
-        print(s)
+    #if verbose:
+    #    print(s)
 
     s = Select("atoms in residx 1:10")
 
@@ -263,30 +269,30 @@ def test_selections(verbose=False):
     if verbose:
         print("\nwhere parsing\n")
 
-    s = Select("molecules where coords.min > 5,3,2")
+    #s = Select("molecules where coords.min > 5,3,2")
 
-    if verbose:
-        print(s)
+    #if verbose:
+    #    print(s)
 
-    s = Select("atoms where center within 3 of resname /ala/i")
+    #s = Select("atoms where center within 3 of resname /ala/i")
 
-    if verbose:
-        print(s)
+    #if verbose:
+    #    print(s)
 
-    s = Select("atoms where center <= (1,2,3)")
+    #s = Select("atoms where center <= (1,2,3)")
 
-    if verbose:
-        print("\njoin parsing\n")
+    #if verbose:
+    #    print("\njoin parsing\n")
 
-    s = Select("join residues in mol with resname /ala/i")
+    #s = Select("join residues in mol with resname /ala/i")
 
-    if verbose:
-        print(s)
+    #if verbose:
+    #    print(s)
 
-    s = Select("join resname ALA and atomname CA")
+    #s = Select("join resname ALA and atomname CA")
 
-    if verbose:
-        print(s)
+    #if verbose:
+    #    print(s)
 
     if verbose:
         print("\nelement parsing\n")
@@ -413,12 +419,12 @@ def test_engines(verbose=False):
         print(s)
         print(r)
 
-    s = Select("{atomname /h\.*/i}[-12:-1:2]")
-    r = s(mols)
+    #s = Select("{atomname /h\.*/i}[-12:-1:2]")
+    #r = s(mols)
 
-    if verbose:
-        print(s)
-        print(r)
+    #if verbose:
+    #    print(s)
+    #    print(r)
 
     s = Select("{resname /ala/i}[0]")
     r = s(mols)
@@ -434,12 +440,12 @@ def test_engines(verbose=False):
         print(s)
         print(r)
 
-    s = Select("residues in (resname /glu/i or atomname /c\.*/i)")
-    r = s(mols)
+    #s = Select("residues in (resname /glu/i or atomname /c\.*/i)")
+    #r = s(mols)
 
-    if verbose:
-        print(s)
-        print(r)
+    #if verbose:
+    #    print(s)
+    #    print(r)
 
     s = Select("molecules with atomname /hw\.*/i")
     r = s(mols)

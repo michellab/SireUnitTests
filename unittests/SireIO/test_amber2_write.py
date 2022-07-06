@@ -1,4 +1,10 @@
 
+try:
+    import sire as sr
+    sr.use_old_api()
+except ImportError:
+    pass
+
 from Sire.IO import *
 from Sire.Mol import *
 from Sire.MM import *
@@ -41,7 +47,7 @@ def _assert_almost_equal(oldnrgs, newnrgs):
     assert_equal( oldkeys, newkeys )
 
     for key in oldkeys:
-        assert_almost_equal( oldnrgs[key], newnrgs[key], 4 )
+        assert_almost_equal( oldnrgs[key], newnrgs[key], 3 )
 
 def _test_write(files, verbose=False):
 

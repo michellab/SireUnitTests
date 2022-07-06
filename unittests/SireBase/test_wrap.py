@@ -1,10 +1,21 @@
 
+try:
+    import sire as sr
+    sr.use_old_api()
+except ImportError:
+    pass
+
 from Sire.IO import *
 from Sire.Mol import *
 from Sire.Maths import *
 from Sire.Vol import *
 from Sire.Base import *
 from Sire.CAS import *
+
+try:
+    from sr.legacy.Base import PropertyList
+except Exception:
+    pass
 
 from nose.tools import assert_equal
 

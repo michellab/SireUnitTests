@@ -1,4 +1,12 @@
 
+try:
+    import sire as sr
+    sr.use_old_api()
+except ImportError:
+    pass
+
+import Sire
+
 from Sire.IO import *
 from Sire.Move import *
 from Sire.Mol import *

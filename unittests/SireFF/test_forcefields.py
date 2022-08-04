@@ -1,3 +1,9 @@
+
+try:
+    import sire as sr
+    sr.use_old_api()
+except ImportError:
+    pass
   
 from Sire.MM import *
 from Sire.FF import *

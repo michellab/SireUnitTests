@@ -1,19 +1,12 @@
+import sire.legacy.Stream
 
-try:
-    import sire as sr
-    sr.use_old_api()
-except ImportError:
-    pass
-
-import Sire.Stream
-
-from Sire.MM import *
-from Sire.Mol import *
-from Sire.Vol import *
-from Sire.Qt import *
-from Sire.Maths import *
-from Sire.Units import *
-from Sire.IO import *
+from sire.legacy.MM import *
+from sire.legacy.Mol import *
+from sire.legacy.Vol import *
+from sire.legacy.Qt import *
+from sire.legacy.Maths import *
+from sire.legacy.Units import *
+from sire.legacy.IO import *
 
 try:
     from sire.legacy.MM import CLJAtoms
@@ -43,7 +36,7 @@ if realcompare:
 
     print("Protein has %d atoms" % protein.nAtoms())
 else:
-    protein = Sire.Stream.load("../io/protein.s3")
+    protein = sire.legacy.Stream.load("../io/protein.s3")
     space = PeriodicBox( Vector(77.3667, 84.0572, 86.8795) )
 
     cnrg_vacuum = -16406.191630892663  

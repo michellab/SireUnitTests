@@ -1,7 +1,6 @@
-
-from Sire.Vol import *
-from Sire.Maths import *
-from Sire.Units import *
+from sire.legacy.Vol import *
+from sire.legacy.Maths import *
+from sire.legacy.Units import *
 
 from nose.tools import assert_equal
 

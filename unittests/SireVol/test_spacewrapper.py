@@ -1,12 +1,11 @@
-
-from Sire.IO import *
-from Sire.Move import *
-from Sire.System import *
-from Sire.MM import *
-from Sire.Mol import *
-from Sire.Maths import *
-from Sire.CAS import *
-from Sire.Units import *
+from sire.legacy.IO import *
+from sire.legacy.Move import *
+from sire.legacy.System import *
+from sire.legacy.MM import *
+from sire.legacy.Mol import *
+from sire.legacy.Maths import *
+from sire.legacy.CAS import *
+from sire.legacy.Units import *
 
 def test_wrapper(verbose=False):
     s = MoleculeParser.read("../io/kcl.crd", "../io/kcl.top")

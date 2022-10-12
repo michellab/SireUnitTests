@@ -1,8 +1,7 @@
-
-from Sire.Mol import *
-from Sire.IO import *
-from Sire.ID import *
-from Sire.Maths import *
+from sire.legacy.Mol import *
+from sire.legacy.IO import *
+from sire.legacy.ID import *
+from sire.legacy.Maths import *
 
 import sys
 

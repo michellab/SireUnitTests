@@ -1,14 +1,7 @@
+from sire.legacy.Units import *
+from sire.legacy.Move import *
 
-try:
-    import sire as sr
-    sr.use_old_api()
-except ImportError:
-    pass
-
-from Sire.Units import *
-from Sire.Move import *
-
-from Sire.Maths import pi
+from sire.legacy.Maths import pi
 
 def _pvt_close( val0, val1 ):
    

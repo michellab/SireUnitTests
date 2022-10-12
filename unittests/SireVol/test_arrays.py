@@ -1,6 +1,5 @@
-
-from Sire.Vol import *
-from Sire.IO import *
+from sire.legacy.Vol import *
+from sire.legacy.IO import *
 
 import copy
 

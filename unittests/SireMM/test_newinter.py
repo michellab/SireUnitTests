@@ -1,17 +1,10 @@
-
-try:
-    import sire as sr
-    sr.use_old_api()
-except ImportError:
-    pass
-
-from Sire.IO import *
-from Sire.Mol import *
-from Sire.MM import *
-from Sire.Units import *
-from Sire.Vol import *
-from Sire.Maths import *
-from Sire.Qt import *
+from sire.legacy.IO import *
+from sire.legacy.Mol import *
+from sire.legacy.MM import *
+from sire.legacy.Units import *
+from sire.legacy.Vol import *
+from sire.legacy.Maths import *
+from sire.legacy.Qt import *
 
 try:
     from sire.legacy.MM import CLJFunction

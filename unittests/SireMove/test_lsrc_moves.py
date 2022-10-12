@@ -1,9 +1,9 @@
-import Sire.Stream
+import sire.legacy.Stream
 
-from Sire.Move import *
-from Sire.System import *
+from sire.legacy.Move import *
+from sire.legacy.System import *
 
-(system,moves) = Sire.Stream.load("../io/lsrc_system.s3")
+(system,moves) = sire.legacy.Stream.load("../io/lsrc_system.s3")
 
 def _pvt_test(sys, move, verbose):
 

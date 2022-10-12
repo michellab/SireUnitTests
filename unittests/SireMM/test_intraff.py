@@ -1,26 +1,26 @@
-from Sire.MM import *
-from Sire.FF import *
-from Sire.System import *
-from Sire.Move import *
-from Sire.IO import *
-from Sire.Mol import *
-from Sire.Maths import *
-from Sire.Vol import *
-from Sire.Base import *
-from Sire.Units import *
-from Sire.Qt import *
+from sire.legacy.MM import *
+from sire.legacy.FF import *
+from sire.legacy.System import *
+from sire.legacy.Move import *
+from sire.legacy.IO import *
+from sire.legacy.Mol import *
+from sire.legacy.Maths import *
+from sire.legacy.Vol import *
+from sire.legacy.Base import *
+from sire.legacy.Units import *
+from sire.legacy.Qt import *
 
-import Sire.Config
-import Sire.Stream
+import sire.legacy.Config
+import sire.legacy.Stream
 
 from nose.tools import assert_almost_equal
 
 import os
 
-protein = Sire.Stream.load("../io/protein.s3")
+protein = sire.legacy.Stream.load("../io/protein.s3")
 
 zmat_maker = ZmatrixMaker()
-zmat_maker.loadTemplates( os.path.join(Sire.Config.parameter_directory, "amber.zmatrices") )
+zmat_maker.loadTemplates( os.path.join(sire.legacy.Config.parameter_directory, "amber.zmatrices") )
 protein = zmat_maker.applyTemplates(protein)
 
 nmoves = 100

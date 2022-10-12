@@ -1,13 +1,6 @@
-
-try:
-    import sire as sr
-    sr.use_old_api()
-except ImportError:
-    pass
-
-from Sire.MM import *
-from Sire.Units import *
-from Sire.Maths import *
+from sire.legacy.MM import *
+from sire.legacy.Units import *
+from sire.legacy.Maths import *
 
 try:
     from sire.legacy.MM import LJParameter

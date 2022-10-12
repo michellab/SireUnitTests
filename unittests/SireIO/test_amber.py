@@ -1,16 +1,15 @@
-
-from Sire.IO import *
-from Sire.Mol import *
-from Sire.CAS import *
-from Sire.System import *
-from Sire.Move import *
-from Sire.MM import *
-from Sire.FF import *
-from Sire.Units import *
-from Sire.Vol import *
-from Sire.Maths import *
-from Sire.Base import *
-from Sire.Qt import *
+from sire.legacy.IO import *
+from sire.legacy.Mol import *
+from sire.legacy.CAS import *
+from sire.legacy.System import *
+from sire.legacy.Move import *
+from sire.legacy.MM import *
+from sire.legacy.FF import *
+from sire.legacy.Units import *
+from sire.legacy.Vol import *
+from sire.legacy.Maths import *
+from sire.legacy.Base import *
+from sire.legacy.Qt import *
 
 import os,re,sys
 import shutil

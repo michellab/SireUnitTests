@@ -1,16 +1,15 @@
+from sire.legacy.MM import *
+from sire.legacy.FF import *
+from sire.legacy.Vol import *
+from sire.legacy.IO import *
+from sire.legacy.System import *
+from sire.legacy.Move import *
+from sire.legacy.Maths import *
+from sire.legacy.Units import *
+from sire.legacy.Mol import *
+from sire.legacy.Qt import *
 
-from Sire.MM import *
-from Sire.FF import *
-from Sire.Vol import *
-from Sire.IO import *
-from Sire.System import *
-from Sire.Move import *
-from Sire.Maths import *
-from Sire.Units import *
-from Sire.Mol import *
-from Sire.Qt import *
-
-import Sire.Stream
+import sire.legacy.Stream
 
 from nose.tools import assert_almost_equal
 
@@ -121,9 +120,9 @@ def _pvt_test_stream(verbose, s):
 
     oldnrg = s.energy().value()
 
-    Sire.Stream.save(s, "tmp.s3")
+    sire.legacy.Stream.save(s, "tmp.s3")
 
-    s2 = Sire.Stream.load("tmp.s3")
+    s2 = sire.legacy.Stream.load("tmp.s3")
 
     newnrg = s2.energy().value()
 

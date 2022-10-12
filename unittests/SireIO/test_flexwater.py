@@ -1,15 +1,8 @@
-
-try:
-    import sire as sr
-    sr.use_old_api()
-except ImportError:
-    pass
-
-from Sire.IO import *
-from Sire.MM import *
-from Sire.Mol import *
-from Sire.CAS import *
-from Sire.Units import *
+from sire.legacy.IO import *
+from sire.legacy.MM import *
+from sire.legacy.Mol import *
+from sire.legacy.CAS import *
+from sire.legacy.Units import *
 
 from nose.tools import assert_equal, assert_almost_equal
 

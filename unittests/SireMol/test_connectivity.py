@@ -1,9 +1,8 @@
+import sire.legacy.Stream
 
-import Sire.Stream
+from sire.legacy.Mol import *
 
-from Sire.Mol import *
-
-mol = Sire.Stream.load("../io/ligand.s3")
+mol = sire.legacy.Stream.load("../io/ligand.s3")
 
 def printMatrix(matrix):
     for i in range(0,len(matrix)):

@@ -1,6 +1,5 @@
-
-from Sire.MM import *
-from Sire.FF import *
+from sire.legacy.MM import *
+from sire.legacy.FF import *
 
 from nose.tools import assert_equal
 

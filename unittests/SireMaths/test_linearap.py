@@ -1,7 +1,6 @@
-
-from Sire.Base import *
-from Sire.Maths import *
-from Sire.Qt import *
+from sire.legacy.Base import *
+from sire.legacy.Maths import *
+from sire.legacy.Qt import *
 
 def test_linearap(verbose=False):
 

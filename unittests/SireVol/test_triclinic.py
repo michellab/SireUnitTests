@@ -2,11 +2,11 @@ from math import sqrt
 from nose.tools import assert_almost_equal
 from random import random, randint
 
-from Sire.IO import *
-from Sire.Maths import *
-from Sire.MM import *
-from Sire.Units import *
-from Sire.Vol import *
+from sire.legacy.IO import *
+from sire.legacy.Maths import *
+from sire.legacy.MM import *
+from sire.legacy.Units import *
+from sire.legacy.Vol import *
 
 # The number of coordinate groups.
 num_groups = 10

@@ -1,6 +1,5 @@
-
-from Sire.MM import *
-from Sire.Base import *
+from sire.legacy.MM import *
+from sire.legacy.Base import *
 
 def _pvt_test_props(ff, verbose = False):
 

@@ -1,6 +1,6 @@
-from Sire.Base import *
-from Sire.IO import *
-from Sire.Mol import *
+from sire.legacy.Base import *
+from sire.legacy.IO import *
+from sire.legacy.Mol import *
 
 from glob import glob
 from nose.tools import assert_equal, assert_almost_equal

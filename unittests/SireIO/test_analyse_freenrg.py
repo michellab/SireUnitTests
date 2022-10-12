@@ -1,20 +1,19 @@
-
 import os
 import subprocess
 
-import Sire.Config
+import sire.legacy.Config
 
 def test_analyse_freenrg(verbose=False):
 
     if verbose:
         print("Analysing free energy...")
 
-    if os.path.exists("%s/analyse_freenrg" % Sire.Config.binary_directory):
-        p = subprocess.Popen(("%s/analyse_freenrg -i ../io/freenrgs.s3" % Sire.Config.binary_directory).split(),
+    if os.path.exists("%s/analyse_freenrg" % sire.legacy.Config.binary_directory):
+        p = subprocess.Popen(("%s/analyse_freenrg -i ../io/freenrgs.s3" % sire.legacy.Config.binary_directory).split(),
                              stdout=subprocess.PIPE)
     else:
         p = subprocess.Popen(("%s/sire_python %s/scripts/analyse_freenrg.py -i ../io/freenrgs.s3" % (
-                             Sire.Config.binary_directory, Sire.Config.share_directory)).split(),
+                             sire.legacy.Config.binary_directory, sire.legacy.Config.share_directory)).split(),
                              stdout=subprocess.PIPE)
     output, _ = p.communicate()
     output = output.decode("UTF-8").split("\n")

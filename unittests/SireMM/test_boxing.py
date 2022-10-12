@@ -1,7 +1,6 @@
-
-from Sire.MM import *
-from Sire.Maths import *
-from Sire.Units import *
+from sire.legacy.MM import *
+from sire.legacy.Maths import *
+from sire.legacy.Units import *
 
 def test_boxing():
     length = 5 * angstrom

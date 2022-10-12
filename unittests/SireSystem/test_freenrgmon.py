@@ -1,11 +1,10 @@
-
-from Sire.System import *
-from Sire.IO import *
-from Sire.Mol import *
-from Sire.MM import *
-from Sire.CAS import *
-from Sire.Maths import *
-from Sire.Base import *
+from sire.legacy.System import *
+from sire.legacy.IO import *
+from sire.legacy.Mol import *
+from sire.legacy.MM import *
+from sire.legacy.CAS import *
+from sire.legacy.Maths import *
+from sire.legacy.Base import *
 
 from nose.tools import assert_almost_equal
 

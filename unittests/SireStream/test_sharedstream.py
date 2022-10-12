@@ -1,6 +1,6 @@
-from Sire.Base import *
-from Sire.Stream import *
-from Sire.Qt import *
+from sire.legacy.Base import *
+from sire.legacy.Stream import *
+from sire.legacy.Qt import *
 
 from nose.tools import assert_equal
 

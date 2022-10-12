@@ -1,6 +1,5 @@
-
-from Sire.IO import *
-from Sire.MM import *
+from sire.legacy.IO import *
+from sire.legacy.MM import *
 
 (mols, space) = Amber().readCrdTop("../io/waterbox.crd", "../io/waterbox.top")
 

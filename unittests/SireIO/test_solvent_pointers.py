@@ -1,5 +1,4 @@
-
-from Sire.IO import *
+from sire.legacy.IO import *
 
 from nose.tools import assert_equal
 

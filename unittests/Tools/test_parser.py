@@ -1,6 +1,5 @@
-
-from Sire.Tools import resolveParameters,readParams,Parameter
-from Sire.Units import *
+from sire.legacy.Tools import resolveParameters,readParams,Parameter
+from sire.legacy.Units import *
 
 distance_restraints_dict = Parameter("distance restraints dictionary", {},
                                      """Dictionary of pair of atoms whose distance is restrained, and restraint

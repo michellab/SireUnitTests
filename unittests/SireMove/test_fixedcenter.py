@@ -1,25 +1,18 @@
+import sire.legacy.Stream
 
-try:
-    import sire as sr
-    sr.use_old_api()
-except ImportError:
-    pass
-
-import Sire.Stream
-
-from Sire.Mol import *
-from Sire.MM import *
-from Sire.System import *
-from Sire.Move import *
-from Sire.IO import *
-from Sire.Base import *
-from Sire.Maths import *
-from Sire.Units import *
+from sire.legacy.Mol import *
+from sire.legacy.MM import *
+from sire.legacy.System import *
+from sire.legacy.Move import *
+from sire.legacy.IO import *
+from sire.legacy.Base import *
+from sire.legacy.Maths import *
+from sire.legacy.Units import *
 
 from nose.tools import assert_almost_equal
 
 def _pvt_test_fixed_center(center_method, verbose = False):
-    ligand = Sire.Stream.load("../io/osel.s3")
+    ligand = sire.legacy.Stream.load("../io/osel.s3")
 
     if center_method:
         old_center = center_method.getPoint(ligand)

@@ -1,8 +1,7 @@
-
-from Sire.MM import *
-from Sire.System import *
-from Sire.Base import *
-from Sire.CAS import *
+from sire.legacy.MM import *
+from sire.legacy.System import *
+from sire.legacy.Base import *
+from sire.legacy.CAS import *
 
 from nose.tools import assert_almost_equal
 

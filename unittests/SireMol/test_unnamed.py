@@ -1,5 +1,5 @@
-from Sire.Maths import *
-from Sire.Mol import *
+from sire.legacy.Maths import *
+from sire.legacy.Mol import *
 
 from nose.tools import assert_equal
 

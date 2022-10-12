@@ -1,5 +1,4 @@
-
-from Sire.IO import *
+from sire.legacy.IO import *
 
 def test_netcdf(verbose=False):
 

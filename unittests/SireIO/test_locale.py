@@ -1,15 +1,8 @@
+from sire.legacy.IO import *
+from sire.legacy.Mol import *
+from sire.legacy.Base import *
 
-try:
-    import sire as sr
-    sr.use_old_api()
-except ImportError:
-    pass
-
-from Sire.IO import *
-from Sire.Mol import *
-from Sire.Base import *
-
-import Sire.Config
+import sire.legacy.Config
 
 import subprocess
 import shlex

@@ -1,5 +1,4 @@
-
-from Sire.Qt import *
+from sire.legacy.Qt import *
 
 import time
 

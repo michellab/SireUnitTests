@@ -1,7 +1,6 @@
-
-from Sire.Mol import *
-from Sire.MM import *
-from Sire.IO import *
+from sire.legacy.Mol import *
+from sire.legacy.MM import *
+from sire.legacy.IO import *
 
 from nose.tools import assert_almost_equal
 

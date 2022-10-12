@@ -1,8 +1,7 @@
-
-from Sire.MM import *
-from Sire.Vol import *
-from Sire.Maths import *
-from Sire.Units import *
+from sire.legacy.MM import *
+from sire.legacy.Vol import *
+from sire.legacy.Maths import *
+from sire.legacy.Units import *
 
 
 def test_index(verbose = False):

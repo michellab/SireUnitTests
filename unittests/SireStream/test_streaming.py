@@ -1,17 +1,16 @@
+from sire.legacy.Mol import *
+from sire.legacy.IO import *
+from sire.legacy.Vol import *
+from sire.legacy.FF import *
+from sire.legacy.MM import *
+from sire.legacy.CAS import *
+from sire.legacy.Maths import *
+from sire.legacy.Qt import *
+from sire.legacy.Units import *
+from sire.legacy.System import *
+from sire.legacy.Move import *
 
-from Sire.Mol import *
-from Sire.IO import *
-from Sire.Vol import *
-from Sire.FF import *
-from Sire.MM import *
-from Sire.CAS import *
-from Sire.Maths import *
-from Sire.Qt import *
-from Sire.Units import *
-from Sire.System import *
-from Sire.Move import *
-
-import Sire.Stream
+import sire.legacy.Stream
 
 from nose.tools import assert_almost_equal
 
@@ -75,12 +74,12 @@ def test_stream(verbose=False):
     if verbose:
         print("saving system...")
 
-    data = Sire.Stream.save(system)
+    data = sire.legacy.Stream.save(system)
 
     if verbose:
         print(("%s takes up %d bytes" % (system.what(),data.size())))
 
-    header = Sire.Stream.getDataHeader(data)
+    header = sire.legacy.Stream.getDataHeader(data)
 
     if verbose:
         print((header.dataType()))
@@ -96,7 +95,7 @@ def test_stream(verbose=False):
         print((header.buildVersion()))
         print((header.systemInfo()))
 
-    system2 = Sire.Stream.load(data)
+    system2 = sire.legacy.Stream.load(data)
   
     if verbose:
         print(("Re-Reading the data"))

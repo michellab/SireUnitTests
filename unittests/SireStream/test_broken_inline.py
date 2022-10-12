@@ -1,10 +1,9 @@
+import sire.legacy.Stream
 
-import Sire.Stream
-
-from Sire.Mol import *
-from Sire.Base import *
-from Sire.Maths import *
-from Sire.Units import *
+from sire.legacy.Mol import *
+from sire.legacy.Base import *
+from sire.legacy.Maths import *
+from sire.legacy.Units import *
 
 ## This test is needed as this causes a crash when using Sire
 ## on Linux or Windows that is compiled with GCC >= 5 using -O3
@@ -25,7 +24,7 @@ def test_should_crash(verbose=False):
              .setProperty("test", 5.0*mod_electron ) \
              .molecule().commit()
 
-    Sire.Stream.save(mol, "testmol.s3")
+    sire.legacy.Stream.save(mol, "testmol.s3")
 
     if verbose:
         print("Simple test")
@@ -43,7 +42,7 @@ def test_should_crash(verbose=False):
     if verbose:
         print("Stream test")
 
-    mol = Sire.Stream.load("testmol.s3")
+    mol = sire.legacy.Stream.load("testmol.s3")
     test = mol.property("test")
 
     if verbose:
@@ -54,7 +53,7 @@ def test_should_crash(verbose=False):
     if verbose:
         print(t)
 
-    mol = Sire.Stream.load("../io/saved_molecule.s3").molecule()
+    mol = sire.legacy.Stream.load("../io/saved_molecule.s3").molecule()
 
     mol = mol.atom( AtomIdx(0) ).edit() \
              .setProperty("test", 5.0) \
@@ -75,7 +74,7 @@ def test_should_crash(verbose=False):
         print(chg.__class__)
         print("chg2 property")
 
-    chg2 = Sire.Stream.load("../io/saved_charges.s3")
+    chg2 = sire.legacy.Stream.load("../io/saved_charges.s3")
 
     if verbose:
         print(chg2.__class__)

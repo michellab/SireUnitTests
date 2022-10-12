@@ -1,29 +1,24 @@
+import sire.legacy as Sire
 
-try:
-    import sire as sr
-    sr.use_old_api()
-except ImportError:
-    pass
-
-import Sire
-
-from Sire.IO import *
-from Sire.Move import *
-from Sire.Mol import *
-from Sire.MM import *
-from Sire.System import *
-from Sire.Units import *
-from Sire.Maths import *
+from sire.legacy.Base import *
+from sire.legacy.IO import *
+from sire.legacy.Move import *
+from sire.legacy.Mol import *
+from sire.legacy.MM import *
+from sire.legacy.System import *
+from sire.legacy.Units import *
+from sire.legacy.Maths import *
 import os.path
 
-np = Sire.try_import("numpy")
+from sire.legacy import try_import
+np = try_import("numpy")
 
 from nose.tools import assert_almost_equal
 plugins = os.path.join('lib','plugins')
 try:
     os.environ["OPENMM_PLUGIN_DIR"]
 except KeyError:
-    os.environ["OPENMM_PLUGIN_DIR"] = os.path.join(Sire.Base.getInstallDir(),plugins)
+    os.environ["OPENMM_PLUGIN_DIR"] = os.path.join(getInstallDir(),plugins)
 
 
 (mols, space) = Amber().readCrdTop("../io/ethane.crd", "../io/ethane.top")

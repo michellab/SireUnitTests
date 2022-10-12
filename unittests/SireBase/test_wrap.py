@@ -1,16 +1,9 @@
-
-try:
-    import sire as sr
-    sr.use_old_api()
-except ImportError:
-    pass
-
-from Sire.IO import *
-from Sire.Mol import *
-from Sire.Maths import *
-from Sire.Vol import *
-from Sire.Base import *
-from Sire.CAS import *
+from sire.legacy.IO import *
+from sire.legacy.Mol import *
+from sire.legacy.Maths import *
+from sire.legacy.Vol import *
+from sire.legacy.Base import *
+from sire.legacy.CAS import *
 
 try:
     from sr.legacy.Base import PropertyList

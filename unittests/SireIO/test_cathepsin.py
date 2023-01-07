@@ -1,3 +1,9 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
 
 from Sire.IO import *
 from Sire.Mol import *
@@ -22,15 +28,16 @@ for prm in prms:
 
     inputs[prm] = rst
 
+
 def _get_first_molecules(s):
     m = MoleculeGroup("all")
     intraff = InternalFF("intraff")
     intraclj = IntraCLJFF("intraclj")
 
-    for i in range(0,s.nMolecules()):
+    for i in range(0, s.nMolecules()):
         mol = s[MolIdx(i)]
 
-        # only add non-water molecules
+        # only add non-water molecules
         if mol.nAtoms() > 5:
             m.add(mol)
             intraff.add(mol)
@@ -43,11 +50,13 @@ def _get_first_molecules(s):
 
     return s
 
+
 def _combine_dih_imp(nrgs):
     dih = Symbol("E_{intraff}^{dihedral}")
     imp = Symbol("E_{intraff}^{improper}")
     nrgs[dih] += nrgs[imp]
     nrgs[imp] = 0
+
 
 def _get_energies(s):
     nrgs = s.energies()
@@ -59,12 +68,14 @@ def _get_energies(s):
     _combine_dih_imp(n)
     return n
 
+
 def _print_energies(nrgs1, nrgs2):
     keys = list(nrgs1.keys())
     keys.sort()
 
     for key in keys:
         print("%s  %s  %s" % (key, nrgs1[key], nrgs2[key]))
+
 
 def _compare_energies(nrgs1, nrgs2):
     keys = list(nrgs1.keys())
@@ -75,6 +86,7 @@ def _compare_energies(nrgs1, nrgs2):
         if diff > 0.1:
             print(key)
             assert_equal(nrgs1[key], nrgs2[key])
+
 
 def _test_input(prm, crd, verbose=False, slow_tests=False):
     root = prm.split("/")[-1][0:-6]
@@ -88,7 +100,7 @@ def _test_input(prm, crd, verbose=False, slow_tests=False):
     a = AmberPrm(prm)
 
     d = os.path.dirname("test-%s" % root)
-    if (not os.path.isdir(d) and d != ""):
+    if not os.path.isdir(d) and d != "":
         os.mkdir(d)
 
     a.writeToFile("test-%s.prm" % root)
@@ -152,7 +164,7 @@ def _test_input(prm, crd, verbose=False, slow_tests=False):
     _compare_energies(nrgs, nrgs2)
 
     if verbose:
-       print("Comparing writing to coordinate files")
+        print("Comparing writing to coordinate files")
 
     r = AmberRst(full_s)
     r.writeToFile("test-%s.rst" % root)

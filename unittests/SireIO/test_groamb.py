@@ -1,9 +1,17 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
+
 from Sire.IO import *
 from Sire.System import *
 from Sire.MM import *
 from Sire.Mol import *
 
 from nose.tools import assert_equal, assert_almost_equal
+
 
 def _addForceFields(s):
     cljff = InterFF("cljff")
@@ -21,27 +29,29 @@ def _addForceFields(s):
 
     return s
 
+
 def test_groamb(verbose=False):
     if verbose:
         print("Reading gromacs file...")
 
     # load up the gromacs file
-    s = MoleculeParser.read("../io/urea.top", "../io/urea.gro",
-                            {"GROMACS_PATH":"../io/gromacs"})
+    s = MoleculeParser.read(
+        "../io/urea.top", "../io/urea.gro", {"GROMACS_PATH": "../io/gromacs"}
+    )
 
     # assert that all of the molecules have an amber-style forcefield
-    for i in range(0,s.nMolecules()):
+    for i in range(0, s.nMolecules()):
         ff = s[MolIdx(i)].property("forcefield")
 
         if verbose:
-            print("Forcefield %s ==\n%s" % (s[MolIdx(i)],ff))
+            print("Forcefield %s ==\n%s" % (s[MolIdx(i)], ff))
 
-        assert_equal( ff.isAmberStyle(), True )
+        assert_equal(ff.isAmberStyle(), True)
 
     if verbose:
         print("Saving to amber files...")
 
-    # save to amber, and then reload
+    # save to amber, and then reload
     a = AmberPrm(s)
     c = AmberRst(s)
 
@@ -74,7 +84,8 @@ def test_groamb(verbose=False):
             print("%s:  %s  versus  %s" % (key, nrgs[key], nrgs2[key]))
 
     for key in keys:
-        assert_almost_equal( nrgs[key], nrgs2[key], 2 )
+        assert_almost_equal(nrgs[key], nrgs2[key], 2)
+
 
 def test_ryckaert_bellemans(verbose=False):
     if verbose:
@@ -82,13 +93,16 @@ def test_ryckaert_bellemans(verbose=False):
         print("Reading gromacs file...")
 
     # load up the gromacs file
-    s = MoleculeParser.read("../io/cage_quin1.top", "../io/cage_quin1.gro",
-                            {"GROMACS_PATH":"../io/cage_quin1"})
+    s = MoleculeParser.read(
+        "../io/cage_quin1.top",
+        "../io/cage_quin1.gro",
+        {"GROMACS_PATH": "../io/cage_quin1"},
+    )
 
     if verbose:
         print("Saving to amber files...")
 
-    # save to amber, and then reload
+    # save to amber, and then reload
     a = AmberPrm(s)
     c = AmberRst(s)
 
@@ -121,7 +135,8 @@ def test_ryckaert_bellemans(verbose=False):
             print("%s:  %s  versus  %s" % (key, nrgs[key], nrgs2[key]))
 
     for key in keys:
-        assert_almost_equal( nrgs[key], nrgs2[key], 2 )
+        assert_almost_equal(nrgs[key], nrgs2[key], 2)
+
 
 if __name__ == "__main__":
     test_groamb(True)

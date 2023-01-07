@@ -1,3 +1,10 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
+
 from Sire.Base import *
 from Sire.IO import *
 from Sire.Mol import *
@@ -20,7 +27,7 @@ def test_chains(verbose=False):
         return
 
     # Parse a Mol2 file containing multiple chains.
-    p = Mol2('../io/complex.mol2')
+    p = Mol2("../io/complex.mol2")
 
     # Create a Sire molecular system.
     s = p.toSystem()
@@ -32,8 +39,9 @@ def test_chains(verbose=False):
     r = m.residues()
 
     # Assert that the residues belong to the correct chains.
-    assert_equal( r[0].chain().name().value(),  'A' )
-    assert_equal( r[-1].chain().name().value(), 'C' )
+    assert_equal(r[0].chain().name().value(), "A")
+    assert_equal(r[-1].chain().name().value(), "C")
+
 
 if __name__ == "__main__":
     test_chains(True)

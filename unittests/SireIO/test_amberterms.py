@@ -1,3 +1,10 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
+
 from Sire.IO import *
 from Sire.MM import *
 from Sire.Mol import *
@@ -8,18 +15,21 @@ from nose.tools import assert_almost_equal
 
 rangen = RanGenerator()
 
-mol = MoleculeParser.read("../io/ose.top","../io/ose.crd") \
-        [MolWithResID(ResName("OSE"))].molecule()
+mol = MoleculeParser.read("../io/ose.top", "../io/ose.crd")[
+    MolWithResID(ResName("OSE"))
+].molecule()
+
 
 def _assert_expressions_equal(ex0, ex1, symbol):
     try:
-        for i in range(0,100):
-            values = {symbol:rangen.rand(-5.0,5.0)}
+        for i in range(0, 100):
+            values = {symbol: rangen.rand(-5.0, 5.0)}
 
-            assert_almost_equal( ex0.evaluate(values), ex1.evaluate(values) )
+            assert_almost_equal(ex0.evaluate(values), ex1.evaluate(values))
     except Exception as e:
-        print("FAILED: %s != %s" % (ex0,ex1))
+        print("FAILED: %s != %s" % (ex0, ex1))
         raise e
+
 
 def test_bonds(verbose=False):
     bonds = mol.property("bond").potentials()
@@ -29,10 +39,12 @@ def test_bonds(verbose=False):
         amberbond = AmberBond(pot, Symbol("r"))
 
         if verbose:
-             print("%s == %s ??" % (amberbond,pot))
+            print("%s == %s ??" % (amberbond, pot))
 
-        _assert_expressions_equal( pot, amberbond.toExpression(Symbol("r")),
-                                   Symbol("r") )
+        _assert_expressions_equal(
+            pot, amberbond.toExpression(Symbol("r")), Symbol("r")
+        )
+
 
 def test_angles(verbose=False):
     angles = mol.property("angle").potentials()
@@ -42,10 +54,12 @@ def test_angles(verbose=False):
         amberangle = AmberAngle(pot, Symbol("theta"))
 
         if verbose:
-             print("%s == %s ??" % (amberangle,pot))
+            print("%s == %s ??" % (amberangle, pot))
 
-        _assert_expressions_equal( pot, amberangle.toExpression(Symbol("theta")),
-                                   Symbol("theta") )
+        _assert_expressions_equal(
+            pot, amberangle.toExpression(Symbol("theta")), Symbol("theta")
+        )
+
 
 def test_dihedrals(verbose=False):
     dihedrals = mol.property("dihedral").potentials()
@@ -55,10 +69,12 @@ def test_dihedrals(verbose=False):
         amberdihedral = AmberDihedral(pot, Symbol("phi"))
 
         if verbose:
-             print("%s == %s ??" % (amberdihedral,pot))
+            print("%s == %s ??" % (amberdihedral, pot))
 
-        _assert_expressions_equal( pot, amberdihedral.toExpression(Symbol("phi")),
-                                   Symbol("phi") )
+        _assert_expressions_equal(
+            pot, amberdihedral.toExpression(Symbol("phi")), Symbol("phi")
+        )
+
 
 def test_impropers(verbose=False):
     impropers = mol.property("improper").potentials()
@@ -68,10 +84,13 @@ def test_impropers(verbose=False):
         amberdihedral = AmberDihedral(pot, Symbol("phi"))
 
         if verbose:
-             print("%s == %s ??" % (amberdihedral,pot))
+            print("%s == %s ??" % (amberdihedral, pot))
 
-        _assert_expressions_equal( pot, amberdihedral.toExpression(Symbol("phi")),
-                                   Symbol("phi") )
+        _assert_expressions_equal(
+            pot, amberdihedral.toExpression(Symbol("phi")), Symbol("phi")
+        )
+
+
 def test_dihedral_forms(verbose=False):
 
     # The symbol for the expression.
@@ -80,9 +99,9 @@ def test_dihedral_forms(verbose=False):
     # First test single terms expressions.
 
     # 1. Standard form.
-    f = Expression(0.3 * (1 + Cos(4*Phi - 2.0)))    # Functional form.
-    d = AmberDihedral(f, Phi)                       # The Amber dihedral object.
-    t = d[0]                                        # The dihedral part (term).
+    f = Expression(0.3 * (1 + Cos(4 * Phi - 2.0)))  # Functional form.
+    d = AmberDihedral(f, Phi)  # The Amber dihedral object.
+    t = d[0]  # The dihedral part (term).
 
     # Make sure k, periodicity, and phase are correct.
     assert_almost_equal(t.k(), 0.3)
@@ -90,9 +109,9 @@ def test_dihedral_forms(verbose=False):
     assert_almost_equal(t.phase(), 2.0)
 
     # 2. Negative k.
-    f = Expression(-0.3 * (1 + Cos(4*Phi - 2.0)))   # Functional form.
-    d = AmberDihedral(f, Phi)                       # The Amber dihedral object.
-    t = d[0]                                        # The dihedral part (term).
+    f = Expression(-0.3 * (1 + Cos(4 * Phi - 2.0)))  # Functional form.
+    d = AmberDihedral(f, Phi)  # The Amber dihedral object.
+    t = d[0]  # The dihedral part (term).
 
     # Make sure k, periodicity, and phase are correct.
     assert_almost_equal(t.k(), -0.3)
@@ -100,9 +119,9 @@ def test_dihedral_forms(verbose=False):
     assert_almost_equal(t.phase(), 2.0)
 
     # 3. k [ 1 - cos(Phi - phase) ]
-    f = Expression(0.3 * (1 - Cos(4*Phi - 2.0)))    # Functional form.
-    d = AmberDihedral(f, Phi)                       # The Amber dihedral object.
-    t = d[0]                                        # The dihedral part (term).
+    f = Expression(0.3 * (1 - Cos(4 * Phi - 2.0)))  # Functional form.
+    d = AmberDihedral(f, Phi)  # The Amber dihedral object.
+    t = d[0]  # The dihedral part (term).
 
     # Make sure k, periodicity, and phase are correct.
     assert_almost_equal(t.k(), 0.3)
@@ -140,14 +159,23 @@ def test_dihedral_forms(verbose=False):
     assert_almost_equal(f.evaluate(val), d.toExpression(Phi).evaluate(val))
 
     # Try a three-term expression that mixes all formats.
-    f = Expression(0.3 * (1 + Cos(Phi)) -1.2 * (1 + Cos(3 * Phi)) + 0.8 * (1 - Cos(4 * Phi)))
+    f = Expression(
+        0.3 * (1 + Cos(Phi))
+        - 1.2 * (1 + Cos(3 * Phi))
+        + 0.8 * (1 - Cos(4 * Phi))
+    )
     d = AmberDihedral(f, Phi)
     assert_almost_equal(f.evaluate(val), d.toExpression(Phi).evaluate(val))
 
     # Try a three-term expression with equal factors.
-    f = Expression(0.3 * (1 + Cos(Phi)) -0.3 * (1 + Cos(3 * Phi)) + 0.3 * (1 - Cos(4 * Phi)))
+    f = Expression(
+        0.3 * (1 + Cos(Phi))
+        - 0.3 * (1 + Cos(3 * Phi))
+        + 0.3 * (1 - Cos(4 * Phi))
+    )
     d = AmberDihedral(f, Phi)
     assert_almost_equal(f.evaluate(val), d.toExpression(Phi).evaluate(val))
+
 
 if __name__ == "__main__":
     test_bonds(True)

@@ -1,3 +1,10 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
+
 from Sire.Base import *
 from Sire.IO import *
 from Sire.Mol import *
@@ -25,7 +32,7 @@ def test_read_write(verbose=False):
         return
 
     # Glob all of the Mol2 files in the example file directory.
-    mol2files = glob('../io/*mol2')
+    mol2files = glob("../io/*mol2")
 
     # Loop over all test files.
     for file in mol2files:
@@ -38,7 +45,7 @@ def test_read_write(verbose=False):
                 print("Parallel = %s" % use_par)
 
             # Parse the file into a Mol2 object.
-            p = Mol2(file, {"parallel" : wrap(use_par)})
+            p = Mol2(file, {"parallel": wrap(use_par)})
 
             if verbose:
                 print("Constructing molecular system...")
@@ -50,10 +57,11 @@ def test_read_write(verbose=False):
                 print("Reconstructing Mol2 data from molecular system...")
 
             # Now re-parse the molecular system.
-            p = Mol2(s, {"parallel" : wrap(use_par)})
+            p = Mol2(s, {"parallel": wrap(use_par)})
 
             if verbose:
                 print("Passed!\n")
+
 
 # Specific atom coordinate data validation test for file "../io/complex.mol2".
 def test_atom_coords(verbose=False):
@@ -64,11 +72,13 @@ def test_atom_coords(verbose=False):
     atoms = ["N", "CA", "C", "O", "CB"]
 
     # Test coordinates.
-    coords = [[ -2.9880,  -2.0590,  -2.6220],
-              [ -3.8400,  -2.0910,  -7.4260],
-              [ -6.4250,  -3.9190, -10.9580],
-              [ -6.1980,  -6.0090, -14.2910],
-              [ -9.8700,  -6.5500, -15.2480]]
+    coords = [
+        [-2.9880, -2.0590, -2.6220],
+        [-3.8400, -2.0910, -7.4260],
+        [-6.4250, -3.9190, -10.9580],
+        [-6.1980, -6.0090, -14.2910],
+        [-9.8700, -6.5500, -15.2480],
+    ]
 
     # Test in parallel and serial mode.
     for use_par in [True, False]:
@@ -78,7 +88,7 @@ def test_atom_coords(verbose=False):
             print("Parallel = %s" % use_par)
 
         # Parse the Mol2 file.
-        p = Mol2('../io/complex.mol2', {"parallel" : wrap(use_par)})
+        p = Mol2("../io/complex.mol2", {"parallel": wrap(use_par)})
 
         if verbose:
             print("Constructing molecular system...")
@@ -96,18 +106,19 @@ def test_atom_coords(verbose=False):
         for i in range(0, len(atoms)):
 
             # Extract the atom from the residue "i + 1".
-            a = m.atom(AtomName(atoms[i]) + ResNum(i+1))
+            a = m.atom(AtomName(atoms[i]) + ResNum(i + 1))
 
             # Extract the atom coordinates.
             c = a.property("coordinates")
 
             # Validate parsed coordinates against known values.
-            assert_almost_equal( c[0], coords[i][0] )
-            assert_almost_equal( c[1], coords[i][1] )
-            assert_almost_equal( c[2], coords[i][2] )
+            assert_almost_equal(c[0], coords[i][0])
+            assert_almost_equal(c[1], coords[i][1])
+            assert_almost_equal(c[2], coords[i][2])
 
         if verbose:
             print("Passed!\n")
+
 
 # Residue and chain validation test for file "../io/complex.mol2".
 def test_residues(verbose=False):
@@ -122,7 +133,7 @@ def test_residues(verbose=False):
             print("Parallel = %s" % use_par)
 
         # Parse the Mol2 file.
-        p = Mol2('../io/complex.mol2', {"parallel" : wrap(use_par)})
+        p = Mol2("../io/complex.mol2", {"parallel": wrap(use_par)})
 
         if verbose:
             print("Constructing molecular system...")
@@ -142,24 +153,25 @@ def test_residues(verbose=False):
             print("Checking chain and residue data...")
 
         # Check the number of chains in each molecule.
-        assert_equal( len(c1), 3 )
-        assert_equal( len(c2), 1 )
+        assert_equal(len(c1), 3)
+        assert_equal(len(c2), 1)
 
         # Check the number of residues in each chain of the first molecule.
-        assert_equal( len(c1[0].residues()), 118 )
-        assert_equal( len(c1[1].residues()), 114 )
-        assert_equal( len(c1[2].residues()), 118 )
+        assert_equal(len(c1[0].residues()), 118)
+        assert_equal(len(c1[1].residues()), 114)
+        assert_equal(len(c1[2].residues()), 118)
 
         # Check the number of residues in the single chain of the second molecule.
-        assert_equal( len(c2[0].residues()), 1 )
+        assert_equal(len(c2[0].residues()), 1)
 
         # Check some specific residue names in the first chain from the first molecule.
-        assert_equal( c1[0].residues()[0].name().toString(), "ResName('PRO1')" )
-        assert_equal( c1[1].residues()[1].name().toString(), "ResName('MET2')" )
-        assert_equal( c1[1].residues()[2].name().toString(), "ResName('PHE3')" )
+        assert_equal(c1[0].residues()[0].name().toString(), "ResName('PRO1')")
+        assert_equal(c1[1].residues()[1].name().toString(), "ResName('MET2')")
+        assert_equal(c1[1].residues()[2].name().toString(), "ResName('PHE3')")
 
         if verbose:
             print("Passed!\n")
+
 
 if __name__ == "__main__":
     test_read_write(True)

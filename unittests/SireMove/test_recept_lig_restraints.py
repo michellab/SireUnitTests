@@ -4,6 +4,13 @@
 #                                                                                                  #
 ####################################################################################################
 
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
+
 import os
 from nose.tools import assert_almost_equal
 from Sire.Tools import OpenMMMD

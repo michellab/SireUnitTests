@@ -1,7 +1,14 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
 
 from Sire.Base import *
 from Sire.Maths import *
 from Sire.Qt import *
+
 
 def test_linearap(verbose=False):
 
@@ -15,10 +22,10 @@ def test_linearap(verbose=False):
     t = QTime()
     t.start()
 
-    for i in range(0,costs.nRows()):
-        for j in range(0,costs.nColumns()):
-            d = rand.rand(0,5)
-            costs.set(i,j, d*d)
+    for i in range(0, costs.nRows()):
+        for j in range(0, costs.nColumns()):
+            d = rand.rand(0, 5)
+            costs.set(i, j, d * d)
 
     ms = t.elapsed()
 
@@ -54,12 +61,14 @@ def test_linearap(verbose=False):
         print("\nBrute force solution:")
         print(rows_to_columns2)
 
-        print("Total cost = %f" % calculate_total_cost(costs, rows_to_columns2))
+        print(
+            "Total cost = %f" % calculate_total_cost(costs, rows_to_columns2)
+        )
 
         print("\nSolution took %d ms" % ms)
 
-    assert( rows_to_columns == rows_to_columns2 )
+    assert rows_to_columns == rows_to_columns2
+
 
 if __name__ == "__main__":
     test_linearap(True)
-

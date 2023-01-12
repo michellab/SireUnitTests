@@ -56,7 +56,11 @@ def test_mol_property(verbose=False):
     assert_equal( m.property("test4").asAnInteger(), 42 )
     assert_equal( m.property("test5").asAnInteger(), 42 )
     assert_equal( m.property("test6").asAString(), "Hello World" )
-    assert_equal( m.property("test7").value(), 5 * angstrom )
+
+    try:
+        assert_equal( m.property("test7").value(), 5 * angstrom )
+    except Exception:
+        assert_equal( m.property("test7"), 5 * angstrom )
 
 if __name__ == "__main__":
     test_cast(True)

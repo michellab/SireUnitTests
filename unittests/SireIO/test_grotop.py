@@ -1,3 +1,9 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
 
 from Sire.IO import *
 from Sire.MM import *
@@ -20,6 +26,7 @@ except:
     # No GroTop support
     has_grotop = False
 
+
 def test_grotop(verbose=False):
     if not has_grotop:
         return
@@ -30,10 +37,10 @@ def test_grotop(verbose=False):
 
     files = ["../io/urea.top", "../io/urea.gro"]
 
-    s = MoleculeParser.read( files, {"GROMACS_PATH":gromacs_path})
+    s = MoleculeParser.read(files, {"GROMACS_PATH": gromacs_path})
 
     # check parameters...
-    for i in range(0,s.nMolecules()):
+    for i in range(0, s.nMolecules()):
         m = s[MolIdx(i)]
 
         print(m.propertyKeys())
@@ -58,62 +65,64 @@ def test_grotop(verbose=False):
 
     prm.writeToFile("test.prm")
 
+
 def test_grosys(verbose=False):
 
     try:
         s = GroSystem()
     except:
-        # no GroSystem support
+        # no GroSystem support
         return
 
-    assert_true( s.isNull() )
-    assert_true( s.isEmpty() )
-    assert_equal( s.nMolecules(), 0 )
+    assert_true(s.isNull())
+    assert_true(s.isEmpty())
+    assert_equal(s.nMolecules(), 0)
 
     s.setName("Test System")
 
-    assert_equal( s.name(), "Test System" )
+    assert_equal(s.name(), "Test System")
 
-    assert_false( s.isNull() )
-    assert_true( s.isEmpty() )
+    assert_false(s.isNull())
+    assert_true(s.isEmpty())
 
     s.add("water")
 
-    assert_false( s.isEmpty() )
-    assert_false( s.isNull() )
-    assert_equal( s.nMolecules(), 1 )
-    assert_equal( len(s.uniqueTypes()), 1 )
-    assert_equal( s.uniqueTypes()[0], "water" )
+    assert_false(s.isEmpty())
+    assert_false(s.isNull())
+    assert_equal(s.nMolecules(), 1)
+    assert_equal(len(s.uniqueTypes()), 1)
+    assert_equal(s.uniqueTypes()[0], "water")
 
-    assert_equal( s[0], "water" )
+    assert_equal(s[0], "water")
 
     s.add("water", 100)
 
-    assert_equal( s.nMolecules(), 101 )
-    assert_equal( len(s.uniqueTypes()), 1 )
-    assert_equal( s.uniqueTypes()[0], "water" )
+    assert_equal(s.nMolecules(), 101)
+    assert_equal(len(s.uniqueTypes()), 1)
+    assert_equal(s.uniqueTypes()[0], "water")
 
     for i in range(0, s.nMolecules()):
-        assert_equal( s[i], "water" )
+        assert_equal(s[i], "water")
 
     s.add("sodium", 30)
 
-    assert_equal( s.nMolecules(), 131 )
-    assert_equal( len(s.uniqueTypes()), 2 )
-    assert_equal( s.uniqueTypes()[0], "water" )
-    assert_equal( s.uniqueTypes()[1], "sodium" )
+    assert_equal(s.nMolecules(), 131)
+    assert_equal(len(s.uniqueTypes()), 2)
+    assert_equal(s.uniqueTypes()[0], "water")
+    assert_equal(s.uniqueTypes()[1], "sodium")
 
     for i in range(0, s.nMolecules()):
         if i <= 100:
-            assert_equal( s[i], "water" )
+            assert_equal(s[i], "water")
         else:
-            assert_equal( s[i], "sodium" )
+            assert_equal(s[i], "sodium")
+
 
 def test_pairs(verbose=False):
 
     # Load cyclohexane molecule and create System object.
     files = ["../io/cyclohexane.gro", "../io/cyclohexane.top"]
-    s = MoleculeParser.read( files, {"GROMACS_PATH":gromacs_path})
+    s = MoleculeParser.read(files, {"GROMACS_PATH": gromacs_path})
 
     # Convert to a GroTop object and write to file.
     top = GroTop(s)
@@ -139,6 +148,7 @@ def test_pairs(verbose=False):
         # Ignore timestamp.
         if x != 1:
             assert lines0[x] == lines1[x]
+
 
 if __name__ == "__main__":
     test_grotop(True)

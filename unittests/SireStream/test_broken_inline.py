@@ -1,3 +1,9 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
 
 import Sire.Stream
 
@@ -10,20 +16,35 @@ from Sire.Units import *
 ## on Linux or Windows that is compiled with GCC >= 5 using -O3
 ## (-O2 seems to be ok)
 
+
 def test_should_crash(verbose=False):
     mol = Molecule("test")
 
-    mol = mol.edit().add( CGName("1") ).add(AtomName("CA")) \
-             .cutGroup().add(AtomName("CB")) \
-             .cutGroup().add(AtomName("CC")) \
-             .cutGroup().add(AtomName("CD")) \
-             .cutGroup().add(AtomName("CE")) \
-             .cutGroup().add(AtomName("CF")) \
-             .molecule().commit()
+    mol = (
+        mol.edit()
+        .add(CGName("1"))
+        .add(AtomName("CA"))
+        .cutGroup()
+        .add(AtomName("CB"))
+        .cutGroup()
+        .add(AtomName("CC"))
+        .cutGroup()
+        .add(AtomName("CD"))
+        .cutGroup()
+        .add(AtomName("CE"))
+        .cutGroup()
+        .add(AtomName("CF"))
+        .molecule()
+        .commit()
+    )
 
-    mol = mol.atom( AtomIdx(0) ).edit() \
-             .setProperty("test", 5.0*mod_electron ) \
-             .molecule().commit()
+    mol = (
+        mol.atom(AtomIdx(0))
+        .edit()
+        .setProperty("test", 5.0 * mod_electron)
+        .molecule()
+        .commit()
+    )
 
     Sire.Stream.save(mol, "testmol.s3")
 
@@ -38,7 +59,7 @@ def test_should_crash(verbose=False):
     t = test.toVector()
 
     if verbose:
-        print( t )
+        print(t)
 
     if verbose:
         print("Stream test")
@@ -56,9 +77,14 @@ def test_should_crash(verbose=False):
 
     mol = Sire.Stream.load("../io/saved_molecule.s3").molecule()
 
-    mol = mol.atom( AtomIdx(0) ).edit() \
-             .setProperty("test", 5.0) \
-             .setProperty("chg3", 5*mod_electron).molecule().commit()
+    mol = (
+        mol.atom(AtomIdx(0))
+        .edit()
+        .setProperty("test", 5.0)
+        .setProperty("chg3", 5 * mod_electron)
+        .molecule()
+        .commit()
+    )
 
     if verbose:
         print("test property")
@@ -112,7 +138,7 @@ def test_should_crash(verbose=False):
     if verbose:
         print(t1)
         print(t2)
-        print(t3) 
+        print(t3)
         print("lj.toVector()")
 
     t = lj.toVector()
@@ -144,6 +170,6 @@ def test_should_crash(verbose=False):
         print(s1)
         print(s2)
 
+
 if __name__ == "__main__":
     test_should_crash(True)
-

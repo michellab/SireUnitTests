@@ -1,3 +1,10 @@
+
+try:
+    import sire as sr
+    sr.use_old_api()
+except ImportError:
+    pass
+
 from Sire.IO import *
 from Sire.Mol import *
 from Sire.System import *
@@ -21,7 +28,10 @@ def test_mapping(verbose=False):
     user_match = { AtomName("H1") : AtomName("H18"),
                    AtomName("C9") : AtomName("O4") }
 
-    mapping = ose.evaluate().findMCS(zan, AtomIDMatcher(user_match), True)
+    try:
+        mapping = ose.evaluate().findMCS(zan, AtomIDMatcher(user_match), True)
+    except Exception:
+        mapping = ose[0].evaluate().findMCS(zan, AtomIDMatcher(user_match), True)
 
     if verbose:
         keys = list(mapping.keys())

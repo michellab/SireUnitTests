@@ -1,8 +1,15 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
 
 import os
 import subprocess
 
 import Sire.Config
+
 
 def test_analyse_freenrg(verbose=False):
 
@@ -10,12 +17,21 @@ def test_analyse_freenrg(verbose=False):
         print("Analysing free energy...")
 
     if os.path.exists("%s/analyse_freenrg" % Sire.Config.binary_directory):
-        p = subprocess.Popen(("%s/analyse_freenrg -i ../io/freenrgs.s3" % Sire.Config.binary_directory).split(),
-                             stdout=subprocess.PIPE)
+        p = subprocess.Popen(
+            (
+                "%s/analyse_freenrg -i ../io/freenrgs.s3"
+                % Sire.Config.binary_directory
+            ).split(),
+            stdout=subprocess.PIPE,
+        )
     else:
-        p = subprocess.Popen(("%s/sire_python %s/scripts/analyse_freenrg.py -i ../io/freenrgs.s3" % (
-                             Sire.Config.binary_directory, Sire.Config.share_directory)).split(),
-                             stdout=subprocess.PIPE)
+        p = subprocess.Popen(
+            (
+                "%s/sire_python %s/scripts/analyse_freenrg.py -i ../io/freenrgs.s3"
+                % (Sire.Config.binary_directory, Sire.Config.share_directory)
+            ).split(),
+            stdout=subprocess.PIPE,
+        )
     output, _ = p.communicate()
     output = output.decode("UTF-8").split("\n")
 
@@ -35,9 +51,8 @@ def test_analyse_freenrg(verbose=False):
         for line in output:
             print(line.lstrip().rstrip())
 
-    assert(False)
+    assert False
+
 
 if __name__ == "__main__":
     test_analyse_freenrg(True)
-
-

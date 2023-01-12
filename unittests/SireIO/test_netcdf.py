@@ -1,5 +1,12 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
 
 from Sire.IO import *
+
 
 def test_netcdf(verbose=False):
 
@@ -24,6 +31,6 @@ def test_netcdf(verbose=False):
 
     PDB().write(s.molecules(), "test.pdb")
 
+
 if __name__ == "__main__":
     test_netcdf(True)
-

@@ -1,3 +1,9 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
 
 from Sire.IO import *
 from Sire.Move import *
@@ -8,6 +14,7 @@ from Sire.Maths import *
 from Sire.CAS import *
 from Sire.Units import *
 
+
 def test_wrapper(verbose=False):
     s = MoleculeParser.read("../io/kcl.crd", "../io/kcl.top")
 
@@ -16,11 +23,11 @@ def test_wrapper(verbose=False):
     all = s[MGName("all")]
 
     ff = InterFF("cljff")
-    ff.setCLJFunction( CLJShiftFunction(7.5*angstrom) )
+    ff.setCLJFunction(CLJShiftFunction(7.5 * angstrom))
     ff.add(all)
 
     ff2 = InterFF("cljff2")
-    ff2.setCLJFunction( CLJShiftFunction(7*angstrom) )
+    ff2.setCLJFunction(CLJShiftFunction(7 * angstrom))
     ff2.add(all)
 
     s.add(ff)
@@ -38,7 +45,7 @@ def test_wrapper(verbose=False):
     s.setComponent(fast_s, fast)
     s.setComponent(s.totalComponent(), slow_s)
 
-    s.add( SpaceWrapper(Vector(0), all) )
+    s.add(SpaceWrapper(Vector(0), all))
 
     move = RigidBodyMC(all)
     vmove = VolumeMove(all)
@@ -55,9 +62,9 @@ def test_wrapper(verbose=False):
     if verbose:
         print("Moving the molecules...")
 
-    for i in range(0,10):
+    for i in range(0, 10):
         if verbose:
-            print("Move %d" % (i+1))
+            print("Move %d" % (i + 1))
 
         s = moves.move(s, 1)
 
@@ -65,10 +72,11 @@ def test_wrapper(verbose=False):
             print(moves)
 
         p = PDB2(s)
-        p.writeToFile("test%03d.pdb" % (i+1))
+        p.writeToFile("test%03d.pdb" % (i + 1))
 
     if verbose:
         print("Moves complete")
+
 
 if __name__ == "__main__":
     test_wrapper(True)

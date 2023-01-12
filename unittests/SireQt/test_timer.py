@@ -1,7 +1,14 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
 
 from Sire.Qt import *
 
 import time
+
 
 def test_timer(verbose=True):
     t = QElapsedTimer()
@@ -10,9 +17,9 @@ def test_timer(verbose=True):
     ns = t.nsecsElapsed()
 
     if verbose:
-        print("Minimum time is %s ms" % (0.000001*ns))
+        print("Minimum time is %s ms" % (0.000001 * ns))
 
-    assert( ns < 1000000 )
+    assert ns < 1000000
 
     t.start()
 
@@ -21,11 +28,11 @@ def test_timer(verbose=True):
     ns = t.nsecsElapsed()
 
     if verbose:
-        print("Slept for 1 s == %s ms" % (0.000001*ns))
+        print("Slept for 1 s == %s ms" % (0.000001 * ns))
 
-    assert( ns >= 990000000 )
-    assert( ns <= 1300000000 )
+    assert ns >= 990000000
+    assert ns <= 1300000000
+
 
 if __name__ == "__main__":
     test_timer(True)
-

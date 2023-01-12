@@ -1,8 +1,15 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
 
 from Sire.IO import *
 from Sire.Base import *
 
 from nose.tools import assert_equal
+
 
 def test_broken_prm(verbose=False):
     if verbose:
@@ -13,7 +20,7 @@ def test_broken_prm(verbose=False):
     if verbose:
         print("Creating the system in serial...")
 
-    s1 = a.toSystem( {"parallel":wrap(False)} )
+    s1 = a.toSystem({"parallel": wrap(False)})
 
     if verbose:
         print("Creating the system in parallel...")
@@ -31,6 +38,7 @@ def test_broken_prm(verbose=False):
     p = PDB2(s)
     p.writeToFile("test.pdb")
 
+
 def test_broken_zan(verbose=False):
 
     if verbose:
@@ -42,6 +50,7 @@ def test_broken_zan(verbose=False):
         print("Creating the system...")
 
     s = a.toSystem()
+
 
 if __name__ == "__main__":
     test_broken_prm(True)

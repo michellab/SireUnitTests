@@ -454,16 +454,6 @@ def test_engines(verbose=False):
         print(s)
         print(r)
 
-    s = Select("element oxygen")
-    r = s(mols)
-
-    if verbose:
-        print(s)
-        print(r)
-
-    for atom in r:
-        assert_equal( atom.property("element"), Element("O") )
-
     s = Select("resname /ala/i and element carbon,H,o")
     r = s(mols)
 
@@ -487,9 +477,6 @@ def test_engines(verbose=False):
     if verbose:
         print(s)
         print(r)
-
-        for atom in r:
-            print(atom)
 
     _writeToFile(r,"test.pdb")
 

@@ -1,3 +1,9 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
 
 from Sire.IO import *
 from Sire.Mol import *
@@ -5,6 +11,7 @@ from Sire.MM import *
 from Sire.FF import *
 
 from nose.tools import assert_equal, assert_almost_equal
+
 
 def _getEnergies(s):
     intraclj = IntraFF("intraclj")
@@ -24,12 +31,14 @@ def _getEnergies(s):
 
     return ffs.energies()
 
+
 def _printCompareEnergies(oldnrgs, newnrgs):
     keys = list(oldnrgs.keys())
     keys.sort()
 
     for key in keys:
-        print("%s: %s  %s" % (key, oldnrgs[key],newnrgs[key]))
+        print("%s: %s  %s" % (key, oldnrgs[key], newnrgs[key]))
+
 
 def _assert_almost_equal(oldnrgs, newnrgs):
     oldkeys = list(oldnrgs.keys())
@@ -38,20 +47,21 @@ def _assert_almost_equal(oldnrgs, newnrgs):
     oldkeys.sort()
     newkeys.sort()
 
-    assert_equal( oldkeys, newkeys )
+    assert_equal(oldkeys, newkeys)
 
     newsum = 0
     oldsum = 0
 
     for key in oldkeys:
         if str(key).find("dihedral") == -1 and str(key).find("improper") == -1:
-            assert_almost_equal( oldnrgs[key], newnrgs[key], 3 )
+            assert_almost_equal(oldnrgs[key], newnrgs[key], 3)
         else:
             newsum += newnrgs[key]
             oldsum += oldnrgs[key]
 
-    # this is the sum of improper and dihedral energy
+    # this is the sum of improper and dihedral energy
     assert_almost_equal(oldsum, newsum, 3)
+
 
 def _test_ambergro(files, verbose=False):
 
@@ -88,8 +98,8 @@ def _test_ambergro(files, verbose=False):
     newnrgs = _getEnergies(s)
 
     if verbose:
-        _printCompareEnergies(oldnrgs,newnrgs)
-    
+        _printCompareEnergies(oldnrgs, newnrgs)
+
     _assert_almost_equal(oldnrgs, newnrgs)
 
     if verbose:
@@ -108,30 +118,33 @@ def _test_ambergro(files, verbose=False):
         print("Getting energies...")
 
     newnrgs = _getEnergies(s)
-    
+
     if verbose:
-        _printCompareEnergies(oldnrgs,newnrgs)
-    
-    _assert_almost_equal(oldnrgs, newnrgs)    
+        _printCompareEnergies(oldnrgs, newnrgs)
+
+    _assert_almost_equal(oldnrgs, newnrgs)
+
 
 def test_ambergro(verbose=False):
     if verbose:
         print("\nTesting ose.top/ose.crd")
 
-    _test_ambergro(["../io/ose.top","../io/ose.crd"], verbose)
+    _test_ambergro(["../io/ose.top", "../io/ose.crd"], verbose)
 
-    #if verbose:
+    # if verbose:
     #    print("\nTesting ethanol.grotop/ethanol.gro")
 
-    #_test_ambergro(["../io/ethanol.grotop","../io/ethanol.gro"], verbose)
+    # _test_ambergro(["../io/ethanol.grotop","../io/ethanol.gro"], verbose)
+
 
 def test_growrite(verbose=False):
 
     if verbose:
         print("Reading...")
 
-    s = MoleculeParser.read("../io/urea.top", "../io/urea.gro", 
-                            {"GROMACS_PATH":"../io/gromacs"})
+    s = MoleculeParser.read(
+        "../io/urea.top", "../io/urea.gro", {"GROMACS_PATH": "../io/gromacs"}
+    )
 
     # calculate the initial internal energy
     oldnrgs = _getEnergies(s)
@@ -144,17 +157,17 @@ def test_growrite(verbose=False):
     if verbose:
         print("Saved the system to file(s): %s" % filenames)
 
-    # read this back in and check the energies
-    s = MoleculeParser.read(filenames)    
+    # read this back in and check the energies
+    s = MoleculeParser.read(filenames)
 
     newnrgs = _getEnergies(s)
 
     if verbose:
-        _printCompareEnergies(oldnrgs,newnrgs)
+        _printCompareEnergies(oldnrgs, newnrgs)
 
     _assert_almost_equal(oldnrgs, newnrgs)
+
 
 if __name__ == "__main__":
     test_ambergro(True)
     test_growrite(True)
-

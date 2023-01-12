@@ -1,3 +1,9 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
 
 from Sire.IO import *
 from Sire.System import *
@@ -8,9 +14,11 @@ from Sire.Units import *
 
 from nose.tools import assert_equal, assert_almost_equal
 
-def _assert_almost_equal( a, b, tol=0.5 ):
-    if abs( a - b ) > tol:
-        assert_almost_equal(a, b, 2)    
+
+def _assert_almost_equal(a, b, tol=0.5):
+    if abs(a - b) > tol:
+        assert_almost_equal(a, b, 2)
+
 
 def _addForceFields(s):
     cljff = InterFF("cljff")
@@ -19,7 +27,7 @@ def _addForceFields(s):
     intraff = InternalFF("intraff")
     intraff.enable14Calculation()
 
-    #only calculate intramolecular energy of non-solvent molecules
+    # only calculate intramolecular energy of non-solvent molecules
     for molnum in s.molNums():
         mol = s[molnum]
         if mol.nAtoms() > 3:
@@ -33,12 +41,15 @@ def _addForceFields(s):
 
     return s
 
+
 def test_small(verbose=False):
     if verbose:
         print("Reading small amber files...")
 
-    files = [ ("../io/ose.top", "../io/ose.crd" ),
-              ("../io/ala.top", "../io/ala.crd" ) ]
+    files = [
+        ("../io/ose.top", "../io/ose.crd"),
+        ("../io/ala.top", "../io/ala.crd"),
+    ]
 
     for file in files:
         if verbose:
@@ -48,7 +59,7 @@ def test_small(verbose=False):
 
         if verbose:
             print("Converting to gromacs...")
- 
+
         gtop = GroTop(s)
         g87 = Gro87(s)
 
@@ -70,13 +81,13 @@ def test_small(verbose=False):
             print("Calculating energies...")
 
         nrgs = s.energies()
-        # merge the dihedral and improper energies... 
+        # merge the dihedral and improper energies...
         dihsym = Symbol("E_{intraff}^{dihedral}")
         impsym = Symbol("E_{intraff}^{improper}")
         nrgs.set(dihsym, nrgs[dihsym] + nrgs[impsym])
         nrgs.set(impsym, 0.0)
 
-        nrgs2 = s2.energies()    
+        nrgs2 = s2.energies()
 
         keys = list(nrgs.keys())
         keys.sort()
@@ -84,11 +95,11 @@ def test_small(verbose=False):
         if verbose:
             print("Energies:")
             for key in keys:
-                print("%s:  %s  %s" % \
-                    (key, nrgs[key], nrgs2[key]))
+                print("%s:  %s  %s" % (key, nrgs[key], nrgs2[key]))
 
         for key in keys:
-            _assert_almost_equal( nrgs[key], nrgs2[key] )
+            _assert_almost_equal(nrgs[key], nrgs2[key])
+
 
 def test_ambgro(verbose=False):
     if verbose:
@@ -100,7 +111,7 @@ def test_ambgro(verbose=False):
     if verbose:
         print("Saving to gromacs files...")
 
-    # save to amber, and then reload
+    # save to amber, and then reload
     gtop = GroTop(s)
     g87 = Gro87(s)
 
@@ -181,16 +192,25 @@ def test_ambgro(verbose=False):
     if verbose:
         print("Energies:")
         for key in keys:
-            print("%s:  %s  %s  %s  %s  %s" % \
-                    (key, nrgs[key], nrgs2[key], nrgs3[key], nrgs4[key], nrgs5[key]))
+            print(
+                "%s:  %s  %s  %s  %s  %s"
+                % (
+                    key,
+                    nrgs[key],
+                    nrgs2[key],
+                    nrgs3[key],
+                    nrgs4[key],
+                    nrgs5[key],
+                )
+            )
 
     for key in keys:
-        _assert_almost_equal( nrgs[key], nrgs2[key] )
-        _assert_almost_equal( nrgs2[key], nrgs4[key] )
-        _assert_almost_equal( nrgs3[key], nrgs5[key] )
-        #_assert_almost_equal( nrgs[key], nrgs3[key] )
+        _assert_almost_equal(nrgs[key], nrgs2[key])
+        _assert_almost_equal(nrgs2[key], nrgs4[key])
+        _assert_almost_equal(nrgs3[key], nrgs5[key])
+        # _assert_almost_equal( nrgs[key], nrgs3[key] )
+
 
 if __name__ == "__main__":
     test_small(True)
     test_ambgro(True)
-

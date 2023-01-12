@@ -1,3 +1,10 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
+
 from math import sqrt
 from nose.tools import assert_almost_equal
 from random import random, randint
@@ -29,9 +36,7 @@ while dz == 0:
 p = PeriodicBox(Vector(dx, dy, dz))
 
 # Create a triclinic box.
-t = TriclinicBox(Vector(dx, 0,  0),
-                 Vector(0, dy,  0),
-                 Vector(0,  0, dz))
+t = TriclinicBox(Vector(dx, 0, 0), Vector(0, dy, 0), Vector(0, 0, dz))
 
 # Generate a vector of random coordinates.
 cg_array = CoordGroupArray()
@@ -41,15 +46,16 @@ for x in range(0, num_groups):
     coords = []
 
     # Randomise the center of the coordinate group.
-    center = randint(-50, 50)*Vector(random(), random(), random())
+    center = randint(-50, 50) * Vector(random(), random(), random())
 
     # Append num_coords random coordinates to each group.
     for y in range(0, num_coords):
-        coords.append(Vector(1 - 2*random(),
-                             1 - 2*random(),
-                             1 - 2*random())
-                      + center)
+        coords.append(
+            Vector(1 - 2 * random(), 1 - 2 * random(), 1 - 2 * random())
+            + center
+        )
     cg_array.append(coords)
+
 
 def test_distances(verbose=False):
     # Assert that the distance between all pairs of vectors in cg_array is the
@@ -76,6 +82,7 @@ def test_distances(verbose=False):
                     assert_almost_equal(vp.y(), vt.y())
                     assert_almost_equal(vp.z(), vt.z())
 
+
 def test_minimum_distance(verbose=False):
     # Assert that the minimum distance between coordinate groups and coordinate
     # group axis-aligned boxes are the same in both spaces.
@@ -90,15 +97,18 @@ def test_minimum_distance(verbose=False):
             mt = t.minimumDistance(cg_array[a].aaBox(), cg_array[b].aaBox())
             assert_almost_equal(mp, mt)
 
+
 def test_minimum_image(verbose=False):
     # Assert that the minimum image of a point with respect to center is the
     # same in both spaces.
     for a in range(0, num_groups):
         for b in range(0, num_coords):
             for c in range(0, 10):
-                center = Vector(50 - 100*random(),
-                                50 - 100*random(),
-                                50 - 100*random())
+                center = Vector(
+                    50 - 100 * random(),
+                    50 - 100 * random(),
+                    50 - 100 * random(),
+                )
                 mp = p.getMinimumImage(cg_array[a][b], center)
                 mt = t.getMinimumImage(cg_array[a][b], center)
                 assert_almost_equal(mp.x(), mt.x())
@@ -109,9 +119,9 @@ def test_minimum_image(verbose=False):
     # is the same in both spaces.
     for a in range(0, num_groups):
         for b in range(0, 10):
-            center = Vector(50 - 100*random(),
-                            50 - 100*random(),
-                            50 - 100*random())
+            center = Vector(
+                50 - 100 * random(), 50 - 100 * random(), 50 - 100 * random()
+            )
             mp = p.getMinimumImage(cg_array[a], center)
             mt = t.getMinimumImage(cg_array[a], center)
 
@@ -125,9 +135,9 @@ def test_minimum_image(verbose=False):
     # Assert that the minimum image of a coordinate group array with respect to
     # center is the same in both spaces.
     for a in range(0, 10):
-        center = Vector(50 - 100*random(),
-                        50 - 100*random(),
-                        50 - 100*random())
+        center = Vector(
+            50 - 100 * random(), 50 - 100 * random(), 50 - 100 * random()
+        )
 
         # Whether to shift the entire array as one.
         for b in [False, True]:
@@ -147,9 +157,9 @@ def test_minimum_image(verbose=False):
     # with respect to center is the same in both spaces.
     for a in range(0, num_groups):
         for b in range(0, 10):
-            center = Vector(50 - 100*random(),
-                            50 - 100*random(),
-                            50 - 100*random())
+            center = Vector(
+                50 - 100 * random(), 50 - 100 * random(), 50 - 100 * random()
+            )
             mp = p.getMinimumImage(cg_array[a].aaBox(), center)
             mt = t.getMinimumImage(cg_array[a].aaBox(), center)
             mp_min = mp.minCoords()
@@ -163,6 +173,7 @@ def test_minimum_image(verbose=False):
             assert_almost_equal(mp_max.y(), mt_max.y())
             assert_almost_equal(mp_max.z(), mt_max.z())
 
+
 def test_angles(verbose=False):
     # Assert that angles between points computed in both spaces are equivalent.
     for a in range(0, num_groups):
@@ -171,13 +182,12 @@ def test_angles(verbose=False):
             for c in range(0, num_coords):
                 v1 = cg_array[a][c]
                 for d in range(0, num_coords):
-                    if b != c and \
-                       b != d and \
-                       c != d:
+                    if b != c and b != d and c != d:
                         v2 = cg_array[a][d]
                         ap = p.calcAngle(v0, v1, v2)
                         at = t.calcAngle(v0, v1, v2)
                         assert_almost_equal(ap.value(), at.value())
+
 
 def test_dihedrals(verbose=False):
     # Assert that dihedrals between points computed in both spaces are equivalent.
@@ -189,31 +199,36 @@ def test_dihedrals(verbose=False):
                 for d in range(0, num_coords):
                     v2 = cg_array[a][d]
                     for e in range(0, num_coords):
-                        if b != c and \
-                           b != d and \
-                           b != e and \
-                           c != d and \
-                           c != e and \
-                           d != e:
+                        if (
+                            b != c
+                            and b != d
+                            and b != e
+                            and c != d
+                            and c != e
+                            and d != e
+                        ):
                             v3 = cg_array[a][e]
                             dp = p.calcDihedral(v0, v1, v2, v3)
                             dt = t.calcDihedral(v0, v1, v2, v3)
                             assert_almost_equal(dp.value(), dt.value())
+
 
 def test_images_within(verbose=False):
     # Assert that the periodic images of point with respect to center within
     # dist are the same in both spaces.
     max_dist = max([abs(dx), abs(dy), abs(dz)])
     for a in range(0, 10):
-        point = Vector(dx*(0.5 - random()),
-                       dy*(0.5 - random()),
-                       dz*(0.5 - random()))
+        point = Vector(
+            dx * (0.5 - random()), dy * (0.5 - random()), dz * (0.5 - random())
+        )
         for b in range(0, 10):
-            center = Vector(dx*(0.5 - random()),
-                            dy*(0.5 - random()),
-                            dz*(0.5 - random()))
+            center = Vector(
+                dx * (0.5 - random()),
+                dy * (0.5 - random()),
+                dz * (0.5 - random()),
+            )
             for c in range(0, 10):
-                dist = max_dist*random()
+                dist = max_dist * random()
                 ip = p.getImagesWithin(point, center, dist)
                 it = t.getImagesWithin(point, center, dist)
                 assert len(ip) == len(it)
@@ -222,28 +237,31 @@ def test_images_within(verbose=False):
                     assert_almost_equal(ip[d].y(), it[d].y())
                     assert_almost_equal(ip[d].z(), it[d].z())
 
+
 def test_energy(verbose=False):
     # Assert that intermolecular energies calculated in both spaces agree.
     # Note that, other than using InterCLJFF, this comparison can only be
     # made between Cartesian triclinic spaces and a periodic box.
 
-    (mols, periodic_space) = Amber().readCrdTop("../io/waterbox.crd", "../io/waterbox.top")
+    (mols, periodic_space) = Amber().readCrdTop(
+        "../io/waterbox.crd", "../io/waterbox.top"
+    )
 
     dimensions = periodic_space.dimensions()
 
-    triclinic_space = TriclinicBox(Vector(dimensions.x(), 0, 0),
-                                   Vector(0, dimensions.y(), 0),
-                                   Vector(0, 0, dimensions.z()))
+    triclinic_space = TriclinicBox(
+        Vector(dimensions.x(), 0, 0),
+        Vector(0, dimensions.y(), 0),
+        Vector(0, 0, dimensions.z()),
+    )
 
     long_coul_cutoff = 25 * angstrom
     coul_cutoff = 15 * angstrom
     lj_cutoff = 10 * angstrom
 
-    switchfunc = \
-        HarmonicSwitchingFunction(coul_cutoff,
-                                  coul_cutoff,
-                                  lj_cutoff,
-                                  lj_cutoff)
+    switchfunc = HarmonicSwitchingFunction(
+        coul_cutoff, coul_cutoff, lj_cutoff, lj_cutoff
+    )
 
     p_oldff = InterCLJFF("p_oldff")
     p_oldff.setSwitchingFunction(switchfunc)
@@ -301,13 +319,14 @@ def test_energy(verbose=False):
     assert_almost_equal(p_oldcnrg, t_oldcnrg)
     assert_almost_equal(p_oldljnrg, t_oldljnrg)
 
+
 def test_equivalence(verbose=False):
     # Assert that TriclinicBox objects constructed using lattice vectors,
     # or lattice vector magnitudes and angles are equivalent.
 
     # Cubic.
     t0 = TriclinicBox.cubic(1)
-    t1 = TriclinicBox(1, 1, 1, 90*degrees, 90*degrees, 90*degrees)
+    t1 = TriclinicBox(1, 1, 1, 90 * degrees, 90 * degrees, 90 * degrees)
     assert_almost_equal(t0.vector0().x(), t1.vector0().x())
     assert_almost_equal(t0.vector0().y(), t1.vector0().y())
     assert_almost_equal(t0.vector0().z(), t1.vector0().z())
@@ -320,7 +339,7 @@ def test_equivalence(verbose=False):
 
     # Rhombic-dodecahedron (square).
     t0 = TriclinicBox.rhombicDodecahedronSquare(1)
-    t1 = TriclinicBox(1, 1, 1, 60*degrees, 60*degrees, 90*degrees)
+    t1 = TriclinicBox(1, 1, 1, 60 * degrees, 60 * degrees, 90 * degrees)
     assert_almost_equal(t0.vector0().x(), t1.vector0().x())
     assert_almost_equal(t0.vector0().y(), t1.vector0().y())
     assert_almost_equal(t0.vector0().z(), t1.vector0().z())
@@ -333,7 +352,7 @@ def test_equivalence(verbose=False):
 
     # Rhombic-dodecahedron (hexagon).
     t0 = TriclinicBox.rhombicDodecahedronHexagon(1)
-    t1 = TriclinicBox(1, 1, 1, 60*degrees, 60*degrees, 60*degrees)
+    t1 = TriclinicBox(1, 1, 1, 60 * degrees, 60 * degrees, 60 * degrees)
     assert_almost_equal(t0.vector0().x(), t1.vector0().x())
     assert_almost_equal(t0.vector0().y(), t1.vector0().y())
     assert_almost_equal(t0.vector0().z(), t1.vector0().z())
@@ -343,6 +362,7 @@ def test_equivalence(verbose=False):
     assert_almost_equal(t0.vector2().x(), t1.vector2().x())
     assert_almost_equal(t0.vector2().y(), t1.vector2().y())
     assert_almost_equal(t0.vector2().z(), t1.vector2().z())
+
 
 if __name__ == "__main__":
     test_distances(True)

@@ -1,9 +1,17 @@
+try:
+    import sire as sr
+
+    sr.use_old_api()
+except ImportError:
+    pass
+
 import Sire.Stream
 
 from Sire.Move import *
 from Sire.System import *
 
-(system,moves) = Sire.Stream.load("../io/lsrc_system.s3")
+(system, moves) = Sire.Stream.load("../io/lsrc_system.s3")
+
 
 def _pvt_test(sys, move, verbose):
 
@@ -19,7 +27,7 @@ def _pvt_test(sys, move, verbose):
     if verbose:
         print("\nTESTING %s" % move)
 
-    for i in range(0,10):
+    for i in range(0, 10):
         if verbose:
             print("MOVE %s" % i)
 
@@ -45,17 +53,21 @@ def _pvt_test(sys, move, verbose):
     for key in keys:
         if abs(newnrgs[key] - r_newnrgs[key]) > 0.0001:
             if verbose:
-                print("BROKEN %s : %s versus %s" % (key, oldnrgs[key], newnrgs[key]))
+                print(
+                    "BROKEN %s : %s versus %s"
+                    % (key, oldnrgs[key], newnrgs[key])
+                )
 
             all_agree = False
 
-    assert(all_agree)
+    assert all_agree
 
-def test_moves(verbose = False):
+
+def test_moves(verbose=False):
 
     for move in moves:
         _pvt_test(system, move, verbose)
 
+
 if __name__ == "__main__":
     test_moves(True)
-

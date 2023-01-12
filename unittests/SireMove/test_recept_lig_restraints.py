@@ -40,8 +40,8 @@ OpenMMMD.distance_restraints_dict = OpenMMMD.Parameter("distance restraints dict
 OpenMMMD.boresch_restraints_dict = OpenMMMD.Parameter("boresch restraints dictionary", {"anchor_points":{"r1":4946, "r2":4944, "r3":4949,
                                      "l1":11, "l2":2, "l3":3},"equilibrium_values":{"r0":5.92, "thetaA0":1.85, 
                                      "thetaB0":1.59,"phiA0":-0.30, "phiB0":-1.55, "phiC0":2.90},
-                                     "force_constants":{"kr":25.49, "kthetaA":66.74, "kthetaB":38.39, "kphiA":215.36,
-                                      "kphiB":49.23, "kphiC":49.79}},
+                                     "force_constants":{"kr":12.75, "kthetaA":33.37, "kthetaB":19.20, "kphiA":107.68,
+                                      "kphiB":24.62, "kphiC":24.90}},
                                     """Dictionary of four dictionaries: anchor points in ligand, anchor points in receptor,
                                     equilibrium values for 6 Boresch-style external degrees of freedom, and associated force
                                     constants. Syntax is:
@@ -112,10 +112,10 @@ def test_boresch_restraints(verbose=False):
         print("Testing Boresch restraints...")
         print(f"Energy of system with Boresch restraints on = {boresch_on_nrg}")
         print(f"Energy of system with Boresch restraints off = {boresch_off_nrg}")
-        print(f"Energy difference = {nrg_diff}")
+        print(f"Energy change when restraints turned on = {nrg_diff}")
         print("#######################################")
 
-    assert_almost_equal(nrg_diff.value(), 1.27076849)
+    assert_almost_equal(nrg_diff.value(), 1.2708966768404935)
 
 
 def test_multiple_distance_restraints(verbose=False):
@@ -130,7 +130,7 @@ def test_multiple_distance_restraints(verbose=False):
         print("Testing multiple distance restraints...")
         print(f"Energy of system with multiple distance restraints on = {mdr_on_nrg}")
         print(f"Energy of system with multiple distance restraints off = {mdr_off_nrg}")
-        print(f"Energy difference = {nrg_diff}")
+        print(f"Energy difference when restraints turned on = {nrg_diff}")
         print("#######################################")
 
     assert_almost_equal(nrg_diff.value(), 5.6443886268)

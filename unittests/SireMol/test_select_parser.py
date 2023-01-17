@@ -71,11 +71,6 @@ def test_selections(verbose=False):
     if verbose:
         print(s)
 
-    s = Select("atomnam hello; resname goodbye")
-
-    if verbose:
-        print(s)
-
     s = Select("atomnam hello and resname goodbye")
 
     if verbose:
@@ -426,7 +421,7 @@ def test_engines(verbose=False):
     #    print(s)
     #    print(r)
 
-    s = Select("{resname /ala/i}[0]")
+    s = Select("resname /ala/i[0]")
     r = s(mols)
 
     if verbose:

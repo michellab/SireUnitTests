@@ -33,3 +33,13 @@ __pycache__/
 
 # macOS folder attributes.
 .DS_Store
+
+*/Sire*/*.prm*
+*/Sire*/*.pdb
+*/Sire*/*.rst*
+*/Sire*/*.top
+*/Sire*/*.gro*
+*/Sire*/*.mol2
+*/Sire*/*.s3
+*/Sire*/*.g87
+*/Tools/*.s3

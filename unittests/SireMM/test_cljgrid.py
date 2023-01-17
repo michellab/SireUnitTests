@@ -62,7 +62,7 @@ def test_build_grid(verbose = False):
 
     gridpot = cljfunc.calculate(water, grid)
 
-    reduce_fac = math.sqrt(one_over_four_pi_eps0)
+    reduce_fac = math.sqrt(one_over_four_pi_eps0.value())
 
     for i in range(0,grid.nPoints()):
         gridpoint = grid.point(i)

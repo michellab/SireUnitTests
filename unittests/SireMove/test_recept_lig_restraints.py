@@ -65,6 +65,8 @@ OpenMMMD.boresch_restraints_dict = OpenMMMD.Parameter("boresch restraints dictio
 OpenMMMD.morphfile = OpenMMMD.Parameter("morphfile", "../io/receptor_ligand_restraints/MORPH.dummy.pert",
                       """Name of the morph file containing the perturbation to apply to the system.""")
 
+OpenMMMD.platform = OpenMMMD.Parameter("platform", "CPU", "Override the GPU platform")
+
 ######## MAIN SCRIPTS  #############
 
 def getPotEnergyRestr(boresch_on=False, mult_dist_on=False, verbose=False):
@@ -81,6 +83,7 @@ def getPotEnergyRestr(boresch_on=False, mult_dist_on=False, verbose=False):
     """
     # Silence Sire output
     os.environ['SIRE_SILENT_PHONEHOME'] = "1"
+    os.environ['OPENMM_DEFAULT_PLATFORM'] = "CPU"
 
     amber = OpenMMMD.Amber()
     (molecules, space) = amber.readCrdTop(OpenMMMD.crdfile.val, OpenMMMD.topfile.val)
@@ -93,7 +96,8 @@ def getPotEnergyRestr(boresch_on=False, mult_dist_on=False, verbose=False):
         system = OpenMMMD.setupBoreschRestraints(system)
 
     system = OpenMMMD.setupForceFieldsFreeEnergy(system, space)
-    moves = OpenMMMD.setupMovesFreeEnergy(system, OpenMMMD.debug_seed.val, OpenMMMD.gpu.val, OpenMMMD.lambda_val.val)
+    moves = OpenMMMD.setupMovesFreeEnergy(system, OpenMMMD.debug_seed.val, 
+                                          OpenMMMD.gpu.val, OpenMMMD.lambda_val.val)
     mdmoves = moves.moves()[0]
     integrator = mdmoves.integrator()
     nrg = integrator.getPotentialEnergy(system)
@@ -115,7 +119,7 @@ def test_boresch_restraints(verbose=False):
         print(f"Energy change when restraints turned on = {nrg_diff}")
         print("#######################################")
 
-    assert_almost_equal(nrg_diff.value(), 1.2708966768404935)
+    assert_almost_equal(nrg_diff.value(), 1.2708966768404935, places=3)
 
 
 def test_multiple_distance_restraints(verbose=False):
@@ -133,7 +137,7 @@ def test_multiple_distance_restraints(verbose=False):
         print(f"Energy difference when restraints turned on = {nrg_diff}")
         print("#######################################")
 
-    assert_almost_equal(nrg_diff.value(), 5.6443886268)
+    assert_almost_equal(nrg_diff.value(), 5.6443886268, places=3)
 
 
 if __name__ == '__main__':

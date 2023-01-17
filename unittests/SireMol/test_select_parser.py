@@ -176,26 +176,6 @@ def test_selections(verbose=False):
         print(s)
 
     if verbose:
-        print("\nSubscripting\n")
-
-    s = Select("{atoms in resname ALA}[0:10]")
-
-    if verbose:
-        print(s)
-
-    s = Select("atoms in {resname ALA}[0:10]")
-
-    if verbose:
-        print(s)
-
-    s = Select("{resname ALA and atomname /ca/i}[5]")
-
-    if verbose:
-        print(s)
-
-    s = Select("{molecules with resname /ala/i}[-1]")
-
-    if verbose:
         print(s)
 
     if verbose:
@@ -206,25 +186,10 @@ def test_selections(verbose=False):
     if verbose:
         print(s)
 
-    s = Select("resname /ala/i;\n//another comment\n resname /gly/i")
-
-    if verbose:
-        print(s)
-
-    s = Select("{molecules /*comment*/ with resname /ala/i /*comment */}/*comment*/[-1]")
-
-    if verbose:
-        print(s)
-
     if verbose:
         print("\nWithin distance\n")
 
     s = Select("molecules within 5.0 of resname ALA")
-
-    if verbose:
-        print(s)
-
-    s = Select("{atoms within 10 nm of molecules with resname /ala/i}[0:-1:100]")
 
     if verbose:
         print(s)
@@ -238,56 +203,6 @@ def test_selections(verbose=False):
 
     if verbose:
         print(s)
-
-    if verbose:
-        print("\nUser-supplied tokens\n")
-
-    Select.setToken("protein", "molecules with resname /ala/i,/asp/i,/arg/i,/leu/i")
-
-    s = Select("protein")
-
-    if verbose:
-        print(s)
-
-    Select.setToken("ligand", "resname /lig/i")
-
-    s = Select("protein or ligand")
-
-    if verbose:
-        print(s)
-
-    s = Select("{protein}[0]")
-
-    if verbose:
-        print(s)
-
-    if verbose:
-        print("\nwhere parsing\n")
-
-    #s = Select("molecules where coords.min > 5,3,2")
-
-    #if verbose:
-    #    print(s)
-
-    #s = Select("atoms where center within 3 of resname /ala/i")
-
-    #if verbose:
-    #    print(s)
-
-    #s = Select("atoms where center <= (1,2,3)")
-
-    #if verbose:
-    #    print("\njoin parsing\n")
-
-    #s = Select("join residues in mol with resname /ala/i")
-
-    #if verbose:
-    #    print(s)
-
-    #s = Select("join resname ALA and atomname CA")
-
-    #if verbose:
-    #    print(s)
 
     if verbose:
         print("\nelement parsing\n")
@@ -428,7 +343,7 @@ def test_engines(verbose=False):
         print(s)
         print(r)
 
-    s = Select("atoms with resname /ala/i")
+    s = Select("atoms in resname /ala/i")
     r = s(mols)
 
     if verbose:

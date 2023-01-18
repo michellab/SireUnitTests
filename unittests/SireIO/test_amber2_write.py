@@ -49,7 +49,12 @@ def _assert_almost_equal(oldnrgs, newnrgs):
     for key in oldkeys:
         assert_almost_equal( oldnrgs[key], newnrgs[key], 3 )
 
+count = 0
+
 def _test_write(files, verbose=False):
+
+    global count
+    count += 1
 
     try:
         s = MoleculeParser.read
@@ -67,7 +72,7 @@ def _test_write(files, verbose=False):
     if verbose:
         print("Writing...")
 
-    filenames = MoleculeParser.write(s, "test")
+    filenames = MoleculeParser.write(s, f"amber2_{count}_test")
 
     if verbose:
         print("Saved the system to file(s): %s" % filenames)

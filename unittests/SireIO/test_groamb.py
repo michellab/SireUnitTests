@@ -55,13 +55,13 @@ def test_groamb(verbose=False):
     a = AmberPrm(s)
     c = AmberRst(s)
 
-    a.writeToFile("test.top")
-    c.writeToFile("test.rst")
+    a.writeToFile("test_urea.top")
+    c.writeToFile("test_urea.rst")
 
     if verbose:
         print("Reading from amber files...")
 
-    s2 = MoleculeParser.read("test.top", "test.rst")
+    s2 = MoleculeParser.read("test_urea.top", "test_urea.rst")
 
     if verbose:
         print("Adding forcefields...")
@@ -100,19 +100,21 @@ def test_ryckaert_bellemans(verbose=False):
     )
 
     if verbose:
+        print(f"Read {s.nAtoms()} atoms...")
         print("Saving to amber files...")
 
     # save to amber, and then reload
     a = AmberPrm(s)
     c = AmberRst(s)
 
-    a.writeToFile("test.top")
-    c.writeToFile("test.rst")
+    a.writeToFile("test_cage.top")
+    c.writeToFile("test_cage.rst")
 
     if verbose:
+        print(f"Written {a.nAtoms()} / {c.nAtoms()} atoms")
         print("Reading from amber files...")
 
-    s2 = MoleculeParser.read("test.top", "test.rst")
+    s2 = MoleculeParser.read("test_cage.top", "test_cage.rst")
 
     if verbose:
         print("Adding forcefields...")

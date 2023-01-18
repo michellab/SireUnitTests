@@ -15,21 +15,21 @@ def test_netcdf(verbose=False):
     print(r)
 
     print("Writing back to netcdf...")
-    r.writeToFile("test.rst")
+    r.writeToFile("file_netcdf_test.rst")
 
     print("...done")
 
     print(r.creatorApplication())
     print(r.time())
 
-    s = MoleculeParser.read("test.rst", "../io/NA16.top")
+    s = MoleculeParser.read("file_netcdf_test.rst", "../io/NA16.top")
 
     r7 = AmberRst7(s)
-    r7.writeToFile("test.rst7")
+    r7.writeToFile("file_netcdf_test2.rst7")
 
     print(r7)
 
-    PDB().write(s.molecules(), "test.pdb")
+    PDB().write(s.molecules(), "file_netcdf_test.pdb")
 
 
 if __name__ == "__main__":

@@ -100,12 +100,12 @@ def test_amberrst(verbose=False):
     if verbose:
         print("Writing to a temporary file...")
 
-    newfile.writeToFile("test.rst")
+    newfile.writeToFile("file_amberrst_test.rst")
 
     if verbose:
         print("Reloading from the temporary file...")
 
-    new2file = AmberRst("test.rst")
+    new2file = AmberRst("file_amberrst_test.rst")
 
     print(new2file.warnings())
 
@@ -124,7 +124,7 @@ def test_amberrst(verbose=False):
     if verbose:
         print("Writing back to a full file...")
 
-    for t in ("test.rst", "test.prm7"):
+    for t in ("file_amberrst_test.rst", "file_amberrst_test.prm7"):
         try:
             os.remove(t)
         except:
@@ -133,12 +133,12 @@ def test_amberrst(verbose=False):
     if verbose:
         print("Writing...")
 
-    MoleculeParser.write(s, "test")
+    MoleculeParser.write(s, "file2_amberrst_test")
 
     if verbose:
         print("Re-reading the data from the written file...")
 
-    s2 = MoleculeParser.read("test.prm7", "test.rst")
+    s2 = MoleculeParser.read("file2_amberrst_test.prm7", "file2_amberrst_test.rst")
 
     if verbose:
         print("Comparing energies...")

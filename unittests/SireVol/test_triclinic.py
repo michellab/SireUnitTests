@@ -21,22 +21,35 @@ num_groups = 10
 # The number of coordinates within each group.
 num_coords = 10
 
-# Generate non-zero box lengths in each dimension.
-dx = 0
-while dx == 0:
-    dx = randint(-10, 10)
-dy = 0
-while dy == 0:
-    dy = randint(-10, 10)
-dz = 0
-while dz == 0:
-    dz = randint(-10, 10)
+# Generate non-zero box lengths.
+x = 0
+while x == 0:
+    x = randint(-10, 10)
+y = 0
+while y == 0:
+    y = randint(-10, 10)
+z = 0
+while z == 0:
+    z = randint(-10, 10)
+
+# Create the box and store the absolute values of the lengths.
+box = [x, y, z]
+abs_box = [abs(x), abs(y), abs(z)]
+
+# Create the box, sorted by absolute value.
+box = [i for _, i in sorted(zip(abs_box, box))]
 
 # Create a periodic box.
-p = PeriodicBox(Vector(dx, dy, dz))
+p = PeriodicBox(Vector(box))
 
 # Create a triclinic box.
-t = TriclinicBox(Vector(dx, 0, 0), Vector(0, dy, 0), Vector(0, 0, dz))
+t = TriclinicBox(Vector(box[0], 0, 0), Vector(0, box[1], 0), Vector(0, 0, box[2]))
+
+# Rotate and reduce the box. The rotation will ensure that the lattice vector
+# with the shorest length is aligned with the x axis, the next shortest lies in
+# the x-y plane, and the largest has a positive z component.
+t.rotate()
+t.reduce()
 
 # Generate a vector of random coordinates.
 cg_array = CoordGroupArray()
@@ -216,16 +229,16 @@ def test_dihedrals(verbose=False):
 def test_images_within(verbose=False):
     # Assert that the periodic images of point with respect to center within
     # dist are the same in both spaces.
-    max_dist = max([abs(dx), abs(dy), abs(dz)])
+    max_dist = max([abs(x), abs(y), abs(z)])
     for a in range(0, 10):
         point = Vector(
-            dx * (0.5 - random()), dy * (0.5 - random()), dz * (0.5 - random())
+            x * (0.5 - random()), y * (0.5 - random()), z * (0.5 - random())
         )
         for b in range(0, 10):
             center = Vector(
-                dx * (0.5 - random()),
-                dy * (0.5 - random()),
-                dz * (0.5 - random()),
+                x * (0.5 - random()),
+                y * (0.5 - random()),
+                z * (0.5 - random()),
             )
             for c in range(0, 10):
                 dist = max_dist * random()
@@ -322,7 +335,10 @@ def test_energy(verbose=False):
 
 def test_equivalence(verbose=False):
     # Assert that TriclinicBox objects constructed using lattice vectors,
-    # or lattice vector magnitudes and angles are equivalent.
+    # or lattice vector magnitudes and angles are equivalent. (Note that
+    # other equivalent angles could be supplied, which would only change
+    # the sign lattice vector components, not their magnitudes, e.g. an
+    # equivalent left-tilting box.)
 
     # Cubic.
     t0 = TriclinicBox.cubic(1)
@@ -339,7 +355,7 @@ def test_equivalence(verbose=False):
 
     # Rhombic-dodecahedron (square).
     t0 = TriclinicBox.rhombicDodecahedronSquare(1)
-    t1 = TriclinicBox(1, 1, 1, 60 * degrees, 60 * degrees, 90 * degrees)
+    t1 = TriclinicBox(1, 1, 1, 120 * degrees, 120 * degrees, 90 * degrees)
     assert_almost_equal(t0.vector0().x(), t1.vector0().x())
     assert_almost_equal(t0.vector0().y(), t1.vector0().y())
     assert_almost_equal(t0.vector0().z(), t1.vector0().z())
@@ -352,7 +368,7 @@ def test_equivalence(verbose=False):
 
     # Rhombic-dodecahedron (hexagon).
     t0 = TriclinicBox.rhombicDodecahedronHexagon(1)
-    t1 = TriclinicBox(1, 1, 1, 60 * degrees, 60 * degrees, 60 * degrees)
+    t1 = TriclinicBox(1, 1, 1, 120 * degrees, 60 * degrees, 120 * degrees)
     assert_almost_equal(t0.vector0().x(), t1.vector0().x())
     assert_almost_equal(t0.vector0().y(), t1.vector0().y())
     assert_almost_equal(t0.vector0().z(), t1.vector0().z())
